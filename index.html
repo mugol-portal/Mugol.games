@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MuGöl GAMES - Oyun Portalı</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a1929 0%, #1e3a5f 50%, #2d4a6d 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+            padding: 30px 0;
+        }
+
+        .logo-image {
+            width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .logo {
+            font-size: 3em;
+            font-weight: bold;
+            color: #64b5f6;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+            transition: transform 0.3s;
+        }
+
+        .tagline {
+            font-size: 1.3em;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .game-card:hover::before {
+            left: 100%;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .game-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .game-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .game-description {
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            min-height: 40px;
+        }
+
+        .play-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .play-btn:hover {
+            background: #218838;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
+        }
+
+        .play-btn:active {
+            transform: scale(0.98);
+        }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #dc3545;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .badge.new {
+            background: #28a745;
+        }
+
+        .badge.hot {
+            background: #ff6b6b;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .logo {
+                font-size: 2em;
+            }
+
+            .tagline {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="logo.png" alt="MuGöl GAMES" class="logo-image">
+            <div class="tagline">Eğlenceli Oyunlar, Sınırsız Keyif!</div>
+        </header>
+
+        <div class="games-grid">
+            <!-- Fruit Ninja -->
+            <div class="game-card" onclick="openGame('fruit-ninja.html')">
+                <span class="badge hot">POPÜLER!</span>
+                <div class="game-icon">🍉</div>
+                <h2 class="game-title">Fruit Ninja</h2>
+                <p class="game-description">Meyveleri kes, bombalara dokunma! 10 can ile maksimum skoru yap!</p>
+                <button class="play-btn">🎯 Oyna</button>
+            </div>
+
+            <!-- Flappy Bird -->
+            <div class="game-card" onclick="openGame('flappy-bird.html')">
+                <span class="badge new">YENİ!</span>
+                <div class="game-icon">🐦</div>
+                <h2 class="game-title">Flappy Bird</h2>
+                <p class="game-description">Kuşu uçur, borulardan geç! Klasik bağımlılık yapan oyun!</p>
+                <button class="play-btn">🎯 Oyna</button>
+            </div>
+
+            <!-- Stack Tower -->
+            <div class="game-card" onclick="openGame('stack-tower.html')">
+                <span class="badge new">YENİ!</span>
+                <div class="game-icon">🏗️</div>
+                <h2 class="game-title">Stack Tower</h2>
+                <p class="game-description">Blokları yığ, kuleyi yükselt! Perfect yaparak bonus kazan!</p>
+                <button class="play-btn">🎯 Oyna</button>
+            </div>
+
+            <!-- Space Shooter -->
+            <div class="game-card" onclick="openGame('space-shooter.html')">
+                <span class="badge new">YENİ!</span>
+                <div class="game-icon">🚀</div>
+                <h2 class="game-title">Space Shooter</h2>
+                <p class="game-description">Uzayda düşmanları yok et! Power-up'ları topla, seviyeleri geç!</p>
+                <button class="play-btn">🎯 Oyna</button>
+            </div>
+
+            <!-- Bubble Shooter -->
+            <div class="game-card" onclick="openGame('bebble.html')">
+                <span class="badge hot">40 SEVİYE!</span>
+                <div class="game-icon">🎯</div>
+                <h2 class="game-title">Bubble Shooter</h2>
+                <p class="game-description">Topları patlat! 40 farklı seviye, kolaydan zora!</p>
+                <button class="play-btn">🎯 Oyna</button>
+            </div>
+
+            <!-- Kart Eşleştirme -->
+            <div class="game-card" onclick="openGame('kart-eslestirme.html')">
+                <div class="game-icon">🃏</div>
+                <h2 class="game-title">Kart Eşleştirme</h2>
+                <p class="game-description">Kartları eşleştir, hafızanı test et!</p>
+                <button class="play-btn">🎯 Oyna</button>
+            </div>
+
+            <!-- Yılan Oyunu -->
+            <div class="game-card" onclick="openGame('yilan-oyunu.html')">
+                <div class="game-icon">🐍</div>
+                <h2 class="game-title">Yılan Oyunu</h2>
+                <p class="game-description">Klasik yılan oyunu! Yemekleri ye, büyü!</p>
+                <button class="play-btn">🎯 Oyna</button>
+            </div>
+
+            <!-- Araba Oyunu -->
+            <div class="game-card" onclick="openGame('araba.html')">
+                <div class="game-icon">🚗</div>
+                <h2 class="game-title">Araba Yarışı</h2>
+                <p class="game-description">Hızlı araba yarışı! Rakiplerden kaç!</p>
+                <button class="play-btn">🎯 Oyna</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>© MuGöl GAMES - Tüm hakları saklıdır.</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                8 oyun mevcut - Daha fazla oyun yakında! 🚀
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        function openGame(gameFile) {
+            // Hazır oyunlar listesi
+            const availableGames = [
+                'fruit-ninja.html',
+                'flappy-bird.html', 
+                'stack-tower.html',
+                'space-shooter.html',
+                'bebble.html',
+                'kart-eslestirme.html', 
+                'yilan-oyunu.html', 
+                'araba.html'
+            ];
+            
+            if (availableGames.includes(gameFile)) {
+                window.location.href = gameFile;
+            } else {
+                alert('Bu oyun şu anda mevcut değil! 🎮');
+            }
+        }
+
+        // Logo hover efekti
+        document.querySelector('.logo-image').addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.1)';
+        });
+
+        document.querySelector('.logo-image').addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    </script>
+</body>
+</html>
