@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>MuGöl GAMES - Kelime Bilgesi ULTIMATE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&family=DM+Sans:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0a0118;
+            --bg-mid: #1a0f2e;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #ff006e;
+            --secondary: #8338ec;
+            --tertiary: #3a86ff;
+            --accent: #fb5607;
+            --gold: #ffbe0b;
+            --success: #06ffa5;
+            --warning: #ffbe0b;
+            --error: #ff006e;
+            --easy: #06ffa5;
+            --medium: #ffbe0b;
+            --hard: #ff006e;
+            --text: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.5);
+            --shadow-glow: 0 0 40px rgba(255, 0, 110, 0.3);
+        }
+
+        [data-theme="light"] {
+            --bg-deep: #f0f2f5;
+            --bg-mid: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --text: #1a1a1a;
+            --text-dim: rgba(0, 0, 0, 0.8);
+            --text-muted: rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 40px rgba(131, 56, 236, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y pinch-zoom;
+            overscroll-behavior-y: none;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            overscroll-behavior-y: none;
+            -webkit-overflow-scrolling: touch;
+            transition: background 0.3s ease, color 0.3s ease;
+            touch-action: pan-y pinch-zoom;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        .bg-animation {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--primary), transparent);
+            top: -100px;
+            left: -100px;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--secondary), transparent);
+            bottom: -150px;
+            right: -150px;
+            animation-delay: -7s;
+        }
+
+        .orb-3 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, var(--tertiary), transparent);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.9); }
+            75% { transform: translate(40px, 30px) scale(1.05); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overscroll-behavior: none;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 20px 20px;
+            animation: slideDown 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: var(--shadow-glow);
+            animation: logoSpin 3s ease-in-out infinite;
+        }
+
+        @keyframes logoSpin {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(5deg) scale(1.05); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .brand-text { text-align: left; }
+
+        .brand {
+            font-family: 'Righteous', cursive;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .title {
+            font-family: 'Righteous', cursive;
+            font-size: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+            line-height: 1;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .info-bar {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .info-chip {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            color: var(--text);
+        }
+
+        .info-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-control {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            color: var(--text);
+            padding: 12px 18px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+        }
+
+        .btn-control:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            background: var(--glass-border);
+        }
+
+        .btn-control:active {
+            transform: translateY(0);
+        }
+
+        .game-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .game-board {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .game-board.shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .tile {
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--glass-border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            color: var(--text);
+        }
+
+        .tile.filled {
+            border-color: var(--text-dim);
+            transform: scale(1.05);
+        }
+
+        .tile.flip {
+            animation: flip 0.5s ease;
+        }
+
+        @keyframes flip {
+            0% { transform: rotateX(0deg); }
+            50% { transform: rotateX(90deg); }
+            100% { transform: rotateX(0deg); }
+        }
+
+        .tile.correct {
+            background: linear-gradient(135deg, var(--success), #04d98b);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .tile.present {
+            background: linear-gradient(135deg, var(--warning), #ffa500);
+            border-color: var(--warning);
+            color: white;
+        }
+
+        .tile.absent {
+            background: linear-gradient(135deg, #555, #333);
+            border-color: #555;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .hint-panel {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .hint-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .hint-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dim);
+        }
+
+        .timer-display {
+            background: linear-gradient(135deg, var(--tertiary), var(--primary));
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hint-count {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .hint-text {
+            font-size: 18px;
+            color: var(--text);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: var(--glass-bg);
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .hint-locked {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .revealed {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .btn-hint {
+            background: linear-gradient(135deg, var(--accent), var(--gold));
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(251, 86, 7, 0.4);
+        }
+
+        .btn-hint:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(251, 86, 7, 0.6);
+        }
+
+        .btn-hint:active {
+            transform: translateY(0);
+        }
+
+        .keyboard {
+            padding: 20px;
+        }
+
+        .keyboard-row {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .key {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: var(--text);
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            min-width: 32px;
+            text-align: center;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .key:hover {
+            background: var(--glass-border);
+            transform: scale(1.05);
+        }
+
+        .key:active {
+            transform: scale(0.95);
+        }
+
+        .key.wide {
+            min-width: 60px;
+            font-size: 12px;
+        }
+
+        .key.correct {
+            background: linear-gradient(135deg, var(--success), #04d98b);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .key.present {
+            background: linear-gradient(135deg, var(--warning), #ffa500);
+            border-color: var(--warning);
+            color: white;
+        }
+
+        .key.absent {
+            background: linear-gradient(135deg, #555, #333);
+            border-color: #555;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--bg-mid);
+            border: 2px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            font-family: 'Righteous', cursive;
+            font-size: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .modal-subtitle {
+            font-size: 16px;
+            color: var(--text-dim);
+        }
+
+        .modal-body {
+            margin: 25px 0;
+        }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .selection-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .selection-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary);
+        }
+
+        .selection-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.2), rgba(131, 56, 236, 0.2));
+            box-shadow: 0 0 20px rgba(255, 0, 110, 0.4);
+        }
+
+        .selection-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .selection-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .selection-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 0, 110, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 110, 0.6);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            color: var(--text);
+            padding: 14px 30px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-border);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-group button {
+            flex: 1;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .result-info {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .result-word {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .word-display {
+            font-size: 40px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .word-meaning {
+            font-size: 16px;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .result-stats {
+            display: flex;
+            justify-content: space-around;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .result-stat {
+            text-align: center;
+        }
+
+        .result-stat-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .result-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .result-stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .step-dot.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 30px;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .tile {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+
+            .key {
+                padding: 12px;
+                font-size: 12px;
+                min-width: 28px;
+            }
+
+            .key.wide {
+                min-width: 50px;
+            }
+
+            .title {
+                font-size: 26px;
+            }
+
+            .modal-content {
+                padding: 30px 20px;
+            }
+
+            .selection-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="bg-animation">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <div class="container">
+        <div class="glass-card header">
+            <div class="logo-container">
+                <div class="logo">🎯</div>
+                <div class="brand-text">
+                    <div class="brand">MuGöl GAMES</div>
+                    <div class="title">Kelime Bilgesi</div>
+                </div>
+            </div>
+
+            <div class="info-bar">
+                <div class="info-chip">
+                    <span>⭐</span>
+                    <span id="levelDisplay">Seviye 1</span>
+                </div>
+                <div class="info-chip">
+                    <span>🔥</span>
+                    <span id="streakDisplay">Seri: 0</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-control" id="statsBtn" onclick="openStats()">📊</button>
+                <button class="btn-control" id="themeBtn" onclick="toggleTheme()"><span>🌙</span></button>
+                <button class="btn-control" id="soundBtn" onclick="toggleSound()"><span>🔊</span></button>
+                <button class="btn-control" onclick="restartGame()">🔄</button>
+            </div>
+        </div>
+
+        <div class="game-container">
+            <div class="glass-card game-board" id="gameBoard"></div>
+
+            <div class="glass-card hint-panel">
+                <div class="hint-header">
+                    <div class="hint-title">💡 İpucu</div>
+                    <div class="timer-display">
+                        <span>⏱️</span>
+                        <span id="timerDisplay">00:00</span>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: center; margin-bottom: 10px;">
+                    <div class="hint-count">
+                        <span id="hintRemaining">3</span> kaldı
+                    </div>
+                </div>
+                <div class="hint-text" id="hintText">
+                    <div class="hint-locked">İlk tahminden sonra ipucu açılacak...</div>
+                </div>
+                <button class="btn-hint" onclick="revealHint()">İpucu Al</button>
+            </div>
+
+            <div class="glass-card keyboard" id="keyboard"></div>
+        </div>
+    </div>
+
+    <!-- Start Modal -->
+    <div class="modal active" id="startModal">
+        <div class="modal-content">
+            <div class="step-indicator">
+                <div class="step-dot" id="step1dot"></div>
+                <div class="step-dot" id="step2dot"></div>
+                <div class="step-dot" id="step3dot"></div>
+            </div>
+
+            <div id="step1" style="display: none;">
+                <div class="modal-header">
+                    <div class="modal-icon">🎯</div>
+                    <div class="modal-title">Zorluk Seç</div>
+                    <div class="modal-subtitle">Hangi seviyede oynamak istersin?</div>
+                </div>
+                <div class="selection-grid">
+                    <div class="selection-card" onclick="selectDifficulty('easy')">
+                        <div class="selection-icon">😊</div>
+                        <div class="selection-title">Kolay</div>
+                        <div class="selection-desc">Yeni başlayanlar için</div>
+                    </div>
+                    <div class="selection-card" onclick="selectDifficulty('medium')">
+                        <div class="selection-icon">🤔</div>
+                        <div class="selection-title">Orta</div>
+                        <div class="selection-desc">Biraz daha zorlayıcı</div>
+                    </div>
+                    <div class="selection-card" onclick="selectDifficulty('hard')">
+                        <div class="selection-icon">🔥</div>
+                        <div class="selection-title">Zor</div>
+                        <div class="selection-desc">Uzmanlar için</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step2" style="display: none;">
+                <div class="modal-header">
+                    <div class="modal-icon">📚</div>
+                    <div class="modal-title">Harf Sayısı</div>
+                    <div class="modal-subtitle">Kaç harfli kelime tahmin etmek istersin?</div>
+                </div>
+                <div class="selection-grid">
+                    <div class="selection-card" onclick="selectLetterCount(3)">
+                        <div class="selection-icon">3️⃣</div>
+                        <div class="selection-title">3 Harf</div>
+                        <div class="selection-desc">Kısa kelimeler</div>
+                    </div>
+                    <div class="selection-card" onclick="selectLetterCount(4)">
+                        <div class="selection-icon">4️⃣</div>
+                        <div class="selection-title">4 Harf</div>
+                        <div class="selection-desc">Klasik mod</div>
+                    </div>
+                    <div class="selection-card" onclick="selectLetterCount(5)">
+                        <div class="selection-icon">5️⃣</div>
+                        <div class="selection-title">5 Harf</div>
+                        <div class="selection-desc">Standart</div>
+                    </div>
+                    <div class="selection-card" onclick="selectLetterCount(6)">
+                        <div class="selection-icon">6️⃣</div>
+                        <div class="selection-title">6 Harf</div>
+                        <div class="selection-desc">Orta zorluk</div>
+                    </div>
+                    <div class="selection-card" onclick="selectLetterCount(7)">
+                        <div class="selection-icon">7️⃣</div>
+                        <div class="selection-title">7 Harf</div>
+                        <div class="selection-desc">Uzun kelimeler</div>
+                    </div>
+                </div>
+                <button class="btn-secondary" onclick="goToStep(1)" style="margin-top: 20px; width: 100%;">
+                    ← Geri
+                </button>
+            </div>
+
+            <div id="step3" style="display: none;">
+                <div class="modal-header">
+                    <div class="modal-icon">🎮</div>
+                    <div class="modal-title">Hazır mısın?</div>
+                    <div class="modal-subtitle">Seçimlerini kontrol et</div>
+                </div>
+                <div class="modal-body">
+                    <div class="result-info">
+                        <div class="result-stats">
+                            <div class="result-stat">
+                                <div class="result-stat-icon" id="summaryDifficultyIcon">😊</div>
+                                <div class="result-stat-label">Zorluk</div>
+                            </div>
+                            <div class="result-stat">
+                                <div class="result-stat-icon" id="summaryLetterCount">5️⃣</div>
+                                <div class="result-stat-label">Harf Sayısı</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="btn-secondary" onclick="goToStep(2)">← Geri</button>
+                    <button class="btn-primary" onclick="startGameWithSettings()">Başla! 🚀</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon" id="resultIcon">🎉</div>
+                <div class="modal-title" id="resultTitle">TEBRİKLER!</div>
+                <div class="modal-subtitle" id="resultSubtitle">Kelimeyi buldunuz!</div>
+            </div>
+
+            <div class="result-info">
+                <div class="result-word">
+                    <div class="word-display" id="revealedWord">KELIME</div>
+                    <div class="word-meaning" id="wordMeaning">Kelime anlamı burada görünecek</div>
+                </div>
+
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <div class="result-stat-icon">🎯</div>
+                        <div class="result-stat-value" id="finalMoves">0</div>
+                        <div class="result-stat-label">Hamle</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-icon">⏱️</div>
+                        <div class="result-stat-value" id="finalTime">00:00</div>
+                        <div class="result-stat-label">Süre</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-icon" id="finalDifficulty">😊</div>
+                        <div class="result-stat-value">Zorluk</div>
+                        <div class="result-stat-label">Seviye</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-icon">⭐</div>
+                        <div class="result-stat-value" id="finalLevel">1</div>
+                        <div class="result-stat-label">Seviye</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="restartGame()">Yeniden Ayarla</button>
+                <button class="btn-primary" onclick="nextGame()">Sonraki Oyun</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div class="modal" id="statsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">📊</div>
+                <div class="modal-title">İstatistikler</div>
+                <div class="modal-subtitle">Performans Özeti</div>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="statTotal">0</div>
+                    <div class="stat-label">Toplam Oyun</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statWins">0</div>
+                    <div class="stat-label">Kazanılan</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statRate">0%</div>
+                    <div class="stat-label">Başarı Oranı</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statStreak">0</div>
+                    <div class="stat-label">En Uzun Seri</div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="closeModal('statsModal')" style="margin-top: 25px;">Kapat</button>
+        </div>
+    </div>
+
+    <script>
+        // Pull-to-refresh engelleme
+        document.addEventListener('touchmove', function(e) {
+            if (e.touches.length > 1) {
+                return;
+            }
+            const target = e.target;
+            const container = document.querySelector('.container');
+            if (container && container.scrollTop === 0) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchstart', function(e) {
+            const container = document.querySelector('.container');
+            if (container && container.scrollTop === 0 && e.touches.length === 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        let wordDatabase = null;
+        let game = {
+            mode: 5,
+            difficulty: 'medium',
+            target: null,
+            currentRow: 0,
+            currentCol: 0,
+            guess: "",
+            over: false,
+            keyStates: {},
+            hintsAvailable: 3,
+            hintsRevealed: 0,
+            revealedLetters: [], // Açılmış harfler için
+            startTime: null,
+            timerInterval: null
+        };
+
+        let stats = {
+            totalGames: 0,
+            wins: 0,
+            currentStreak: 0,
+            maxStreak: 0,
+            level: 1,
+            theme: 'dark',
+            soundOn: true
+        };
+
+        let modalStep = {
+            current: 1,
+            difficulty: null,
+            letterCount: null
+        };
+
+        const TURKISH_KEYBOARD = [
+            ['E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'Ğ', 'Ü'],
+            ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ş', 'İ'],
+            ['Z', 'C', 'V', 'B', 'N', 'M', 'Ö', 'Ç', 'SİL', 'ENTER']
+        ];
+
+        async function loadWordDatabase() {
+            try {
+                const response = await fetch('kelimeler.json');
+                wordDatabase = await response.json();
+                console.log('Kelime veritabanı yüklendi!');
+                return true;
+            } catch (error) {
+                console.error('Kelime veritabanı yüklenirken hata:', error);
+                alert('Kelime veritabanı yüklenemedi. Lütfen sayfayı yenileyin.');
+                return false;
+            }
+        }
+
+        function startTimer() {
+            game.startTime = Date.now();
+            game.timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function stopTimer() {
+            if (game.timerInterval) {
+                clearInterval(game.timerInterval);
+                game.timerInterval = null;
+            }
+        }
+
+        function updateTimer() {
+            if (!game.startTime || game.over) return;
+            
+            const elapsed = Math.floor((Date.now() - game.startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            
+            document.getElementById('timerDisplay').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function getElapsedTime() {
+            if (!game.startTime) return '00:00';
+            const elapsed = Math.floor((Date.now() - game.startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        async function init() {
+            const loaded = await loadWordDatabase();
+            if (!loaded) return;
+
+            loadStats();
+            updateUI();
+            createKeyboard();
+            goToStep(1);
+        }
+
+        function loadStats() {
+            const saved = localStorage.getItem('kelimeBilgesiStats');
+            if (saved) {
+                Object.assign(stats, JSON.parse(saved));
+                document.body.setAttribute('data-theme', stats.theme);
+            }
+        }
+
+        function saveStats() {
+            localStorage.setItem('kelimeBilgesiStats', JSON.stringify(stats));
+        }
+
+        function updateUI() {
+            document.getElementById('levelDisplay').textContent = `Seviye ${stats.level}`;
+            document.getElementById('streakDisplay').textContent = `Seri: ${stats.currentStreak}`;
+            document.getElementById('themeBtn').innerHTML = `<span>${stats.theme === 'dark' ? '🌙' : '☀️'}</span>`;
+            document.getElementById('soundBtn').innerHTML = `<span>${stats.soundOn ? '🔊' : '🔇'}</span>`;
+        }
+
+        function goToStep(step) {
+            document.querySelectorAll('[id^="step"]').forEach(el => {
+                if (el.id.includes('dot')) return;
+                el.style.display = 'none';
+            });
+            
+            document.querySelectorAll('.step-dot').forEach(dot => dot.classList.remove('active'));
+            
+            document.getElementById(`step${step}`).style.display = 'block';
+            document.getElementById(`step${step}dot`).classList.add('active');
+            
+            modalStep.current = step;
+
+            if (step === 3) {
+                updateSummary();
+            }
+
+            playSound('click');
+        }
+
+        function selectDifficulty(difficulty) {
+            modalStep.difficulty = difficulty;
+            document.querySelectorAll('#step1 .selection-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            setTimeout(() => goToStep(2), 300);
+        }
+
+        function selectLetterCount(count) {
+            modalStep.letterCount = count;
+            document.querySelectorAll('#step2 .selection-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            setTimeout(() => goToStep(3), 300);
+        }
+
+        function updateSummary() {
+            const difficultyIcons = { easy: '😊', medium: '🤔', hard: '🔥' };
+            document.getElementById('summaryDifficultyIcon').textContent = difficultyIcons[modalStep.difficulty];
+            document.getElementById('summaryLetterCount').textContent = `${modalStep.letterCount}️⃣`;
+        }
+
+        function startGameWithSettings() {
+            game.difficulty = modalStep.difficulty;
+            game.mode = modalStep.letterCount;
+            
+            closeModal('startModal');
+            initGame();
+        }
+
+        function initGame() {
+            if (!wordDatabase) {
+                alert('Kelimeler henüz yüklenmedi. Lütfen bekleyin...');
+                return;
+            }
+
+            const letterCountStr = game.mode.toString();
+            const wordsForMode = wordDatabase[game.difficulty][letterCountStr];
+            
+            if (!wordsForMode || wordsForMode.length === 0) {
+                alert(`Bu ayarlar için kelime bulunamadı: ${game.difficulty} - ${game.mode} harf`);
+                return;
+            }
+
+            game.target = wordsForMode[Math.floor(Math.random() * wordsForMode.length)];
+            game.currentRow = 0;
+            game.currentCol = 0;
+            game.guess = "";
+            game.over = false;
+            game.keyStates = {};
+            game.hintsRevealed = 0;
+            game.revealedLetters = []; // Açılmış harfleri sıfırla
+            game.startTime = null;
+
+            createBoard();
+            updateHintPanel();
+            resetKeyboard();
+            
+            // Süreyi sıfırla
+            document.getElementById('timerDisplay').textContent = '00:00';
+            stopTimer();
+            startTimer();
+        }
+
+        function createBoard() {
+            const board = document.getElementById('gameBoard');
+            board.innerHTML = '';
+            
+            for (let i = 0; i < 6; i++) {
+                const row = document.createElement('div');
+                row.className = 'row';
+                
+                for (let j = 0; j < game.mode; j++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.id = `tile-${i}-${j}`;
+                    row.appendChild(tile);
+                }
+                
+                board.appendChild(row);
+            }
+        }
+
+        function createKeyboard() {
+            const keyboard = document.getElementById('keyboard');
+            keyboard.innerHTML = '';
+
+            TURKISH_KEYBOARD.forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'keyboard-row';
+
+                row.forEach(key => {
+                    const keyDiv = document.createElement('div');
+                    keyDiv.className = 'key';
+                    keyDiv.textContent = key;
+                    keyDiv.id = `key-${key}`;
+                    
+                    if (key === 'SİL' || key === 'ENTER') {
+                        keyDiv.classList.add('wide');
+                    }
+                    
+                    keyDiv.onclick = () => handleKey(key);
+                    rowDiv.appendChild(keyDiv);
+                });
+
+                keyboard.appendChild(rowDiv);
+            });
+        }
+
+        function resetKeyboard() {
+            document.querySelectorAll('.key').forEach(key => {
+                key.classList.remove('correct', 'present', 'absent');
+            });
+        }
+
+        function handleKey(key) {
+            if (game.over) return;
+
+            if (key === 'SİL') {
+                if (game.currentCol > 0) {
+                    game.currentCol--;
+                    game.guess = game.guess.slice(0, -1);
+                    updateTile();
+                    playSound('delete');
+                }
+            } else if (key === 'ENTER') {
+                if (game.currentCol === game.mode) {
+                    submitGuess();
+                } else {
+                    shakeBoard();
+                    playSound('error');
+                }
+            } else {
+                if (game.currentCol < game.mode) {
+                    game.guess += key;
+                    updateTile();
+                    game.currentCol++;
+                    playSound('type');
+                }
+            }
+        }
+
+        function updateTile() {
+            for (let i = 0; i < game.mode; i++) {
+                const tile = document.getElementById(`tile-${game.currentRow}-${i}`);
+                tile.textContent = game.guess[i] || '';
+                tile.classList.toggle('filled', !!game.guess[i]);
+            }
+        }
+
+        function submitGuess() {
+            const boardEl = document.querySelector('.game-board');
+            
+            if (game.guess.length !== game.mode) {
+                shakeBoard();
+                playSound('error');
+                
+                const warning = document.createElement('div');
+                warning.textContent = `${game.mode} harfli kelime girmelisiniz!`;
+                warning.style.cssText = `
+                    position: absolute;
+                    top: -40px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: var(--error);
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 12px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+                    animation: fadeOut 2s forwards;
+                `;
+                boardEl.parentElement.style.position = 'relative';
+                boardEl.parentElement.appendChild(warning);
+                
+                setTimeout(() => warning.remove(), 2000);
+                return;
+            }
+
+            let target = game.target.w.split('');
+            let states = new Array(game.mode).fill('absent');
+
+            for (let i = 0; i < game.mode; i++) {
+                if (game.guess[i] === target[i]) {
+                    states[i] = 'correct';
+                    target[i] = null;
+                }
+            }
+
+            for (let i = 0; i < game.mode; i++) {
+                if (states[i] === 'correct') continue;
+                const idx = target.indexOf(game.guess[i]);
+                if (idx !== -1) {
+                    states[i] = 'present';
+                    target[idx] = null;
+                }
+            }
+
+            states.forEach((state, i) => {
+                const tile = document.getElementById(`tile-${game.currentRow}-${i}`);
+                setTimeout(() => {
+                    tile.classList.add('flip', state);
+                    playSound(state);
+                }, i * 150);
+
+                updateKeyState(game.guess[i], state);
+            });
+
+            if (game.currentRow === 0 && game.hintsRevealed === 0) {
+                setTimeout(() => {
+                    game.hintsRevealed = 1;
+                    updateHintPanel();
+                }, game.mode * 150 + 500);
+            }
+
+            setTimeout(() => {
+                if (game.guess === game.target.w) {
+                    endGame(true);
+                } else if (game.currentRow === 5) {
+                    endGame(false);
+                } else {
+                    game.currentRow++;
+                    game.currentCol = 0;
+                    game.guess = "";
+                }
+            }, game.mode * 150 + 400);
+        }
+
+        function updateKeyState(letter, state) {
+            const current = game.keyStates[letter];
+            if (current === 'correct') return;
+            if (current === 'present' && state === 'absent') return;
+            
+            game.keyStates[letter] = state;
+            const key = document.getElementById(`key-${letter}`);
+            if (key) {
+                key.classList.remove('correct', 'present', 'absent');
+                key.classList.add(state);
+            }
+        }
+
+        function updateHintPanel() {
+            const hintText = document.getElementById('hintText');
+            document.getElementById('hintRemaining').textContent = game.hintsAvailable - game.hintsRevealed;
+
+            if (game.hintsRevealed === 0) {
+                hintText.innerHTML = '<div class="hint-locked">İlk tahminden sonra ipucu açılacak...</div>';
+            } else {
+                // Açılmış harfleri göster
+                let displayWord = '';
+                for (let i = 0; i < game.target.w.length; i++) {
+                    if (game.revealedLetters.includes(i)) {
+                        displayWord += `<span style="color: var(--success); font-weight: 700; font-size: 24px; margin: 0 3px;">${game.target.w[i]}</span>`;
+                    } else {
+                        displayWord += `<span style="color: var(--text-muted); font-size: 24px; margin: 0 3px;">_</span>`;
+                    }
+                }
+                
+                // Metin ipucunu da göster
+                let hintDisplay = `<div style="margin-bottom: 15px;">${displayWord}</div>`;
+                if (game.hintsRevealed <= game.target.hints.length) {
+                    hintDisplay += `<div style="font-size: 14px; color: var(--text-dim);">${game.target.hints[game.hintsRevealed - 1]}</div>`;
+                }
+                
+                hintText.innerHTML = hintDisplay;
+            }
+        }
+
+        function revealHint() {
+            if (game.over || game.currentRow === 0) {
+                alert('İpucu almak için önce tahmin yapmalısınız!');
+                return;
+            }
+            
+            if (game.hintsRevealed < game.hintsAvailable) {
+                game.hintsRevealed++;
+                
+                // Her ipucunda rastgele 1 harf aç
+                const availablePositions = [];
+                for (let i = 0; i < game.target.w.length; i++) {
+                    if (!game.revealedLetters.includes(i)) {
+                        availablePositions.push(i);
+                    }
+                }
+                
+                // 1 harf aç (eğer kalan harf varsa)
+                if (availablePositions.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * availablePositions.length);
+                    const position = availablePositions[randomIndex];
+                    game.revealedLetters.push(position);
+                }
+                
+                updateHintPanel();
+                playSound('hint');
+            } else {
+                alert('Tüm ipuçları kullanıldı!');
+            }
+        }
+
+        function endGame(won) {
+            game.over = true;
+            stopTimer();
+            
+            stats.totalGames++;
+            if (won) {
+                stats.wins++;
+                stats.currentStreak++;
+                stats.maxStreak = Math.max(stats.maxStreak, stats.currentStreak);
+                if (stats.wins % 5 === 0) stats.level++;
+                playSound('win');
+            } else {
+                stats.currentStreak = 0;
+                playSound('lose');
+            }
+
+            saveStats();
+            showResult(won);
+            updateUI();
+        }
+
+        function showResult(won) {
+            const modal = document.getElementById('resultModal');
+            document.getElementById('resultIcon').textContent = won ? '🎉' : '😢';
+            document.getElementById('resultTitle').textContent = won ? 'TEBRİKLER!' : 'MAALESEF!';
+            document.getElementById('resultSubtitle').textContent = won ? 'Kelimeyi buldunuz!' : 'Bir dahaki sefere!';
+            document.getElementById('revealedWord').textContent = game.target.w;
+            document.getElementById('wordMeaning').textContent = game.target.m;
+            document.getElementById('finalMoves').textContent = game.currentRow + 1;
+            document.getElementById('finalTime').textContent = getElapsedTime();
+            document.getElementById('finalDifficulty').textContent = game.difficulty === 'easy' ? '😊' : game.difficulty === 'medium' ? '🤔' : '🔥';
+            document.getElementById('finalLevel').textContent = stats.level;
+
+            modal.classList.add('active');
+        }
+
+        function nextGame() {
+            closeModal('resultModal');
+            initGame();
+        }
+
+        function restartGame() {
+            game.currentRow = 0;
+            game.currentCol = 0;
+            game.guess = "";
+            game.over = false;
+            game.keyStates = {};
+            game.hintsRevealed = 0;
+            game.revealedLetters = []; // Açılmış harfleri sıfırla
+            game.startTime = null;
+            stopTimer();
+            
+            closeModal('resultModal');
+            modalStep = {
+                current: 1,
+                difficulty: null,
+                letterCount: null
+            };
+            goToStep(1);
+            document.getElementById('startModal').classList.add('active');
+        }
+
+        function openStats() {
+            document.getElementById('statTotal').textContent = stats.totalGames;
+            document.getElementById('statWins').textContent = stats.wins;
+            document.getElementById('statRate').textContent = stats.totalGames > 0 ? 
+                Math.round((stats.wins / stats.totalGames) * 100) + '%' : '0%';
+            document.getElementById('statStreak').textContent = stats.maxStreak;
+            document.getElementById('statsModal').classList.add('active');
+            playSound('click');
+        }
+
+        function toggleTheme() {
+            stats.theme = stats.theme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', stats.theme);
+            document.getElementById('themeBtn').innerHTML = 
+                `<span>${stats.theme === 'dark' ? '🌙' : '☀️'}</span>`;
+            saveStats();
+            playSound('click');
+        }
+
+        function toggleSound() {
+            stats.soundOn = !stats.soundOn;
+            document.getElementById('soundBtn').innerHTML = 
+                `<span>${stats.soundOn ? '🔊' : '🔇'}</span>`;
+            saveStats();
+            playSound('click');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            playSound('click');
+        }
+
+        function shakeBoard() {
+            document.querySelector('.game-board').classList.add('shake');
+            setTimeout(() => {
+                document.querySelector('.game-board').classList.remove('shake');
+            }, 500);
+        }
+
+        function playSound(type) {
+            if (!stats.soundOn) return;
+            
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            const freqs = {
+                type: 440, delete: 330, error: 220,
+                correct: 660, present: 550, absent: 380,
+                click: 480, hint: 580, win: 880, lose: 220
+            };
+            
+            osc.frequency.value = freqs[type] || 440;
+            gain.gain.value = 0.1;
+            
+            osc.start();
+            osc.stop(ctx.currentTime + 0.1);
+        }
+
+        document.addEventListener('keydown', e => {
+            if (game.over) return;
+            
+            const key = e.key.toLocaleUpperCase('tr-TR');
+            
+            if (key === 'BACKSPACE') handleKey('SİL');
+            else if (key === 'ENTER') handleKey('ENTER');
+            else if (/^[A-ZİĞÜŞÖÇ]$/.test(key)) handleKey(key);
+        });
+
+        init();
+    </script>
+</body>
+</html>
