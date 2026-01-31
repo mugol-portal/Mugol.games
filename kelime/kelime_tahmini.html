@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kelime Ustası: Neon (Kör Mod)</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-purple: #bc13fe;
+            --neon-green: #0aff68;
+            --neon-yellow: #ffee00;
+            --neon-red: #ff2a2a;
+            --bg-deep: #050510;
+            
+            --correct: #0aff68;
+            --present: #ffee00;
+            --absent-bg: #1f1f35; 
+            --absent-text: #6b6b7e;
+            
+            --tile-glass: rgba(255, 255, 255, 0.03);
+            --tile-border: rgba(255, 255, 255, 0.1);
+            --tile-active-glow: rgba(0, 243, 255, 0.5);
+            
+            --tile-size: 60px;
+        }
+
+        body[data-theme="orman"]   { --neon-blue: #4ade80; --neon-pink: #166534; --neon-purple: #a3e635; }
+        body[data-theme="okyanus"] { --neon-blue: #38bdf8; --neon-pink: #0284c7; --neon-purple: #0ea5e9; }
+        body[data-theme="volkan"]  { --neon-blue: #fbbf24; --neon-pink: #f43f5e; --neon-purple: #9f1239; }
+
+        * { box-sizing: border-box; touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-deep);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- ARKA PLAN EFEKTLERİ --- */
+        .universe { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
+        
+        .grid-overlay {
+            position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg);
+            animation: gridMove 30s linear infinite;
+        }
+        @keyframes gridMove { 0% { transform: perspective(500px) rotateX(60deg) translateY(0); } 100% { transform: perspective(500px) rotateX(60deg) translateY(50px); } }
+
+        .nebula {
+            position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.3;
+            mix-blend-mode: screen; animation: float 40s infinite ease-in-out alternate;
+        }
+        .nebula-1 { width: 600px; height: 600px; background: var(--neon-purple); top: -20%; left: -20%; }
+        .nebula-2 { width: 500px; height: 500px; background: var(--neon-blue); bottom: -10%; right: -10%; animation-delay: -5s; }
+        
+        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 60px) scale(1.1); } }
+
+        /* --- HEADER --- */
+        header {
+            flex: 0 0 70px; display: flex; justify-content: space-between; align-items: center;
+            padding: 0 15px; background: rgba(5, 5, 16, 0.8); backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 10;
+            position: relative; box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+        }
+
+        .level-info { display: flex; flex-direction: column; align-items: center; }
+        .rank-badge { font-size: 0.7rem; color: var(--neon-pink); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; text-shadow: 0 0 10px var(--neon-pink); }
+        .level-badge { font-size: 1.2rem; color: #fff; font-weight: 900; }
+        .level-num { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
+        .word-len-badge { font-size: 0.65rem; color: #aaa; letter-spacing: 1px; margin-top: 2px; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+
+        .header-right { display: flex; gap: 8px; align-items: center; }
+
+        .gold-display {
+            background: linear-gradient(45deg, rgba(255, 238, 0, 0.1), rgba(255, 238, 0, 0.05)); 
+            border: 1px solid rgba(255, 238, 0, 0.3); color: var(--neon-yellow);
+            padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.95rem;
+            display: flex; align-items: center; gap: 6px; box-shadow: 0 0 15px rgba(255, 238, 0, 0.1);
+        }
+
+        .icon-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; width: 42px; height: 42px; border-radius: 12px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.2rem; cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            position: relative; overflow: hidden;
+        }
+        .icon-btn:active { transform: scale(0.9); }
+        .icon-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); }
+        
+        .btn-bomb:hover { border-color: var(--neon-red); color: var(--neon-red); box-shadow: 0 0 15px rgba(255, 42, 42, 0.3); }
+        
+        .muted-line { position: absolute; width: 2px; height: 20px; background: var(--neon-red); transform: rotate(45deg); display: none; }
+        .muted .muted-line { display: block; }
+
+        /* KÖR MOD STİLİ */
+        .blind-active { border-color: var(--neon-red); color: var(--neon-red); box-shadow: 0 0 15px rgba(255,42,42,0.2); }
+        .blind-line { position: absolute; width: 2px; height: 24px; background: var(--neon-red); transform: rotate(-45deg); display: none; }
+        .blind-active .blind-line { display: block; }
+
+        /* Timer Bar */
+        .time-bar-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.05); }
+        .time-bar { height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); width: 100%; box-shadow: 0 0 15px var(--neon-blue); }
+
+        /* --- OYUN ALANI --- */
+        #game-area { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2px; z-index: 5; overflow-y: auto; }
+        
+        /* İPUCU ALANI */
+        #hint-container {
+            width: 100%; max-width: 400px;
+            margin-bottom: 10px;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            padding: 8px 15px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+            animation: fadeIn 0.5s ease-out;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        /* Kör Mod Aktifse İpucu Kutusu Stili */
+        #hint-container.blind-mode-box {
+            background: rgba(255, 42, 42, 0.05);
+            border-color: var(--neon-red);
+            box-shadow: 0 0 10px rgba(255, 42, 42, 0.1);
+        }
+        
+        #hint-label {
+            font-size: 0.7rem; color: var(--neon-blue); 
+            text-transform: uppercase; letter-spacing: 2px; 
+            font-weight: 700; display: block; margin-bottom: 4px;
+        }
+        
+        #hint-text {
+            color: #fff; font-size: 1.05rem; font-weight: 500; line-height: 1.3;
+        }
+
+        #board { display: grid; gap: 8px; }
+        .row { display: grid; gap: 8px; }
+
+        .tile {
+            width: var(--tile-size); height: var(--tile-size);
+            background: var(--tile-glass); 
+            border: 2px solid var(--tile-border);
+            backdrop-filter: blur(4px);
+            border-radius: 12px; display: flex; justify-content: center; align-items: center;
+            font-size: 2.2rem; font-weight: 800; color: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+            transition: transform 0.15s, border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+            will-change: transform, background-color; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .tile[data-state="active"] {
+            border-color: var(--neon-blue);
+            background: rgba(0, 243, 255, 0.08);
+            box-shadow: 0 0 20px var(--tile-active-glow);
+            transform: scale(1.05);
+            animation: tilePulse 0.3s ease-out;
+        }
+
+        .tile.locked-hint {
+            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(0,0,0,0));
+            border-color: var(--neon-blue);
+            color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.15) inset;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        @keyframes tilePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.12); border-color: #fff; }
+            100% { transform: scale(1.05); }
+        }
+        
+        .tile[data-state="autofilled"] {
+            animation: pulseGreen 0.6s ease-out;
+            border-color: rgba(10, 255, 104, 0.6);
+            color: var(--neon-green);
+        }
+
+        @keyframes pulseGreen {
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(10, 255, 104, 0); }
+            50% { transform: scale(1.15); box-shadow: 0 0 25px rgba(10, 255, 104, 0.5); }
+            100% { transform: scale(1); box-shadow: 0 0 0 rgba(10, 255, 104, 0); }
+        }
+
+        .tile.flip { transform: rotateX(90deg); transition: transform 0.3s ease-in; }
+        
+        .tile.correct { background: var(--correct) !important; border-color: var(--correct) !important; color: #000 !important; box-shadow: 0 0 25px var(--correct); }
+        .tile.present { background: var(--present) !important; border-color: var(--present) !important; color: #000 !important; box-shadow: 0 0 25px var(--present); }
+        .tile.absent { background: var(--absent-bg) !important; border-color: transparent !important; color: var(--absent-text) !important; opacity: 1 !important; box-shadow: none !important; }
+
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translateX(-3px); } 20%, 80% { transform: translateX(3px); } 30%, 50%, 70% { transform: translateX(-5px); } 40%, 60% { transform: translateX(5px); } }
+
+        /* --- KLAVYE --- */
+        #keyboard-container { width: 100%; max-width: 600px; margin: 0 auto; padding: 5px 8px 30px 8px; z-index: 10; }
+        .kb-row { display: flex; width: 100%; justify-content: center; gap: 6px; margin-bottom: 8px; }
+        .key {
+            flex: 1; height: 60px; border-radius: 10px; border: none;
+            background: rgba(40, 40, 60, 0.8); 
+            border-bottom: 4px solid rgba(0,0,0,0.4);
+            color: #fff; font-weight: 700; font-size: 1.25rem;
+            cursor: pointer; transition: all 0.1s;
+            touch-action: manipulation; position: relative; overflow: hidden;
+        }
+        .key:active { transform: translateY(3px); border-bottom-width: 1px; background: rgba(255,255,255,0.1); }
+        .key-wide { flex: 1.5; font-size: 0.9rem; background: rgba(60, 60, 80, 0.8); }
+        
+        /* Klavye Ripple Efekti */
+        .key .ripple {
+            position: absolute; border-radius: 50%; transform: scale(0);
+            animation: ripple 0.6s linear; background-color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+        }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+        .key.correct { background: var(--correct); color: #000; border:none; box-shadow: 0 0 10px var(--correct); }
+        .key.present { background: var(--present); color: #000; border:none; box-shadow: 0 0 10px var(--present); }
+        .key.absent { background: var(--absent-bg); color: var(--absent-text); border:none; opacity: 0.6; }
+
+        /* --- MODALS --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center; z-index: 100;
+        }
+        .modal-content {
+            background: #121220; border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 50px rgba(0,0,0,0.6), 0 0 20px rgba(0, 243, 255, 0.1);
+            padding: 35px; border-radius: 24px; text-align: center;
+            min-width: 340px; max-width: 90%; animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        .close-btn { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+        .close-btn:hover { opacity: 1; }
+        
+        /* YILDIZ ALANI */
+        .star-box { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+        .star-icon {
+            font-size: 3.5rem; color: #333; transition: all 0.3s;
+            text-shadow: 0 0 0 transparent;
+        }
+        .star-icon.active {
+            color: var(--neon-yellow);
+            text-shadow: 0 0 20px var(--neon-yellow);
+            animation: starPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0;
+        }
+        @keyframes starPop {
+            0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        
+        .stat-row { display: flex; justify-content: space-around; margin: 25px 0; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-item { display: flex; flex-direction: column; }
+        .stat-val { font-size: 1.8rem; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 243, 255, 0.3); }
+        .stat-label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 5px; }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        
+        .btn-primary {
+            background: var(--neon-blue); color: #000; border: none;
+            padding: 16px 20px; border-radius: 16px; font-size: 1.1rem; font-weight: 800; letter-spacing: 1px;
+            cursor: pointer; box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+            transition: transform 0.2s; flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn-primary:hover { transform: scale(1.03); box-shadow: 0 0 30px rgba(0, 243, 255, 0.5); }
+        
+        .btn-tdk {
+            background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red);
+            padding: 10px; border-radius: 50px; font-size: 0.9rem; font-weight: 600;
+            margin-top: 15px; cursor: pointer; width: 100%; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-tdk:hover { background: rgba(255, 42, 42, 0.1); box-shadow: 0 0 15px rgba(255, 42, 42, 0.2); }
+
+        #toast-container { position: fixed; top: 120px; left: 50%; transform: translateX(-50%); z-index: 200; pointer-events: none; width: 80%; display: flex; flex-direction: column; align-items: center; }
+        .toast {
+            background: rgba(255,255,255,0.95); color: #000; padding: 14px 28px; border-radius: 40px;
+            font-weight: 800; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            animation: slideUp 0.3s forwards; margin-bottom: 8px; white-space: nowrap; font-size: 1rem;
+        }
+        .toast.error { background: var(--neon-red); color: #fff; box-shadow: 0 5px 30px rgba(255, 42, 42, 0.4); }
+        
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 90; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* ========================================= */
+        /* === RESPONSIVE / MOBİL DÜZELTMELERİ === */
+        /* ========================================= */
+        @media screen and (max-height: 850px) {
+            /* Header Küçültme */
+            header { flex: 0 0 55px; padding: 0 10px; }
+            .icon-btn { width: 32px; height: 32px; font-size: 1rem; border-radius: 8px; }
+            .gold-display { padding: 4px 10px; font-size: 0.8rem; }
+            .rank-badge { font-size: 0.55rem; margin-bottom: 0; }
+            .level-badge { font-size: 0.95rem; }
+            .word-len-badge { font-size: 0.55rem; padding: 1px 4px; }
+
+            /* İpucu Küçültme */
+            #hint-container { margin-bottom: 5px; padding: 4px 6px; max-width: 98%; }
+            #hint-text { font-size: 0.85rem; line-height: 1.1; }
+            #hint-label { font-size: 0.6rem; margin-bottom: 1px; }
+
+            /* Oyun Tahtası Ayarları - MAKSİMUM BÜYÜKLÜK */
+            #game-area { padding: 0; justify-content: center; }
+            
+            /* Mobilde kutu boyutu en üst seviyeye çıkarıldı */
+            :root { --tile-size: 52px !important; } 
+            
+            /* Boşlukları (gap) kıstık ki sığsın */
+            #board { gap: 4px; }
+            .row { gap: 4px; }
+            
+            .tile { font-size: 1.8rem; border-radius: 8px; border-width: 2px; }
+
+            /* Klavye Ayarları */
+            #keyboard-container { padding: 2px 5px 10px 5px; max-width: 100%; }
+            .kb-row { margin-bottom: 4px; gap: 3px; }
+            .key { height: 45px; font-size: 1rem; border-radius: 6px; border-bottom-width: 2px; }
+        }
+
+        /* Çok Küçük Ekranlar (iPhone SE vb.) */
+        @media screen and (max-height: 650px) {
+            header { flex: 0 0 50px; }
+            .icon-btn { width: 28px; height: 28px; }
+            
+            /* Kutu boyutunu 42px'e sabitledik */
+            :root { --tile-size: 42px !important; }
+            #board { gap: 3px; }
+            .row { gap: 3px; }
+
+            .tile { font-size: 1.4rem; }
+            .key { height: 38px; font-size: 0.85rem; }
+            #hint-container { margin-bottom: 2px; padding: 2px; }
+            #hint-text { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ARKA PLAN -->
+    <div class="universe">
+        <div class="grid-overlay"></div>
+        <div class="nebula nebula-1"></div>
+        <div class="nebula nebula-2"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <button class="icon-btn btn-surrender" onclick="surrender()" title="Pes Et">🏳️</button>
+        
+        <div class="level-info">
+            <div id="rank-display" class="rank-badge">GÖZCÜ</div>
+            <div class="level-badge">SEVİYE <span id="level-display" class="level-num">1</span></div>
+            <div id="word-len-display" class="word-len-badge">3 HARFLİ</div>
+        </div>
+
+        <div class="header-right">
+            <div class="gold-display"><span>⚡</span> <span id="gold-display">0</span></div>
+            <button class="icon-btn btn-bomb" onclick="eliminateKeys()" title="3 Yanlış Harfi Elet (-75)">💣</button>
+            <button class="icon-btn" onclick="useHint()" title="Harf Aç (-50)">💡</button>
+            <!-- KÖR MOD BUTONU -->
+            <button class="icon-btn" id="blind-btn" onclick="toggleBlindMode()" title="Kör Mod (İpucunu Gizle)">
+                👁️<div class="blind-line"></div>
+            </button>
+            <button class="icon-btn" id="mute-btn" onclick="toggleMute()">
+                🔊<div class="muted-line"></div>
+            </button>
+        </div>
+        <div class="time-bar-container"><div id="time-bar" class="time-bar"></div></div>
+    </header>
+
+    <canvas id="confetti-canvas"></canvas>
+    <div id="toast-container"></div>
+
+    <!-- OYUN ALANI -->
+    <div id="game-area">
+        <!-- İPUCU ALANI -->
+        <div id="hint-container">
+            <span id="hint-label">BİLGİ</span>
+            <div id="hint-text">Kelimenin anlamı burada görünecek...</div>
+        </div>
+        <div id="board"></div>
+    </div>
+    <div id="keyboard-container"></div>
+
+    <!-- SONUÇ MODALI -->
+    <div id="result-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title" style="margin:0 0 5px 0; font-size: 2.2rem; letter-spacing:1px; text-shadow: 0 0 20px currentColor;"></h2>
+            
+            <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:15px;">
+                <div id="modal-reward" style="font-size:1.1rem; color:var(--neon-yellow); font-weight:700;"></div>
+                <div id="time-bonus" style="font-size:0.9rem; background:rgba(0, 243, 255, 0.1); color:var(--neon-blue); padding:4px 10px; border-radius:10px; border:1px solid var(--neon-blue); display:none;"></div>
+            </div>
+            
+            <!-- YILDIZ ALANI -->
+            <div id="stars-display" class="star-box"></div>
+            
+            <div style="background:rgba(255,255,255,0.03); padding:20px; border-radius:16px; margin:20px 0; border:1px solid rgba(255,255,255,0.05);">
+                <div style="color:#888; font-size:0.75rem; letter-spacing:2px; margin-bottom:8px; font-weight:600;">DOĞRU KELİME</div>
+                <div id="word-reveal" style="color:#fff; font-size: 2rem; font-weight:900; letter-spacing:4px; text-shadow: 0 0 15px rgba(255,255,255,0.5);"></div>
+                
+                <!-- TDK BUTTON -->
+                <button class="btn-tdk" onclick="openTDK()">
+                    📖 TDK Detayı
+                </button>
+            </div>
+
+            <button class="btn-primary" onclick="nextLevel()">
+                DEVAM ET <span style="font-size:1.2rem">➜</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- İSTATİSTİK MODALI -->
+    <div id="stats-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('stats-modal')">✕</button>
+            <h2 style="color:#fff; margin-bottom:5px;">İSTATİSTİKLER</h2>
+            <div id="stat-rank-title" style="color:var(--neon-pink); font-size:0.9rem; margin-bottom:10px; letter-spacing:2px; font-weight:700;">GÖZCÜ</div>
+            
+            <div class="stat-row">
+                <div class="stat-item"><span class="stat-val" id="stat-played">0</span><span class="stat-label">Oyun</span></div>
+                <div class="stat-item"><span class="stat-val" id="stat-win">0</span><span class="stat-label">Zafer</span></div>
+                <div class="stat-item"><span class="stat-val" id="stat-rate">0%</span><span class="stat-label">Başarı</span></div>
+            </div>
+            <div class="stat-row" style="margin-top:10px;">
+                <div class="stat-item"><span class="stat-val" id="stat-streak">0</span><span class="stat-label">Seri</span></div>
+                <div class="stat-item"><span class="stat-val" id="stat-max">0</span><span class="stat-label">Rekor</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- YARDIM MODALI -->
+    <div id="help-modal" class="modal-overlay">
+        <div class="modal-content" style="text-align: left;">
+            <button class="close-btn" onclick="closeModal('help-modal')">✕</button>
+            <h2 style="text-align:center; color:var(--neon-blue);">NASIL OYNANIR?</h2>
+            <p style="color:#ccc; text-align:center; margin-bottom:20px;">Yukarıda kelime hakkında ipucu verilir!</p>
+            
+            <div style="margin:10px 0; padding:12px; border-left:4px solid var(--neon-blue); background:rgba(255,255,255,0.03); border-radius:0 8px 8px 0;">
+                <span style="color:var(--neon-blue); font-weight:bold;">MAVİ</span> harf baştan verilen kilitli ipucudur.
+            </div>
+            <div style="margin:10px 0; padding:12px; border-left:4px solid var(--neon-green); background:rgba(255,255,255,0.03); border-radius:0 8px 8px 0;">
+                <span style="color:var(--neon-green); font-weight:bold;">YEŞİL</span> harf doğru yerde.
+            </div>
+            <div style="margin:10px 0; padding:12px; border-left:4px solid var(--neon-yellow); background:rgba(255,255,255,0.03); border-radius:0 8px 8px 0;">
+                <span style="color:var(--neon-yellow); font-weight:bold;">SARI</span> harf kelimede var ama yeri yanlış.
+            </div>
+            <p style="font-size:0.85rem; color:var(--neon-blue); text-align:center; margin-top:20px;">💣 Bomba ile yanlış harfleri eleyebilirsin!</p>
+        </div>
+    </div>
+
+    <!-- GÜNLÜK ÖDÜL MODALI -->
+    <div id="daily-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="color:var(--neon-yellow);">GÜNLÜK ÖDÜL</h2>
+            <div style="font-size:4rem; margin:20px 0;">🎁</div>
+            <div style="font-size:1.3rem; color:#fff; font-weight:bold;">+50 ENERJİ KAZANDIN</div>
+            <button class="btn-primary" onclick="claimDaily()">TEŞEKKÜRLER</button>
+        </div>
+    </div>
+
+<script>
+    // --- VERİTABANI & AYARLAR ---
+    const STORAGE_KEY = 'kelime_neon_v10_stars';
+    
+    const DB = {
+        3: [
+            { w: "AŞK", h: "Şiddetli ve yakıcı sevgi duygusu." },
+            { w: "TOP", h: "Yuvarlak, genellikle oyun için kullanılan nesne." },
+            { w: "NAR", h: "İçinde yüzlerce küçük kırmızı tanesi olan meyve." },
+            { w: "MUZ", h: "Sarı kabuklu, uzunca tropikal meyve." },
+            { w: "GÖZ", h: "Görme organımız." },
+            { w: "YAZ", h: "En sıcak mevsim." },
+            { w: "KIŞ", h: "En soğuk mevsim." },
+            { w: "ÇAY", h: "Genellikle kahvaltıda içilen sıcak içecek." },
+            { w: "KOL", h: "Omuzdan parmaklara kadar uzanan uzuv." },
+            { w: "TUZ", h: "Yemeklere tat veren beyaz mineral." },
+            { w: "BAĞ", h: "Üzüm kütüklerinin dikili bulunduğu toprak parçası." },
+            { w: "GÜÇ", h: "Kuvvet, takat." },
+            { w: "SÜT", h: "Memelilerin yavrularını besledikleri beyaz sıvı." },
+            { w: "KAN", h: "Damarlarda dolaşan hayati kırmızı sıvı." },
+            { w: "CEM", h: "Toplama, bir araya getirme." },
+            { w: "YOL", h: "Karada gidiş geliş için açılmış şerit." },
+            { w: "HIZ", h: "Sürat." },
+            { w: "PİL", h: "Elektrik enerjisi depolayan cihaz." },
+            { w: "ADA", h: "Dört tarafı sularla çevrili kara parçası." },
+            { w: "ATA", h: "Baba, dede, ecdat." },
+            { w: "ARA", h: "Mesafe veya boşluk." },
+            { w: "KEP", h: "Siperli başlık." },
+            { w: "BEL", h: "Vücudun orta kısmı." },
+            { w: "BİR", h: "İlk sayı." },
+            { w: "BUZ", h: "Donmuş su." },
+            { w: "CAM", h: "Pencereye takılan saydam madde." },
+            { w: "DAĞ", h: "Çevresine göre çok yüksek yeryüzü şekli." },
+            { w: "DİŞ", h: "Çiğneme organı." },
+            { w: "FİL", h: "Hortumlu büyük memeli hayvan." },
+            { w: "GÜL", h: "Dikenli ve güzel kokulu bir çiçek." },
+            { w: "ISI", h: "Sıcaklık enerjisi." },
+            { w: "İYİ", h: "Kötü karşıtı." },
+            { w: "KAŞ", h: "Gözün üzerindeki kıllar." },
+            { w: "KIZ", h: "Dişi çocuk." },
+            { w: "KUŞ", h: "Kanatlı, yumurtlayan hayvan." },
+            { w: "NAL", h: "Atın ayağına çakılan demir." },
+            { w: "ODA", h: "Evin bölümlerinden her biri." },
+            { w: "RUH", h: "Can, tin." },
+            { w: "SAÇ", h: "Baştaki kıllar." },
+            { w: "SAF", h: "Katıksız, arı." },
+            { w: "SES", h: "Kulağın duyabildiği titreşim." },
+            { w: "SİS", h: "Görüşü azaltan dumanlı hava olayı." },
+            { w: "SON", h: "Bitiş, nihayet." },
+            { w: "TAŞ", h: "Sert, katı yeryüzü maddesi." },
+            { w: "TAT", h: "Lezzet." },
+            { w: "TEK", h: "Eşi olmayan, bir tane." },
+            { w: "TOZ", h: "Çok ince toprak zerreleri." },
+            { w: "YIL", h: "Sene, 365 gün." },
+            { w: "YÜZ", h: "Çehre, surat." },
+            { w: "ZAR", h: "Şans oyunlarında kullanılan küp." }
+        ],
+        4: [
+            { w: "ELMA", h: "Kırmızı, sarı veya yeşil kabuklu meyve." },
+            { w: "KAPI", h: "Binalara girip çıkmaya yarayan yer." },
+            { w: "MAVİ", h: "Gökyüzünün ve denizin rengi." },
+            { w: "FARE", h: "Küçük kemirgen bir hayvan." },
+            { w: "OKUL", h: "Eğitim öğretim görülen yer." },
+            { w: "KEDİ", h: "Evcil, miyavlayan hayvan." },
+            { w: "YURT", h: "Vatan veya öğrencilerin kaldığı yer." },
+            { w: "SERT", h: "Yumuşak karşıtı." },
+            { w: "KALE", h: "Düşman saldırılarına karşı yapılan korunak." },
+            { w: "ÜZÜM", h: "Salkım şeklinde yetişen meyve." },
+            { w: "UZAY", h: "Bütün gök cisimlerinin içinde bulunduğu sonsuz boşluk." },
+            { w: "VERİ", h: "Bilgi, data." },
+            { w: "DERT", h: "Sorun, sıkıntı, tasa." },
+            { w: "MART", h: "Yılın üçüncü ayı." },
+            { w: "TANI", h: "Teşhis." },
+            { w: "AKIM", h: "Ceryan." },
+            { w: "PLAN", h: "Tasarı, proje." },
+            { w: "AÇIK", h: "Kapalı olmayan." },
+            { w: "ADIM", h: "Yürürken ayakların her atılışı." },
+            { w: "AĞAÇ", h: "Odunsu gövdesi olan uzun bitki." },
+            { w: "SORU", h: "Cevap bekleyen söz." },
+            { w: "AİLE", h: "Anne, baba ve çocuklardan oluşan birlik." },
+            { w: "AKIL", h: "Düşünme yeteneği, us." },
+            { w: "ALAN", h: "Saha, meydan." },
+            { w: "AMAÇ", h: "Gaye, hedef." },
+            { w: "ANIT", h: "Abide." },
+            { w: "ARZU", h: "İstek, heves." },
+            { w: "ASIR", h: "Yüzyıl." },
+            { w: "AŞÇI", h: "Yemek pişirmeyi meslek edinen kimse." },
+            { w: "ATEŞ", h: "Yanıcı maddelerin tutuşmasıyla beliren ısı ve ışık." },
+            { w: "ATOM", h: "Maddenin en küçük yapı taşı." },
+            { w: "AYNA", h: "Görüntüyü yansıtan cilalı cam." },
+            { w: "BABA", h: "Erkek ebeveyn." },
+            { w: "BATI", h: "Güneşin battığı yön." },
+            { w: "BEBE", h: "Bebek." },
+            { w: "BİNA", h: "Yapı." },
+            { w: "BORÇ", h: "Geri verilmek üzere alınan şey." },
+            { w: "BOYA", h: "Renklendirme maddesi." },
+            { w: "CUMA", h: "Perşembe ile Cumartesi arasındaki gün." },
+            { w: "ÇATI", h: "Binaların üstünü örten kısım." },
+            { w: "DANS", h: "Müzik eşliğinde yapılan ritmik hareketler." },
+            { w: "DERS", h: "Öğrenilen konu." },
+            { w: "DERİ", h: "Vücudun dış örtüsü, ten." },
+            { w: "DOĞA", h: "Tabiat." },
+            { w: "DOST", h: "Arkadaş, yakın kimse." },
+            { w: "EKİM", h: "Sonbahar mevsiminin bir ayı." },
+            { w: "EMEK", h: "Çaba, zahmet." },
+            { w: "ERİK", h: "Farklı türleri olan bir yaz meyvesi." },
+            { w: "EŞYA", h: "Türlü amaçlarla kullanılan nesneler." },
+            { w: "ETKİ", h: "Tesir." },
+            { w: "FİLM", h: "Sinema eseri." },
+            { w: "FOTO", h: "Fotoğrafın kısası." },
+            { w: "GEMİ", h: "Su üzerinde yüzen büyük taşıt." },
+            { w: "GERİ", h: "İleri karşıtı." },
+            { w: "GEZİ", h: "Seyahat." },
+            { w: "GIDA", h: "Besin." },
+            { w: "HALK", h: "Bir ülkede yaşayan insanlar bütünü." },
+            { w: "HATA", h: "Yanlışlık, kusur." },
+            { w: "HAVA", h: "Dünyayı saran gaz tabakası." },
+            { w: "HOBİ", h: "Uğraş." },
+            { w: "İADE", h: "Geri verme." },
+            { w: "İLAÇ", h: "Hastalıkları iyileştiren madde." },
+            { w: "İLKE", h: "Prensip." },
+            { w: "İMZA", h: "Kişinin kendine has işareti." },
+            { w: "İSİM", h: "Ad." },
+            { w: "KAFE", h: "Kahve içilen yer." },
+            { w: "KAMP", h: "Çadır kurarak konaklama." },
+            { w: "KATI", h: "Sıvı olmayan." },
+            { w: "KAYA", h: "Büyük taş kütlesi." },
+            { w: "KEÇİ", h: "İnatçılığıyla bilinen hayvan." },
+            { w: "KENT", h: "Şehir." },
+            { w: "KISA", h: "Uzun olmayan." },
+            { w: "KİLO", h: "Ağırlık birimi." },
+            { w: "KİRA", h: "Kullanım bedeli." },
+            { w: "KONU", h: "Mevzu, bahis." },
+            { w: "KOŞU", "h": "Hızlı yürüme eylemi, yarış." },
+            { w: "KOYU", h: "Açık rengin zıttı." },
+            { w: "KRAL", h: "Hükümdar." },
+            { w: "KURT", h: "Köpekgillerden vahşi hayvan." },
+            { w: "KURU", h: "Yaş veya ıslak olmayan." },
+            { w: "KUTU", h: "İçine eşya konulan kap." },
+            { w: "KUYU", h: "Su çıkarmak için kazılan çukur." },
+            { w: "LİRA", h: "Para birimi." },
+            { w: "MAAŞ", h: "Aylık ücret." },
+            { w: "MANA", h: "Anlam." },
+            { w: "MARŞ", h: "Ritmik yürüyüş müziği." },
+            { w: "MASA", h: "Ayaklı mobilya." },
+            { w: "MAYA", h: "Hamuru kabartan madde." },
+            { w: "MENÜ", h: "Yemek listesi." },
+            { w: "MÜZE", h: "Tarihi eserlerin sergilendiği yer." },
+            { w: "OCAK", h: "Yılın ilk ayı." },
+            { w: "ODAK", h: "Odak noktası, focus." },
+            { w: "OLAY", h: "Hadise, vaka." },
+            { w: "ONAY", h: "Tasdik, kabul." },
+            { w: "ORAN", h: "Nispet." },
+            { w: "ORUÇ", h: "Belli süre yiyip içmeme ibadeti." },
+            { w: "OTEL", h: "Konaklama tesisi." },
+            { w: "OYUN", h: "Eğlence etkinliği." },
+            { w: "ÖDEV", h: "Vazife." },
+            { w: "ÖLÇÜ", h: "Miktar belirleme aracı." },
+            { w: "ÖYKÜ", h: "Hikaye." },
+            { w: "ÖZEL", h: "Hususi." },
+            { w: "ÖZET", h: "Kısaltılmış anlatım." },
+            { w: "PARA", h: "Ödeme aracı." },
+            { w: "PARK", h: "Yeşil alan." },
+            { w: "PAŞA", h: "Yüksek rütbeli asker." },
+            { w: "RÜYA", h: "Uykuda görülen düş." },
+            { w: "SAAT", h: "Zaman ölçme aracı." },
+            { w: "SADE", h: "Süssüz, yalın." },
+            { w: "SAHA", h: "Alan, meydan." },
+            { w: "SARI", h: "Limonun rengi." },
+            { w: "SAYI", h: "Rakam, adet." },
+            { w: "SIRA", h: "Dizi, düzen." },
+            { w: "SPOR", h: "Bedensel aktivite." },
+            { w: "ŞAKA", h: "Güldürmek için yapılan hareket." },
+            { w: "ŞANS", h: "Talih, uğur." },
+            { w: "ŞART", h: "Koşul." },
+            { w: "ŞİİR", h: "Duygulu, ahenkli yazı türü." },
+            { w: "ŞUBE", h: "Bir kurumun alt birimi." },
+            { w: "TAHT", h: "Hükümdar koltuğu." },
+            { w: "TANK", h: "Zırhlı savaş aracı." },
+            { w: "TAPU", h: "Mülkiyet belgesi." },
+            { w: "TAZE", h: "Bayat olmayan." },
+            { w: "TEMA", h: "Ana konu." },
+            { w: "TREN", h: "Raylar üzerinde giden taşıt." },
+            { w: "UMUT", h: "Ümit." },
+            { w: "ÜRÜN", h: "Mahsul." },
+            { w: "ÜNLÜ", h: "Meşhur, tanınmış." },
+            { w: "VALİ", h: "İli yöneten en yetkili kişi." },
+            { w: "VİDA", h: "Döndürülerek sokulan çivi." },
+            { w: "YAPI", h: "Bina, inşaat." },
+            { w: "YARA", h: "Doku hasarı." },
+            { w: "YARI", h: "Bir bütünün iki parçasından biri." },
+            { w: "YENİ", h: "Eski olmayan." },
+            { w: "ZEKA", h: "Akıl, anlama yeteneği." }
+        ],
+        5: [
+            { w: "RADYO", h: "Ses dalgalarını ileten cihaz." },
+            { w: "SEHPA", h: "Küçük masa." },
+            { w: "KİTAP", h: "Okumak için yazılmış eser." },
+            { w: "ÇİÇEK", h: "Bitkilerin renkli ve kokulu kısmı." },
+            { w: "DÜNYA", h: "Yaşadığımız gezegen." },
+            { w: "MÜZİK", h: "Ses sanatı." },
+            { w: "KAHVE", h: "Kafeinli sıcak içecek." },
+            { w: "BULUT", h: "Gökyüzündeki su buharı kütlesi." },
+            { w: "GÜNEŞ", h: "Dünyamızı ısıtan yıldız." },
+            { w: "ROBOT", h: "Otomatik iş yapan makine." },
+            { w: "LAZER", h: "Yoğunlaştırılmış ışık demeti." },
+            { w: "EKRAN", h: "Görüntü paneli." },
+            { w: "MOBİL", h: "Taşınabilir, cep telefonu." },
+            { w: "KABLO", h: "Elektrik ileten tel." },
+            { w: "MOTOR", h: "Güç üreten makine." },
+            { w: "HELVA", h: "Tatlı bir yiyecek." },
+            { w: "MODEM", h: "İnternet bağlantı cihazı." },
+            { w: "SİBER", h: "Bilişim ve ağlarla ilgili." },
+            { w: "PANEL", h: "Levha veya açık oturum." },
+            { w: "VİDEO", h: "Görüntü kaydı." },
+            { w: "AJANS", h: "Haber veya reklam kurumu." },
+            { w: "ACELE", h: "Çabukluk, telaş." },
+            { w: "ADRES", h: "Bulunulan yerin tarifi." },
+            { w: "AKŞAM", h: "Günün batış zamanı." },
+            { w: "ALARM", h: "Uyarı sesi." },
+            { w: "ALBÜM", h: "Müzik veya resim koleksiyonu." },
+            { w: "ALKIŞ", h: "El çırpma." },
+            { w: "ANLAM", h: "Mana." },
+            { w: "ANKET", h: "Soruşturma, kamuoyu yoklaması." },
+            { w: "ANTEN", h: "Sinyal alıcı." },
+            { w: "ARABA", h: "Tekerlekli taşıt." },
+            { w: "ARIZA", h: "Bozukluk." },
+            { w: "BAHÇE", h: "Çiçek veya ağaç dikili yer." },
+            { w: "BALIK", h: "Suda yaşayan hayvan." },
+            { w: "BANKA", h: "Para işleri yapan kurum." },
+            { w: "BANYO", h: "Yıkanma yeri." },
+            { w: "BARIŞ", h: "Savaşın olmama durumu." },
+            { w: "BASIN", h: "Gazete ve dergilerin tümü." },
+            { w: "BAŞAK", h: "Tahılların taneli baş kısmı." },
+            { w: "BEBE", h: "Küçük çocuk." },
+            { w: "BEDEL", h: "Karşılık, fiyat." },
+            { w: "BELGE", h: "Döküman, vesika." },
+            { w: "BEYAZ", h: "Ak, kara karşıtı renk." },
+            { w: "BİBER", h: "Acı veya tatlı sebze." },
+            { w: "BİLET", h: "Giriş veya yolculuk kartı." },
+            { w: "BİLGİ", h: "Öğrenilen şey, malumat." },
+            { w: "BİLİM", h: "İlim." },
+            { w: "BÖLGE", h: "Sınırları belli alan." },
+            { w: "BÖLÜM", h: "Kısım, parça." },
+            { w: "BÜTÇE", h: "Gelir gider dengesi." },
+            { w: "BÜYÜK", h: "Küçük olmayan, iri." },
+            { w: "CAMİA", h: "Topluluk." },
+            { w: "CANLI", h: "Yaşayan." },
+            { w: "CEVAP", h: "Yanıt." },
+            { w: "CEVİZ", h: "Sert kabuklu bir kuruyemiş." },
+            { w: "CİHAZ", h: "Aygıt, alet." },
+            { w: "ÇADIR", h: "Bezden yapılan barınak." },
+            { w: "ÇANTA", h: "Eşya taşıma kabı." },
+            { w: "ÇEKİÇ", h: "Çivi çakma aleti." },
+            { w: "ÇELİK", h: "Sertleştirilmiş demir." },
+            { w: "ÇEŞİT", h: "Tür, cins." },
+            { w: "ÇİZGİ", h: "Hat." },
+            { w: "ÇORAP", h: "Ayağa giyilen giysi." },
+            { w: "DAİRE", h: "Yuvarlak şekil veya konut." },
+            { w: "DAMAR", h: "Kan taşıyan borucuk." },
+            { w: "DAMLA", h: "Küçük su tanesi." },
+            { w: "DAVET", h: "Çağrı." },
+            { w: "DENİZ", h: "Büyük su kütlesi." },
+            { w: "DETAY", h: "Ayrıntı." },
+            { w: "DEVİR", h: "Dönem, çağ." },
+            { w: "DİREK", h: "Sütun." },
+            { w: "DOĞRU", h: "Yanlış karşıtı." },
+            { w: "DOLAP", h: "Eşya konulan mobilya." },
+            { w: "DOSYA", h: "Evrak kabı." },
+            { w: "DÖVİZ", h: "Yabancı para." },
+            { w: "DURAK", h: "Taşıt bekleme yeri." },
+            { w: "DURUM", h: "Vaziyet, hal." },
+            { w: "DUVAR", h: "Yapıların dik bölmesi." },
+            { w: "DÜĞÜN", h: "Evlenme töreni." },
+            { w: "EKMEK", h: "Unla yapılan temel besin." },
+            { w: "ELMAS", h: "Çok değerli sert taş." },
+            { w: "EMLAK", h: "Gayrimenkul." },
+            { w: "ENGEL", h: "Mani." },
+            { w: "ESNAF", h: "Küçük ticaret erbabı." },
+            { w: "ETİKET", h: "Fiyat veya marka kağıdı." },
+            { w: "EYLEM", h: "Fiil, iş, hareket." },
+            { w: "FAKİR", h: "Yoksul." },
+            { w: "FAYDA", h: "Yarar." },
+            { w: "FİDAN", h: "Yeni yetişen ağaç." },
+            { w: "FİKİR", h: "Düşünce." },
+            { w: "FİRMA", h: "Şirket." },
+            { w: "FİZİK", h: "Madde ve enerjiyi inceleyen bilim." },
+            { w: "FORMA", h: "Takım giysisi." },
+            { w: "GENEL", h: "Umumi, herkesle ilgili." },
+            { w: "GİRİŞ", h: "Kapı, içeri girme yeri." },
+            { w: "GİTAR", h: "Telli bir çalgı." },
+            { w: "GİYİM", h: "Kılık kıyafet." },
+            { w: "GÖLGE", h: "Işığın giremediği karanlık yer." },
+            { w: "GÖREV", h: "Vazife." },
+            { w: "GÜZEL", h: "Hoşa giden, çirkin karşıtı." },
+            { w: "HABER", h: "Bilgi, havadis." },
+            { w: "HAFTA", h: "Yedi günlük süre." },
+            { w: "HAKLI", h: "Doğru olan." },
+            { w: "HALKA", h: "Daire biçimindeki cisim." },
+            { w: "HAMLE", h: "Atılım, saldırış." },
+            { w: "HANGİ", h: "Bir soru sıfatı." },
+            { w: "HARİTA", h: "Yeryüzü çizimi." },
+            { w: "HASAR", h: "Zarar, ziyan." },
+            { w: "HAYAL", h: "Düş, imge." },
+            { w: "HAYAT", h: "Yaşam." },
+            { w: "HEDEF", h: "Amaç, nişan." },
+            { w: "HEKİM", h: "Doktor." },
+            { w: "HESAP", h: "Sayma, işlem." },
+            { w: "HEYET", h: "Kurul." },
+            { w: "HIZLI", h: "Süratli." },
+            { w: "HUKUK", h: "Yasalar bütünü." },
+            { w: "HÜCRE", h: "Canlının en küçük yapı taşı." },
+            { w: "HUZUR", h: "Gönül rahatlığı." },
+            { w: "İBARE", h: "Söz, deyiş." },
+            { w: "İÇERİ", h: "Dışarı karşıtı." },
+            { w: "İDEAL", h: "Ülkü, en iyi." },
+            { w: "İFADE", h: "Anlatım." },
+            { w: "İKLİM", h: "Hava koşullarının ortalaması." },
+            { w: "İMKAN", h: "Olanak." },
+            { w: "İNSAN", h: "Beşer, ademoğlu." },
+            { w: "İPTAL", h: "Geçersiz kılma." },
+            { w: "İSLAM", h: "Müslümanlık dini." },
+            { w: "İŞLEM", h: "Ameliye, muamele." },
+            { w: "KAĞIT", h: "Yazı yazmaya yarayan yaprak." },
+            { w: "KALEM", h: "Yazı yazma aracı." },
+            { w: "KANAL", h: "Su veya yayın yolu." },
+            { w: "KANIT", h: "Delil." },
+            { w: "KARGO", h: "Yük taşıma." },
+            { w: "KAŞIK", h: "Yemek yeme aracı." },
+            { w: "KAYIP", h: "Yitik." },
+            { w: "KAYIT", h: "Yazma, tescil." },
+            { w: "KAZAN", h: "Büyük yemek pişirme kabı." },
+            { w: "KEBAP", h: "Ateşte pişen et yemeği." },
+            { w: "KENAR", h: "Kıyı, köşe." },
+            { w: "KESİN", h: "Şüphesiz, kati." },
+            { w: "KIVAM", h: "Uygun koyuluk." },
+            { w: "KİMYA", h: "Maddeleri inceleyen bilim." },
+            { w: "KİRAZ", h: "Kırmızı yaz meyvesi." },
+            { w: "KLİMA", h: "İklimlendirme cihazı." },
+            { w: "KOLAY", h: "Zor olmayan." },
+            { w: "KONUK", h: "Misafir." },
+            { w: "KONUM", h: "Yer, pozisyon." },
+            { w: "KOPYA", h: "Taklit, suret." },
+            { w: "KORKU", h: "Tehlike anında duyulan his." },
+            { w: "KREDİ", h: "Borç para." },
+            { w: "KURAL", h: "Kaide." },
+            { w: "KURUL", h: "Heyet." },
+            { w: "KURUM", h: "Müessese." },
+            { w: "KUZEY", h: "Bir yön." },
+            { w: "LİDER", h: "Önder." },
+            { w: "LİMAN", h: "Gemilerin yanaştığı yer." },
+            { w: "LİSTE", h: "Dizelge." },
+            { w: "MAHAL", h: "Yer, yöre." },
+            { w: "MAKAM", h: "Mevki." },
+            { w: "MAKAS", h: "Kesme aleti." },
+            { w: "MANTI", h: "Hamurlu bir yemek." },
+            { w: "MARKA", h: "Ticari isim." },
+            { w: "MASAL", h: "Olağanüstü hikaye." },
+            { w: "MEDYA", h: "İletişim araçları." },
+            { w: "MEKAN", h: "Yer." },
+            { w: "MESAJ", h: "İleti." },
+            { w: "METAL", h: "Demir, bakır gibi madenler." },
+            { w: "METİN", h: "Yazı." },
+            { w: "METRO", h: "Yeraltı treni." },
+            { w: "MİMAR", h: "Bina tasarlayan kişi." },
+            { w: "MİRAS", h: "Ölen kimseden kalan mal." },
+            { w: "MODEL", h: "Örnek, kalıp." },
+            { w: "NİYET", h: "Amaç, maksat." },
+            { w: "NOKTA", h: "Cümlenin sonuna konur." },
+            { w: "NÖBET", h: "Sırayla yapılan iş." },
+            { w: "NUMARA", h: "Sayı, rakam." },
+            { w: "ORTAM", h: "Çevre, atmosfer." },
+            { w: "ÖRDEK", h: "Suda yüzen perde ayaklı kuş." },
+            { w: "ÖRNEK", h: "Misal." },
+            { w: "ÖZLEM", h: "Hasret." },
+            { w: "PAKET", h: "Sarılıp bağlanmış nesne." },
+            { w: "PAMUK", h: "Yumuşak bitki lifi." },
+            { w: "PANİK", h: "Ani korku." },
+            { w: "PARÇA", h: "Bütünün bir kısmı." },
+            { w: "PAZAR", h: "Haftanın son günü veya alışveriş yeri." },
+            { w: "PEMBE", h: "Kırmızı ile beyazın karışımı renk." },
+            { w: "PERDE", h: "Pencere örtüsü." },
+            { w: "PİLOT", h: "Uçak kullanan kişi." },
+            { w: "PİYON", h: "Satrançta en küçük taş." },
+            { w: "PLAZA", h: "İş merkezi." },
+            { w: "POLİS", h: "Emniyet görevlisi." },
+            { w: "PROJE", h: "Tasarı." },
+            { w: "RAKİP", h: "Yarışılan kimse." },
+            { w: "RAPOR", h: "Durum bildiren yazı." },
+            { w: "RESİM", h: "Çizim veya boyama sanatı." },
+            { w: "ROMAN", h: "Uzun edebi eser." },
+            { w: "ROKET", h: "Füze." },
+            { w: "SABAH", h: "Günün ilk saatleri." },
+            { w: "SAHİL", h: "Kıyı, kumsal." },
+            { w: "SAHNE", h: "Oyun oynanan platform." },
+            { w: "SAKİN", h: "Gürültüsüz, durgun." },
+            { w: "SALON", h: "Evin büyük odası." },
+            { w: "SANAL", h: "Gerçek olmayan." },
+            { w: "SANAT", h: "Yaratıcılık ürünü eserler." },
+            { w: "SANKİ", h: "Güya." },
+            { w: "SARAY", h: "Hükümdar evi." },
+            { w: "SATIŞ", h: "Satma işi." },
+            { w: "SEBEP", h: "Neden." },
+            { w: "SEBZE", h: "Yenen bitkiler." },
+            { w: "SEÇİM", h: "Tercih veya oy verme." },
+            { w: "SEKİZ", h: "Yediden sonra gelen sayı." },
+            { w: "SELAM", h: "Esenleme sözü." },
+            { w: "SENET", h: "Borç belgesi." },
+            { w: "SERGİ", h: "Eserlerin gösterildiği yer." },
+            { w: "SERVİ", h: "Uzun, ince bir ağaç." },
+            { w: "SESLİ", h: "Sessiz olmayan." },
+            { w: "SEZON", h: "Mevsim, dönem." },
+            { w: "SICAK", h: "Soğuk karşıtı." },
+            { w: "SINAV", h: "İmtihan." },
+            { w: "SINIF", h: "Derslik." },
+            { w: "SINIR", h: "Hudut." },
+            { w: "SİLAH", h: "Savaş aleti." },
+            { w: "SİMYA", h: "Eski kimya." },
+            { w: "SİNEK", h: "Uçan küçük böcek." },
+            { w: "SİREN", h: "Uyarı düdüğü." },
+            { w: "SİTEM", h: "Kırgınlık belirtme." },
+            { w: "SİVİL", h: "Asker olmayan." },
+            { w: "SİYAH", h: "Kara renk." },
+            { w: "SOKAK", h: "Cadde, yol." },
+            { w: "SONUÇ", h: "Netice." },
+            { w: "SORUN", h: "Problem, mesele." },
+            { w: "SÖZLÜ", h: "Yazılı olmayan." },
+            { w: "SUBAY", h: "Rütbeli asker." },
+            { w: "SÜREÇ", h: "Proses." },
+            { w: "SÜRÜM", h: "Versiyon." },
+            { w: "ŞAHİT", h: "Tanık." },
+            { w: "ŞARKI", h: "Müzik parçası." },
+            { w: "ŞEHİR", h: "Kent." },
+            { w: "ŞEKER", h: "Tatlı madde." },
+            { w: "ŞEKİL", h: "Biçim." },
+            { w: "TABAK", h: "Yemek kabı." },
+            { w: "TABAN", h: "Alt kısım." },
+            { w: "TABLO", h: "Duvara asılan resim." },
+            { w: "TAKIM", h: "Ekip." },
+            { w: "TAKİP", h: "İzleme." },
+            { w: "TALEB", h: "İstek." },
+            { w: "TALİH", h: "Şans." },
+            { w: "TAMİR", h: "Onarım." },
+            { w: "TARAF", h: "Yan, yön." },
+            { w: "TARIM", h: "Ziraat." },
+            { w: "TARİH", h: "Geçmiş zaman." },
+            { w: "TARLA", h: "Ekip biçilen yer." },
+            { w: "TAVUK", h: "Yumurtlayan kümes hayvanı." },
+            { w: "TEKNE", h: "Küçük deniz taşıtı." },
+            { w: "TEMEL", h: "Esas, taban." },
+            { w: "TEMİZ", h: "Kirli olmayan." },
+            { w: "TEPSİ", h: "Servis aracı." },
+            { w: "TERZİ", h: "Elbise dikeni kişi." },
+            { w: "TÖREN", h: "Merasim." },
+            { w: "TUTAR", h: "Toplam miktar." },
+            { w: "TÜNEL", h: "Yeraltı geçidi." },
+            { w: "UZMAN", h: "Mütehassıs, bilen kişi." },
+            { w: "ÜCRET", h: "Hizmet karşılığı para." },
+            { w: "ÜÇGEN", h: "Üç kenarlı şekil." },
+            { w: "ÜNİTE", h: "Birim." },
+            { w: "ÜNVAN", h: "Sıfat, lakap." },
+            { w: "ÜSTÜN", h: "Daha iyi olan." },
+            { w: "VAKIF", h: "Hayır kurumu." },
+            { w: "VAKİT", h: "Zaman." },
+            { w: "VARİL", h: "Büyük sıvı kabı." },
+            { w: "VARLIK", h: "Mevcudiyet." },
+            { w: "VATAN", h: "Yurt." },
+            { w: "VERGİ", h: "Devlete ödenen para." },
+            { w: "VİRÜS", h: "Hastalık yapan mikrop." },
+            { w: "VAGON", h: "Trenin bölmesi." },
+            { w: "YAKIN", h: "Uzak olmayan." },
+            { w: "YALAN", h: "Gerçek dışı söz." },
+            { w: "YANIT", h: "Cevap." },
+            { w: "YANKI", h: "Sesin geri dönmesi." },
+            { w: "YARAR", h: "Fayda." },
+            { w: "YASAL", h: "Kanuni." },
+            { w: "YAŞAM", h: "Hayat." },
+            { w: "YATAK", h: "Uyuma yeri." },
+            { w: "YAYIN", h: "Basım veya neşriyat." },
+            { w: "YAZAR", h: "Kitap yazan kişi." },
+            { w: "YEMEK", h: "Yenen şeyler." },
+            { w: "YEREL", h: "Lokal, mahalli." },
+            { w: "YEŞİL", h: "Doğanın rengi." },
+            { w: "YİĞİT", h: "Cesur, kahraman." },
+            { w: "YOKSA", h: "Aksi takdirde." },
+            { w: "YORUM", h: "Düşünce açıklama." },
+            { w: "YÜZDE", h: "Yüz parçada bir." },
+            { w: "ZAMAN", h: "Vakit." },
+            { w: "ZEMİN", h: "Yer, taban." },
+            { w: "ZİRVE", h: "Doruk, en tepe." },
+            { w: "ZORLU", h: "Güç, çetin." }
+        ],
+        6: [
+            { w: "KAPTAN", h: "Gemi veya uçak yöneticisi." },
+            { w: "GÖZLÜK", h: "Görme bozukluğunu düzelten araç." },
+            { w: "BARDAK", h: "Su içme kabı." },
+            { w: "KOLTUK", h: "Oturma eşyası." },
+            { w: "YASTIK", h: "Baş altına konulan eşya." },
+            { w: "ZÜRAFA", h: "Uzun boyunlu hayvan." },
+            { w: "BALKON", h: "Evin dışarı çıkıntısı." },
+            { w: "KARPUZ", h: "İçi kırmızı yaz meyvesi." },
+            { w: "SİSTEM", h: "Düzen, dizge." },
+            { w: "SUNUCU", h: "Programı sunan kişi veya server." },
+            { w: "SİNYAL", h: "İşaret." },
+            { w: "BOŞLUK", h: "Dolu olmayan yer." },
+            { w: "ENERJİ", h: "İş yapabilme yeteneği." },
+            { w: "PUSULA", h: "Yön bulma aracı." },
+            { w: "SEKTÖR", h: "İş kolu, dal." },
+            { w: "ADALET", h: "Hukuk ve doğruluk." },
+            { w: "AKARSU", h: "Nehir, ırmak." },
+            { w: "AKRABA", h: "Kan bağı olanlar." },
+            { w: "AMAZON", h: "Büyük bir orman veya nehir." },
+            { w: "ANONİM", h: "İsimsiz, kimliği belirsiz." },
+            { w: "ANTİKA", h: "Eski ve değerli eşya." },
+            { w: "ARALIK", h: "Yılın son ayı veya mesafe." },
+            { w: "ARITMA", h: "Temizleme işlemi." },
+            { w: "ASKERİ", h: "Orduyla ilgili." },
+            { w: "ATÖLYE", h: "İşlik." },
+            { w: "AVUKAT", h: "Hukukçu, savunman." },
+            { w: "AYARLA", h: "Düzenle." },
+            { w: "BADANA", h: "Duvar boyama işi." },
+            { w: "BAKKAL", h: "Küçük market." },
+            { w: "BALİNA", h: "Dev deniz memelisi." },
+            { w: "BALYOZ", h: "Ağır çekiç." },
+            { w: "BANKER", h: "Banka sahibi veya para babası." },
+            { w: "BARAJ", h: "Su biriktirme yapısı." },
+            { w: "BAYRAK", h: "Ülke sembolü kumaş." },
+            { w: "BAYRAM", h: "Milli veya dini kutlama günü." },
+            { w: "BEĞENİ", h: "Takdir etme, hoşlanma." },
+            { w: "BENZİN", h: "Yakıt türü." },
+            { w: "BERBER", h: "Saç kesen kişi." },
+            { w: "BAŞKAN", h: "Yönetici, reis." },
+            { w: "BİLDİR", h: "Haber ver." },
+            { w: "BONCUK", h: "Süs tanesi." },
+            { w: "BULVAR", h: "Geniş cadde." },
+            { w: "BÜLBÜL", h: "Güzel öten kuş." },
+            { w: "CETVEL", h: "Çizim veya ölçüm aracı." },
+            { w: "CEYLAN", h: "Hızlı koşan zarif hayvan." },
+            { w: "CÖMERT", h: "Eli açık." },
+            { w: "ÇARŞAF", h: "Yatak örtüsü." },
+            { w: "ÇEYREK", h: "Dörtte bir." },
+            { w: "ÇIPLAK", h: "Giyinmemiş." },
+            { w: "ÇÖMLEK", h: "Toprak kap." },
+            { w: "DAKİKA", h: "Zaman birimi, 60 saniye." },
+            { w: "DANTEL", h: "Örgü işi süs." },
+            { w: "DEFTER", h: "Yazı yazılan kağıt tomarı." },
+            { w: "DEPREM", h: "Yer sarsıntısı." },
+            { w: "DERMAN", h: "Çare, ilaç." },
+            { w: "DERNEK", h: "Cemiyet." },
+            { w: "DESTEK", h: "Yardım." },
+            { w: "DEVLET", h: "Siyasi örgütlenmiş toplum." },
+            { w: "DEVRİM", h: "İnkılap." },
+            { w: "DIŞARI", h: "İçeri karşıtı." },
+            { w: "DİKKAT", h: "Uyanıklık, özen." },
+            { w: "DİREKT", h: "Doğrudan." },
+            { w: "DOKTOR", h: "Hekim." },
+            { w: "DOMİNO", h: "Taşlarla oynanan oyun." },
+            { w: "DÜRBÜN", h: "Uzağı görme aleti." },
+            { w: "DÜRÜST", h: "Doğru sözlü." },
+            { w: "ECZANE", h: "İlaç satılan yer." },
+            { w: "EFENDİ", h: "Saygılı kişi, bey." },
+            { w: "EĞİTİM", h: "Öğretim, yetiştirme." },
+            { w: "ELBİSE", h: "Giysi." },
+            { w: "EMEKLİ", h: "İş hayatını tamamlamış kişi." },
+            { w: "ENDEKS", h: "Gösterge, dizin." },
+            { w: "ERİŞİM", h: "Ulaşım." },
+            { w: "ETKİLİ", h: "Tesirli." },
+            { w: "FAKTÖR", h: "Etmen." },
+            { w: "FISTIK", h: "Bir kuruyemiş." },
+            { w: "FİNANS", h: "Maliye, para işleri." },
+            { w: "FIRSAT", h: "Uygun an." },
+            { w: "FORMÜL", h: "Matematiksel kural." },
+            { w: "FUKARA", h: "Yoksul." },
+            { w: "FUTBOL", h: "Ayakla oynanan top oyunu." },
+            { w: "GARSON", h: "Servis elemanı." },
+            { w: "GAZETE", h: "Haber kağıdı." },
+            { w: "GEÇMİŞ", h: "Mazi." },
+            { w: "GERÇEK", h: "Hakiki." },
+            { w: "GÖMLEK", h: "Üst giysisi." },
+            { w: "GÜNCEL", h: "Aktüel, bugünkü." },
+            { w: "GÜNDEM", h: "Görüşülecek konular." },
+            { w: "HARİKA", h: "Mükemmel." },
+            { w: "HASRET", h: "Özlem." },
+            { w: "HASSAS", h: "Duyarlı." },
+            { w: "HATIRA", h: "Anı." },
+            { w: "HAYVAN", h: "Canlı yaratık." },
+            { w: "HAZİNE", h: "Değerli eşyaların saklandığı yer." },
+            { w: "HEYKEL", h: "Yontu." },
+            { w: "HİZMET", h: "İş görme, servis." },
+            { w: "İÇECEK", h: "Meşrubat." },
+            { w: "İLGİNÇ", h: "Enteresan." },
+            { w: "İŞARET", h: "İz, belirti." },
+            { w: "KAFİYE", h: "Uyak." },
+            { w: "KALİTE", h: "Nitelik." },
+            { w: "KAMERA", h: "Görüntü kaydedici." },
+            { w: "KANSER", h: "Tehlikeli bir hastalık." },
+            { w: "KAPLAN", h: "Büyük yırtıcı kedi." },
+            { w: "KARDEŞ", h: "Aynı anne babadan olanlar." },
+            { w: "KARTAL", h: "Yırtıcı kuş." },
+            { w: "KARTON", h: "Kalın kağıt." },
+            { w: "KASABA", h: "Küçük şehir." },
+            { w: "KAYNAK", h: "Pınar veya köken." },
+            { w: "KELİME", h: "Sözcük." },
+            { w: "KESKİN", h: "İyi kesen." },
+            { w: "KLASİK", h: "Eskimeyen, geleneksel." },
+            { w: "KLAVYE", h: "Tuş takımı." },
+            { w: "KOMEDİ", h: "Güldürü." },
+            { w: "KOMPLE", h: "Tamamıyla, bütün." },
+            { w: "KONFOR", h: "Rahatlık." },
+            { w: "KONGRE", h: "Kurultay." },
+            { w: "KONSER", h: "Müzik dinletisi." },
+            { w: "KONTAK", h: "Temas." },
+            { w: "KORKAK", h: "Cesur olmayan." },
+            { w: "KORSAN", h: "Deniz haydutu." },
+            { w: "KRİTER", h: "Ölçüt." },
+            { w: "KRONİK", h: "Süreğen." },
+            { w: "KULÜBE", h: "Küçük barınak." },
+            { w: "KUVVET", h: "Güç." },
+            { w: "KÜLTÜR", h: "Ekin." },
+            { w: "LASTİK", h: "Esnek madde veya tekerlek." },
+            { w: "LEOPAR", h: "Benekli yırtıcı kedi." },
+            { w: "MADENİ", h: "Metalik." },
+            { w: "MAĞAZA", h: "Büyük dükkan." },
+            { w: "MAKALE", h: "Gazete yazısı." },
+            { w: "MAKİNE", h: "Aygıt." },
+            { w: "MANTAR", h: "Sporla çoğalan bitki veya tıpa." },
+            { w: "MANTIK", h: "Doğru düşünme yolu." },
+            { w: "MARKET", h: "Alışveriş yeri." },
+            { w: "MASRAF", h: "Gider, harcama." },
+            { w: "MATKAP", h: "Delik açma aleti." },
+            { w: "MECBUR", h: "Zorunlu." },
+            { w: "MERCEK", h: "Lens." },
+            { w: "MERKEZ", h: "Orta nokta." },
+            { w: "MESLEK", h: "İş, uğraş." },
+            { w: "MEVCUT", h: "Var olan." },
+            { w: "MEYDAN", h: "Geniş alan." },
+            { w: "MİKTAR", h: "Nicelik, tutar." },
+            { w: "MİLLET", h: "Ulus." },
+            { w: "MİLYON", h: "Altı sıfırlı sayı." },
+            { w: "MODERN", h: "Çağdaş." },
+            { w: "MUHTAR", h: "Mahalle yöneticisi." },
+            { w: "MUTFAK", h: "Yemek pişirilen yer." },
+            { w: "NEREDE", h: "Yer sorusu." },
+            { w: "NESNEL", h: "Objektif." },
+            { w: "NORMAL", h: "Anormal olmayan." },
+            { w: "NUMUNE", h: "Örnek." },
+            { w: "ONARIM", h: "Tamirat." },
+            { w: "PANJUR", h: "Pencere örtüsü." },
+            { w: "PARFÜM", h: "Güzel koku." },
+            { w: "PARLAK", h: "Işıldayan." },
+            { w: "PARMAK", h: "El ve ayak uçları." },
+            { w: "PATRON", h: "İşveren." },
+            { w: "PAYLAŞ", h: "Bölüş." },
+            { w: "PEÇETE", h: "Temizlik kağıdı." },
+            { w: "PENDİK", h: "İstanbul'un bir ilçesi." },
+            { w: "PETROL", h: "Siyah altın, yakıt." },
+            { w: "PEYNİR", h: "Sütten yapılan katı yiyecek." },
+            { w: "PİYASA", h: "Pazar." },
+            { w: "PLANLI", h: "Programlı." },
+            { w: "PORTAL", h: "Ana giriş kapısı veya web sitesi." },
+            { w: "POSTAL", h: "Asker botu." },
+            { w: "PROFİL", h: "Yan görünüş." },
+            { w: "REÇETE", h: "İlaç listesi." },
+            { w: "REHBER", h: "Kılavuz." },
+            { w: "REKLAM", h: "Tanıtım." },
+            { w: "RENKLİ", h: "Renkli." },
+            { w: "RESMİ", h: "Devlete ait." },
+            { w: "RÜZGAR", h: "Yel." },
+            { w: "SAĞLIK", h: "Sıhhat." },
+            { w: "SAMİMİ", h: "İçten." },
+            { w: "SANDAL", h: "Küçük kayık." },
+            { w: "SANİYE", h: "Zaman birimi." },
+            { w: "SANSÜR", h: "Denetleme, kısıtlama." },
+            { w: "SARMAL", h: "Helezon." },
+            { w: "SATICI", h: "Satan kişi." },
+            { w: "SAYDAM", h: "Şeffaf." },
+            { w: "SEÇKİN", h: "Elit." },
+            { w: "SEMBOL", h: "Simge." },
+            { w: "SENTEZ", h: "Bireşim." },
+            { w: "SEVİYE", h: "Düzey." },
+            { w: "SİGARA", h: "Tütün ürünü." },
+            { w: "SOHBET", h: "Söyleşi, muhabbet." },
+            { w: "SOSYAL", h: "Toplumsal." },
+            { w: "SÖZLÜK", h: "Kelimeler kitabı, lugat." },
+            { w: "SÜLFÜR", h: "Kükürt." },
+            { w: "SÜNGER", h: "Temizlik malzemesi." },
+            { w: "SÜRÜCÜ", h: "Şoför." },
+            { w: "ŞABLON", h: "Kalıp." },
+            { w: "ŞEFFAF", h: "Saydam." },
+            { w: "ŞİMŞEK", h: "Çakan ışık." },
+            { w: "ŞİRKET", h: "Ticari ortaklık." },
+            { w: "TABLET", h: "Düz bilgisayar." },
+            { w: "TAHMİN", h: "Öngörü." },
+            { w: "TAKVİM", h: "Zaman cetveli." },
+            { w: "TALEBE", h: "Öğrenci." },
+            { w: "TASARI", h: "Proje, plan." },
+            { w: "TATİL", h: "Dinlenme dönemi." },
+            { w: "TEHLİK", h: "Tehlike." },
+            { w: "TEKNİK", h: "Uygulama bilgisi." },
+            { w: "TEKRAR", h: "Yineleme." },
+            { w: "TEMSİL", h: "Simgeleme veya oyun." },
+            { w: "TERCİH", h: "Seçim." },
+            { w: "TERMAL", h: "Isı ile ilgili." },
+            { w: "TESLİM", h: "Verme." },
+            { w: "TOPLAM", h: "Yekün." },
+            { w: "TOPLUM", h: "Cemiyet." },
+            { w: "TOPRAK", h: "Yer, arazi." },
+            { w: "TURİZM", h: "Gezginlik." },
+            { w: "ULUSAL", h: "Milli." },
+            { w: "UZANTI", h: "Ek parça." },
+            { w: "ÜRETİM", h: "İmalat." },
+            { w: "ÜÇGEN", h: "Üç kenarlı." },
+            { w: "VİCDAN", h: "İç ses." },
+            { w: "VİDEO", h: "Görüntü kaydı." },
+            { w: "VİZYON", h: "Görüş, gösterim." },
+            { w: "VOLKAN", h: "Yanardağ." },
+            { w: "YALNIZ", h: "Tek başına." },
+            { w: "YAPRAK", h: "Ağacın yeşil kısmı." },
+            { w: "YARDIM", h: "İmdat, destek." },
+            { w: "YAYGIN", h: "Çok rastlanan." },
+            { w: "YAZICI", h: "Printer." },
+            { w: "YELKEN", h: "Rüzgarla giden gemi bezi." },
+            { w: "YEMEK", h: "Gıda." },
+            { w: "YENGEÇ", h: "Yan yan yürüyen kabuklu." },
+            { w: "YETKİN", h: "Olgun, ehil." },
+            { w: "YILDIZ", h: "Gökyüzünde parlayan cisim." },
+            { w: "YOĞURT", h: "Mayalanmış süt." },
+            { w: "YÖNTEM", h: "Metot." },
+            { w: "YÜKSEK", h: "Alçak karşıtı." },
+            { w: "ZABITA", h: "Belediye polisi." },
+            { w: "ZAMANE", h: "Şimdiki zaman." },
+            { w: "ZEYTİN", h: "Kahvaltılık siyah/yeşil meyve." },
+            { w: "ZİNCİR", h: "Halkalar dizisi." }
+        ],
+        7: [
+            { w: "MERHABA", h: "Selamlaşma sözü." },
+            { w: "PENCERE", h: "Duvarlardaki camlı açıklık." },
+            { w: "TÜRKİYE", h: "Vatanımız." },
+            { w: "TELEFON", h: "İletişim aracı." },
+            { w: "MANZARA", h: "Görünüm." },
+            { w: "JÜPİTER", h: "En büyük gezegen." },
+            { w: "YAZILIM", h: "Bilgisayar programı." },
+            { w: "MONİTÖR", h: "Ekran." },
+            { w: "GEZEGEN", h: "Gök cismi." },
+            { w: "DİJİTAL", h: "Sayısal." },
+            { w: "PROGRAM", h: "İzlence." },
+            { w: "YÖNETİM", h: "İdare." },
+            { w: "AKADEMİ", h: "Yüksek okul." },
+            { w: "AKSİYON", h: "Hareket, eylem." },
+            { w: "AMBALAJ", h: "Paketleme malzemesi." },
+            { w: "ANATOMİ", h: "Vücut yapısı bilimi." },
+            { w: "ANLAŞMA", h: "Uzlaşma, kontrat." },
+            { w: "ANTALYA", h: "Turistik bir ilimiz." },
+            { w: "ARABACI", h: "Araba kullanan." },
+            { w: "ARKADAŞ", h: "Dost." },
+            { w: "AVANTAJ", h: "Üstünlük sağlayan durum." },
+            { w: "AYRINTI", h: "Detay." },
+            { w: "BATARYA", h: "Pil grubu." },
+            { w: "BEKLEME", h: "Durma, intizar." },
+            { w: "BİYOLOG", h: "Canlı bilimci." },
+            { w: "BULMACA", h: "Zeka oyunu." },
+            { w: "ÇALIŞMA", h: "İş, emek." },
+            { w: "ÇAMAŞIR", h: "Yıkanacak giysiler." },
+            { w: "ÇEKİRGE", h: "Sıçrayan böcek." },
+            { w: "ÇEVRECİ", h: "Doğayı koruyan." },
+            { w: "DANIŞMA", h: "Bilgi alma yeri." },
+            { w: "DENKLEM", h: "Eşitlik." },
+            { w: "DERSANE", h: "Özel öğretim kurumu." },
+            { w: "DİNAMİK", h: "Hareketli." },
+            { w: "DİPLOMA", h: "Mezuniyet belgesi." },
+            { w: "DİYALOG", h: "Karşılıklı konuşma." },
+            { w: "DOKUMAN", h: "Belge." },
+            { w: "DÜŞÜNCE", h: "Fikir." },
+            { w: "DÜZENLİ", h: "Tertipli." },
+            { w: "EĞLENCE", h: "Keyifli vakit geçirme." },
+            { w: "EKOLOJİ", h: "Çevre bilimi." },
+            { w: "EKONOMİ", h: "İktisat." },
+            { w: "EMNİYET", h: "Güvenlik." },
+            { w: "ENERJİK", h: "Hareketli, canlı." },
+            { w: "ERZURUM", h: "Doğu Anadolu'da bir il." },
+            { w: "FABRİKA", h: "Üretim tesisi." },
+            { w: "FANTAZİ", h: "Hayal ürünü." },
+            { w: "FASULYE", h: "Bir baklagil." },
+            { w: "FELAKET", h: "Büyük yıkım." },
+            { w: "FELSEFE", h: "Düşünce bilimi." },
+            { w: "FIRTINA", h: "Şiddetli rüzgar." },
+            { w: "FREKANS", h: "Titreşim sıklığı." },
+            { w: "GALAKSİ", h: "Gökada." },
+            { w: "GARANTİ", h: "Güvence." },
+            { w: "GECELİK", h: "Yatarken giyilen giysi." },
+            { w: "GELECEK", h: "Ati, istikbal." },
+            { w: "GELENEK", h: "Adet, töre." },
+            { w: "GENÇLİK", h: "Tazelik çağı." },
+            { w: "GENETİK", h: "Kalıtım bilimi." },
+            { w: "GERİLİM", h: "Tansiyon." },
+            { w: "GÖKYÜZÜ", h: "Sema." },
+            { w: "GÖSTERİ", h: "Şov." },
+            { w: "GÜVENLİ", h: "Emniyetli." },
+            { w: "HABERCİ", h: "Haber getiren." },
+            { w: "HAKİKAT", h: "Gerçek." },
+            { w: "HAREKET", h: "Kımıldama." },
+            { w: "HASTANE", h: "Şifa yurdu." },
+            { w: "HEYECAN", h: "Coşku." },
+            { w: "ISPANAK", h: "Demir deposu sebze." },
+            { w: "İHRACAT", h: "Dış satım." },
+            { w: "İHTİMAL", h: "Olasılık." },
+            { w: "İHTİYAÇ", h: "Gereksinim." },
+            { w: "İNCELİK", h: "Zarafet." },
+            { w: "İSKELET", h: "Kemik çatısı." },
+            { w: "İTFAİYE", h: "Yangın söndürme ekibi." },
+            { w: "JENERİK", h: "Tanıtım yazısı." },
+            { w: "KARINCA", h: "Çalışkan böcek." },
+            { w: "KAVRAMA", h: "Anlama." },
+            { w: "KELEBEK", h: "Renkli kanatlı böcek." },
+            { w: "KERESTE", h: "İşlenmiş odun." },
+            { w: "KILAVUZ", h: "Rehber." },
+            { w: "KIRMIZI", h: "Al renk." },
+            { w: "KİRALIK", h: "Kiraya verilecek olan." },
+            { w: "KOMANDO", h: "Özel asker." },
+            { w: "KOMEDYA", h: "Güldürü." },
+            { w: "KOMUTAN", h: "Askeri yönetici." },
+            { w: "KONTROL", h: "Denetim." },
+            { w: "KORİDOR", h: "Geçit, hol." },
+            { w: "KRİSTAL", h: "Parlak cam." },
+            { w: "MALZEME", h: "Gereç." },
+            { w: "MANZARA", h: "Görünüm." },
+            { w: "MARATON", h: "Uzun koşu." },
+            { w: "MEDİKAL", h: "Tıbbi." },
+            { w: "MEKANİK", h: "Makine ile ilgili." },
+            { w: "MENEKŞE", h: "Bir çiçek." },
+            { w: "MERKEZİ", h: "Ortada olan." },
+            { w: "MOBİLYA", h: "Ev eşyası." },
+            { w: "MUHABİR", h: "Haberci." },
+            { w: "MÜZİKAL", h: "Müzikli oyun." },
+            { w: "NAKLİYE", h: "Taşıma işi." },
+            { w: "NEGATİF", h: "Olumsuz." },
+            { w: "NİLÜFER", h: "Su çiçeği." },
+            { w: "OKYANUS", h: "Büyük deniz." },
+            { w: "ORGANİK", h: "Doğal." },
+            { w: "OYUNCUK", h: "Küçük oyun." },
+            { w: "PALMİYE", h: "Sıcak iklim ağacı." },
+            { w: "PAPAĞAN", h: "Konuşan kuş." },
+            { w: "PAPATYA", h: "Beyaz yapraklı çiçek." },
+            { w: "PARALEL", h: "Kesişmeyen doğrular." },
+            { w: "PATATES", h: "Nişastalı sebze." },
+            { w: "PIRLANTA", h: "Değerli taş." },
+            { w: "PİRAMİT", h: "Mısır'daki anıt mezarlar." },
+            { w: "PİYANGO", h: "Şans oyunu." },
+            { w: "POZİTİF", h: "Olumlu." },
+            { w: "PRENSİP", h: "İlke." },
+            { w: "PROBLEM", h: "Sorun." },
+            { w: "RANDEVU", h: "Buluşma." },
+            { w: "REKABET", h: "Yarışma." },
+            { w: "SAATLER", h: "Zaman dilimleri." },
+            { w: "SABIRLI", h: "Acele etmeyen." },
+            { w: "SANATÇI", h: "Sanat yapan." },
+            { w: "SANTRAL", h: "Merkez istasyonu." },
+            { w: "SATILIK", h: "Satışa çıkarılmış." },
+            { w: "SATRANÇ", h: "Zeka oyunu." },
+            { w: "SAYISAL", h: "Rakamlarla ilgili." },
+            { w: "SEÇENEK", h: "Alternatif." },
+            { w: "SEMİNER", h: "Bilgi şöleni." },
+            { w: "SENARYO", h: "Film metni." },
+            { w: "SENDİKA", h: "İşçi örgütü." },
+            { w: "SERAMİK", h: "Pişmiş toprak sanatı." },
+            { w: "SERBEST", h: "Özgür." },
+            { w: "SİGORTA", h: "Güvence sistemi." },
+            { w: "SİMETRİ", h: "Bakışım." },
+            { w: "SİYASET", h: "Politika." },
+            { w: "STADYUM", h: "Spor alanı." },
+            { w: "SÜRPRİZ", h: "Beklenmedik olay." },
+            { w: "ŞEMSİYE", h: "Yağmur koruyucusu." },
+            { w: "ŞÖVALYE", h: "Savaşçı soylu." },
+            { w: "TAAHHÜT", h: "Söz verme." },
+            { w: "TASARIM", h: "Dizayn." },
+            { w: "TAVSİYE", h: "Öğüt." },
+            { w: "TEHLİKE", h: "Risk." },
+            { w: "TENCERE", h: "Yemek pişirme kabı." },
+            { w: "TERBİYE", h: "Eğitim, görgü." },
+            { w: "TESTERE", h: "Kesme aleti." },
+            { w: "TİYATRO", h: "Sahne sanatı." },
+            { w: "TOPLANT", h: "Bir araya gelme." },
+            { w: "TRAKTÖR", h: "Tarım aracı." },
+            { w: "TRABZON", h: "Karadeniz ili." },
+            { w: "TÜKETİM", h: "Kullanım." },
+            { w: "UÇURTMA", h: "Rüzgarla uçurulan oyuncak." },
+            { w: "UYGULAM", h: "Pratik." },
+            { w: "ÜRETİCİ", h: "İmal eden." },
+            { w: "ÜRÜNLER", h: "Mahsuller." },
+            { w: "VİTAMİN", h: "Besin öğesi." },
+            { w: "YABANCI", h: "Tanıdık olmayan." },
+            { w: "YARIŞMA", h: "Müsabaka." },
+            { w: "YAŞAMAK", h: "Hayatta olmak." },
+            { w: "YATIRIM", h: "Kazanç için harcama." },
+            { w: "YAZILIM", h: "Software." },
+            { w: "YELPAZE", h: "Serinletme aracı." },
+            { w: "YETENEK", h: "Kabiliyet." },
+            { w: "YÖNETİM", h: "İdare." },
+            { w: "YÖNETME", h: "İdare etme." },
+            { w: "YUMURTA", h: "Tavuğun ürünü." },
+            { w: "YUVARLA", h: "Tekerlemek." },
+            { w: "ZİYARET", h: "Görüşmeye gitme." },
+            { w: "ANLATIM", h: "İfade ediş." },
+            { w: "BAŞARI", h: "Muvaffakiyet." },
+            { w: "BAĞLAMA", h: "Telli saz." }
+        ]
+    };
+    const THEMES = ["uzay", "orman", "okyanus", "volkan"];
+    const RANKS = [
+        { l: 0, t: "GÖZCÜ" },
+        { l: 5, t: "KAŞİF" },
+        { l: 10, t: "OPERATÖR" },
+        { l: 20, t: "TEKNİSYEN" },
+        { l: 35, t: "SİBER UZMAN" },
+        { l: 50, t: "ELİT ÜYE" },
+        { l: 100, t: "EFSANE" }
+    ];
+
+    let gameState = {
+        level: 1,
+        gold: 100,
+        stats: { played: 0, wins: 0, streak: 0, maxStreak: 0 },
+        lastLogin: null,
+        isMuted: false,
+        blindMode: false // YENİ: Kör Mod Durumu
+    };
+    
+    let targetWord = "", targetHint = "", wordLen = 3, currentGuess = [], remaining = 6, gameActive = true;
+    let levelStartTime = 0;
+    const HINT_COST = 50, BOMB_COST = 75, WIN_REWARD = 50, TIME_BONUS_LIMIT = 30000;
+
+    // --- SES EFEKTLERİ ---
+    const AudioEngine = {
+        ctx: new (window.AudioContext || window.webkitAudioContext)(),
+        play(type) {
+            if (gameState.isMuted) return;
+            if (this.ctx.state === 'suspended') this.ctx.resume();
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            const t = this.ctx.currentTime;
+            
+            if (type === 'click') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
+                osc.start(); osc.stop(t + 0.05);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(120, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+                osc.start(); osc.stop(t + 0.15);
+            } else if (type === 'flip') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(400, t);
+                gain.gain.setValueAtTime(0.05, t);
+                gain.gain.linearRampToValueAtTime(0, t + 0.05);
+                osc.start(); osc.stop(t + 0.05);
+            } else if (type === 'pop') { 
+                osc.type = 'sine'; osc.frequency.setValueAtTime(600, t);
+                gain.gain.setValueAtTime(0.02, t);
+                gain.gain.linearRampToValueAtTime(0, t + 0.1);
+                osc.start(); osc.stop(t + 0.1);
+            } else if (type === 'bomb') {
+                osc.type = 'square'; osc.frequency.setValueAtTime(150, t);
+                osc.frequency.exponentialRampToValueAtTime(40, t + 0.3);
+                gain.gain.setValueAtTime(0.1, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+                osc.start(); osc.stop(t + 0.3);
+            } else if (type === 'win') {
+                [440, 554, 659, 880].forEach((f, i) => {
+                    setTimeout(() => {
+                        if(gameState.isMuted) return;
+                        const o = this.ctx.createOscillator(); const g = this.ctx.createGain();
+                        o.type = 'sine';
+                        o.frequency.value = f; g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                        o.connect(g); g.connect(this.ctx.destination);
+                        o.start(); o.stop(this.ctx.currentTime + 0.3);
+                    }, i * 100);
+                });
+                return;
+            }
+            osc.connect(gain); gain.connect(this.ctx.destination);
+        }
+    };
+
+    // --- OYUN FONKSİYONLARI ---
+    function init() {
+        loadGame();
+        checkDailyBonus();
+        createKeyboard();
+        setupLevel();
+        updateMuteIcon();
+        updateBlindIcon(); // YENİ
+    }
+
+    function loadGame() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(saved) {
+            const parsed = JSON.parse(saved);
+            gameState = { ...gameState, ...parsed };
+        }
+        updateUI();
+    }
+    function saveGame() { localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState)); }
+
+    function updateUI() {
+        document.getElementById("level-display").textContent = gameState.level;
+        document.getElementById("gold-display").textContent = gameState.gold;
+        
+        document.getElementById("stat-played").textContent = gameState.stats.played;
+        document.getElementById("stat-win").textContent = gameState.stats.wins;
+        document.getElementById("stat-streak").textContent = gameState.stats.streak;
+        document.getElementById("stat-max").textContent = gameState.stats.maxStreak;
+        
+        const rate = gameState.stats.played > 0 ? Math.round((gameState.stats.wins / gameState.stats.played) * 100) : 0;
+        document.getElementById("stat-rate").textContent = "%" + rate;
+
+        const currentRank = RANKS.slice().reverse().find(r => gameState.level >= r.l) || RANKS[0];
+        document.getElementById("rank-display").textContent = currentRank.t;
+        document.getElementById("stat-rank-title").textContent = currentRank.t;
+    }
+
+    function toggleMute() {
+        gameState.isMuted = !gameState.isMuted;
+        updateMuteIcon();
+        saveGame();
+    }
+
+    function updateMuteIcon() {
+        const btn = document.getElementById("mute-btn");
+        if(gameState.isMuted) btn.classList.add("muted");
+        else btn.classList.remove("muted");
+    }
+
+    // YENİ: KÖR MOD FONKSİYONLARI
+    function toggleBlindMode() {
+        gameState.blindMode = !gameState.blindMode;
+        updateBlindIcon();
+        applyBlindMode(); // Anlık olarak uygula
+        saveGame();
+        showToast(gameState.blindMode ? "Kör Mod Açıldı" : "Kör Mod Kapandı");
+    }
+
+    function updateBlindIcon() {
+        const btn = document.getElementById("blind-btn");
+        if(gameState.blindMode) btn.classList.add("blind-active");
+        else btn.classList.remove("blind-active");
+    }
+
+    function applyBlindMode() {
+        const hintBox = document.getElementById("hint-container");
+        const hintText = document.getElementById("hint-text");
+        
+        if (gameState.blindMode) {
+            hintText.textContent = "KÖR MOD AKTİF (İPUCU GİZLİ)";
+            hintBox.classList.add("blind-mode-box");
+        } else {
+            hintText.textContent = targetHint;
+            hintBox.classList.remove("blind-mode-box");
+        }
+    }
+
+    function checkDailyBonus() {
+        const today = new Date().toDateString();
+        if(gameState.lastLogin !== today) {
+            setTimeout(() => openModal("daily-modal"), 500);
+        }
+    }
+
+    function claimDaily() {
+        const today = new Date().toDateString();
+        gameState.gold += 50;
+        gameState.lastLogin = today;
+        saveGame();
+        updateUI();
+        closeModal("daily-modal");
+        AudioEngine.play('win');
+        showToast("+50 Enerji Eklendi!");
+    }
+
+    function setupLevel() {
+        wordLen = ((gameState.level - 1) % 5) + 3;
+        
+        document.getElementById("word-len-display").textContent = `${wordLen} HARFLİ`;
+
+        if (wordLen === 3 && gameState.level > 1) {
+            setTimeout(() => showToast("⚡ HIZLI TUR! ⚡"), 500);
+        }
+
+        const list = DB[wordLen] || DB[5];
+        const selection = list[Math.floor(Math.random() * list.length)];
+        
+        targetWord = selection.w;
+        targetHint = selection.h;
+        
+        // YENİ: Seviye başlarken kör mod kontrolü
+        applyBlindMode();
+
+        const tIdx = (gameState.level - 1) % THEMES.length;
+        if(tIdx > 0) document.body.setAttribute("data-theme", THEMES[tIdx]);
+        else document.body.removeAttribute("data-theme");
+
+        closeModal("result-modal");
+        
+        currentGuess = Array(wordLen).fill("");
+        currentGuess[0] = targetWord[0];
+
+        remaining = 6; gameActive = true;
+        
+        document.querySelectorAll(".key").forEach(k => {
+            k.className = "key";
+            if(k.textContent === "GİRİŞ" || k.textContent === "⌫") k.classList.add("key-wide");
+        });
+        
+        createBoard(wordLen);
+        
+        updateActiveRow(0, targetWord[0]);
+        const firstTile = document.getElementById("board").children[0].children[0];
+        firstTile.classList.add("locked-hint");
+
+        startTimerAnimation();
+    }
+
+    function startTimerAnimation() {
+        levelStartTime = Date.now();
+        const bar = document.getElementById("time-bar");
+        bar.style.transition = 'none';
+        bar.style.width = '100%';
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                bar.style.transition = `width ${TIME_BONUS_LIMIT}ms linear`;
+                bar.style.width = '0%';
+            });
+        });
+    }
+
+    function createBoard(len) {
+        const board = document.getElementById("board"); board.innerHTML = "";
+        let size = 60; 
+        if(len === 6) size = 50; 
+        if(len === 7) size = 44;
+        
+        document.documentElement.style.setProperty('--tile-size', size + 'px');
+        
+        for(let i=0; i<6; i++) {
+            const row = document.createElement("div"); row.className = "row";
+            row.style.gridTemplateColumns = `repeat(${len}, 1fr)`;
+            for(let j=0; j<len; j++) {
+                const tile = document.createElement("div"); tile.className = "tile";
+                row.appendChild(tile);
+            }
+            board.appendChild(row);
+        }
+    }
+
+    function createKeyboard() {
+        const rows = ["E R T Y U I O P Ğ Ü", "A S D F G H J K L Ş İ", "Enter Z C V B N M Ö Ç ⌫"];
+        const kb = document.getElementById("keyboard-container"); kb.innerHTML = "";
+        rows.forEach(r => {
+            const div = document.createElement("div"); div.className = "kb-row";
+            r.split(" ").forEach(char => {
+                const btn = document.createElement("button"); btn.className = "key"; btn.textContent = char;
+                let val = char;
+                if(char === "Enter" || char === "⌫") {
+                    btn.classList.add("key-wide");
+                    if(char === "⌫") { val = "Del"; btn.textContent = "⌫"; }
+                    if(char === "Enter") { btn.textContent = "GİRİŞ"; btn.style.fontSize="0.8rem"; }
+                }
+                btn.onclick = (e) => {
+                    createRipple(e, btn);
+                    handleInput(val);
+                };
+                div.appendChild(btn);
+            });
+            kb.appendChild(div);
+        });
+    }
+    
+    function createRipple(e, btn) {
+        const circle = document.createElement("span");
+        const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+        const radius = diameter / 2;
+        circle.style.width = circle.style.height = `${diameter}px`;
+        circle.style.left = `${e.clientX - btn.getBoundingClientRect().left - radius}px`;
+        circle.style.top = `${e.clientY - btn.getBoundingClientRect().top - radius}px`;
+        circle.classList.add("ripple");
+        const ripple = btn.getElementsByClassName("ripple")[0];
+        if (ripple) ripple.remove();
+        btn.appendChild(circle);
+    }
+
+    function handleInput(val) {
+        if(!gameActive) return;
+        
+        if(val === "Enter") {
+            submitGuess();
+        } else if(val === "Del") {
+            let lastFilled = -1;
+            for(let i = wordLen - 1; i > 0; i--) {
+                if(currentGuess[i] !== "") { lastFilled = i; break; }
+            }
+            if (lastFilled !== -1) {
+                currentGuess[lastFilled] = "";
+                updateActiveRow(lastFilled, ""); 
+                AudioEngine.play('click');
+            }
+        } else {
+            let firstEmpty = currentGuess.indexOf("");
+            if(firstEmpty !== -1) { 
+                currentGuess[firstEmpty] = val; 
+                updateActiveRow(firstEmpty, val); 
+                AudioEngine.play('click');
+            }
+        }
+    }
+
+    function updateActiveRow(index, val) {
+        const row = document.querySelectorAll(".row")[6 - remaining];
+        if(!row) return;
+        const tile = row.children[index];
+        tile.textContent = val;
+        tile.removeAttribute("data-state");
+
+        if(val !== "") {
+            tile.setAttribute("data-state", "active");
+        } else {
+            tile.style.boxShadow = ""; 
+            tile.style.borderColor = "";
+            tile.style.transform = "";
+            tile.style.animation = "";
+        }
+    }
+
+    function updateActiveRowForAutofill(index, val) {
+        const row = document.querySelectorAll(".row")[6 - remaining];
+        if(!row) return;
+        const tile = row.children[index];
+        tile.textContent = val;
+        tile.setAttribute("data-state", "autofilled");
+    }
+
+    function shakeRow() {
+        const row = document.querySelectorAll(".row")[6 - remaining];
+        row.classList.remove("shake");
+        void row.offsetWidth; 
+        row.classList.add("shake");
+    }
+
+    function submitGuess() {
+        if(currentGuess.includes("")) { 
+            showToast("Harf Eksik"); 
+            AudioEngine.play('error'); 
+            shakeRow();
+            return; 
+        }
+        
+        const guessStr = currentGuess.join("");
+        const row = document.querySelectorAll(".row")[6 - remaining];
+        const tiles = row.children;
+        let tArr = targetWord.split(""), gArr = [...currentGuess], results = Array(wordLen).fill("absent");
+
+        gArr.forEach((c, i) => { if(c === tArr[i]) { results[i] = "correct"; tArr[i] = null; gArr[i] = null; }});
+        gArr.forEach((c, i) => { if(c !== null && tArr.includes(c)) { results[i] = "present"; tArr[tArr.indexOf(c)] = null; }});
+
+        results.forEach((res, i) => {
+            const tile = tiles[i];
+            setTimeout(() => { 
+                tile.classList.add("flip"); 
+                AudioEngine.play('flip'); 
+            }, i * 150);
+            
+            setTimeout(() => {
+                tile.classList.add(res); 
+                tile.removeAttribute("data-state");
+                tile.classList.remove("locked-hint");
+                tile.style.boxShadow = "";
+                tile.classList.remove("flip");
+                
+                const keyBtn = Array.from(document.querySelectorAll(".key")).find(k => k.textContent === currentGuess[i] || (currentGuess[i]==="İ" && k.textContent==="İ"));
+                if(keyBtn) {
+                    if(res === "correct") keyBtn.className = "key correct";
+                    else if(res === "present" && !keyBtn.classList.contains("correct")) keyBtn.className = "key present";
+                    else if(res === "absent" && !keyBtn.classList.contains("correct") && !keyBtn.classList.contains("present")) keyBtn.className = "key absent";
+                }
+            }, (i * 150) + 300);
+        });
+
+        setTimeout(() => {
+            if(guessStr === targetWord) gameWin();
+            else {
+                remaining--; 
+                
+                let nextGuess = Array(wordLen).fill("");
+                let hasAutofill = false;
+
+                for(let i = 0; i < wordLen; i++) {
+                    if(results[i] === "correct") {
+                        nextGuess[i] = currentGuess[i];
+                        hasAutofill = true;
+                    }
+                }
+
+                if(nextGuess[0] === "") {
+                    nextGuess[0] = targetWord[0];
+                    hasAutofill = true;
+                }
+                
+                currentGuess = nextGuess; 
+
+                if(remaining === 0) {
+                    gameLose();
+                } else {
+                    for(let i=0; i<wordLen; i++) {
+                        if(currentGuess[i] !== "") {
+                            if(i === 0 && results[0] !== "correct") {
+                                updateActiveRow(i, currentGuess[i]);
+                                const newRow = document.querySelectorAll(".row")[6 - remaining];
+                                newRow.children[0].classList.add("locked-hint");
+                            } else {
+                                updateActiveRowForAutofill(i, currentGuess[i]);
+                            }
+                        }
+                    }
+                    setTimeout(() => AudioEngine.play('pop'), 100);
+                }
+            }
+        }, wordLen * 150 + 600);
+    }
+
+    function useHint() {
+        if(!gameActive) return;
+        if(gameState.gold < HINT_COST) { showToast("Enerji Yetersiz!"); AudioEngine.play('error'); return; }
+        
+        let emptyIndices = [];
+        for(let i=0; i<wordLen; i++) if(currentGuess[i] !== targetWord[i]) emptyIndices.push(i);
+
+        if(emptyIndices.length > 0) {
+            gameState.gold -= HINT_COST; saveGame(); updateUI(); AudioEngine.play('click');
+            
+            let idx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+
+            currentGuess[idx] = targetWord[idx];
+            updateActiveRow(idx, targetWord[idx]);
+            const tile = document.querySelectorAll(".row")[6 - remaining].children[idx];
+            tile.style.boxShadow = "0 0 20px #0aff68"; 
+            tile.style.borderColor = "#0aff68";
+        }
+    }
+
+    function eliminateKeys() {
+        if(!gameActive) return;
+        if(gameState.gold < BOMB_COST) { showToast("Enerji Yetersiz!"); AudioEngine.play('error'); return; }
+
+        const allKeys = Array.from(document.querySelectorAll(".key")).filter(k => k.textContent.length === 1 && !"ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ".includes(k.textContent) === false);
+        
+        const candidates = allKeys.filter(k => {
+            const letter = k.textContent;
+            return !targetWord.includes(letter) && 
+                   !k.classList.contains("absent") && 
+                   !k.classList.contains("present") && 
+                   !k.classList.contains("correct");
+        });
+
+        if(candidates.length === 0) { showToast("Elenecek harf yok!"); return; }
+
+        gameState.gold -= BOMB_COST; saveGame(); updateUI(); AudioEngine.play('bomb');
+        
+        let count = Math.min(3, candidates.length);
+        for(let i=0; i<count; i++) {
+            const randomIdx = Math.floor(Math.random() * candidates.length);
+            const keyToEliminate = candidates[randomIdx];
+            keyToEliminate.classList.add("absent");
+            candidates.splice(randomIdx, 1);
+        }
+        showToast("3 Harf Elendi!");
+    }
+
+    function surrender() {
+        if(!gameActive) return;
+        if(confirm("Pes etmek istediğine emin misin? Kelime açıklanacak ve oyunu kaybedeceksin.")) {
+            gameLose();
+        }
+    }
+
+    function gameWin() {
+        gameActive = false; AudioEngine.play('win'); confettiEffect();
+        
+        const timeTaken = Date.now() - levelStartTime;
+        let bonus = 0;
+        if(timeTaken < TIME_BONUS_LIMIT) {
+            bonus = 25; 
+        }
+
+        gameState.level++; 
+        gameState.gold += (WIN_REWARD + bonus);
+        gameState.stats.played++;
+        gameState.stats.wins++;
+        gameState.stats.streak++;
+        if(gameState.stats.streak > gameState.stats.maxStreak) gameState.stats.maxStreak = gameState.stats.streak;
+        saveGame(); updateUI();
+
+        document.getElementById("modal-title").textContent = "SEVİYE TAMAMLANDI";
+        document.getElementById("modal-title").style.color = "var(--neon-green)";
+        document.getElementById("modal-reward").textContent = `+${WIN_REWARD} Enerji`;
+        
+        const tbDiv = document.getElementById("time-bonus");
+        if(bonus > 0) {
+            tbDiv.style.display = "block";
+            tbDiv.textContent = `⚡ Hız Bonusu: +${bonus}`;
+        } else {
+            tbDiv.style.display = "none";
+        }
+
+        // --- YILDIZ HESAPLAMA ---
+        let starCount = 1;
+        if(remaining >= 4) starCount = 3;
+        else if(remaining >= 2) starCount = 2;
+
+        let starsHTML = '';
+        for(let i=0; i<3; i++) {
+            const isActive = i < starCount ? 'active' : '';
+            const delay = i * 0.2; 
+            starsHTML += `<div class="star-icon ${isActive}" style="animation-delay:${delay}s">★</div>`;
+        }
+        document.getElementById("stars-display").innerHTML = starsHTML;
+        
+        document.getElementById("word-reveal").textContent = targetWord;
+        document.querySelector(".btn-primary").innerHTML = "SONRAKİ SEVİYE <span style='font-size:1.2rem'>➜</span>";
+        openModal("result-modal");
+    }
+
+    function gameLose() {
+        gameActive = false; AudioEngine.play('error');
+        
+        gameState.stats.played++;
+        gameState.stats.streak = 0;
+        saveGame(); updateUI();
+
+        document.getElementById("modal-title").textContent = "OYUN BİTTİ";
+        document.getElementById("modal-title").style.color = "var(--neon-red)";
+        document.getElementById("modal-reward").textContent = "";
+        document.getElementById("time-bonus").style.display = "none";
+        
+        document.getElementById("stars-display").innerHTML = "<div style='font-size:4rem'>💔</div>";
+        
+        document.getElementById("word-reveal").textContent = targetWord;
+        document.querySelector(".btn-primary").innerHTML = "TEKRAR DENE <span style='font-size:1.2rem'>↻</span>";
+        openModal("result-modal");
+    }
+
+    function openTDK() {
+        const url = `https://sozluk.gov.tr/?ara=${targetWord.toLocaleLowerCase('tr-TR')}`;
+        window.open(url, '_blank');
+    }
+
+    function nextLevel() { setupLevel(); }
+
+    function showToast(msg) {
+        const t = document.createElement("div"); 
+        t.className = "toast"; 
+        if(msg.includes("!")) t.classList.add("info");
+        t.textContent = msg;
+        document.getElementById("toast-container").appendChild(t);
+        setTimeout(() => t.remove(), 2500);
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = "flex"; }
+    function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
+    function confettiEffect() {
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particles = [];
+        for(let i=0; i<150; i++) particles.push({
+            x: window.innerWidth/2, y: window.innerHeight/2,
+            vx: (Math.random()-0.5)*40, vy: (Math.random()-1)*40-10,
+            c: ['#00f3ff', '#ff00ff', '#0aff68', '#ffee00'][Math.floor(Math.random()*4)],
+            size: Math.random()*8+3
+        });
+        function loop() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            particles.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy; p.vy += 0.8; p.size *= 0.96;
+                ctx.fillStyle = p.c; ctx.shadowBlur=20; ctx.shadowColor=p.c;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+                if(p.size<0.5) particles.splice(i, 1);
+            });
+            if(particles.length) requestAnimationFrame(loop);
+        }
+        loop();
+    }
+
+    document.addEventListener("keydown", (e) => {
+        let key = e.key.toLocaleUpperCase('tr-TR');
+        if(key === "ENTER") handleInput("Enter");
+        else if(key === "BACKSPACE") handleInput("Del");
+        else if("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ".includes(key) && key.length === 1) handleInput(key);
+    });
+
+    init();
+</script>
+</body>
+</html>
