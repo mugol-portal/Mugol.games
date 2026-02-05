@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MuGöl Neon Bubble V3.1 - Fixed</title>
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-green: #0aff00;
+            --neon-yellow: #ffff00;
+            --neon-purple: #bd00ff;
+            --bg-dark: #050510;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; font-family: 'Verdana', 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 20% 30%, #1a1a3a 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, #1a0a2a 0%, transparent 40%);
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden; color: white; touch-action: none;
+        }
+
+        /* Ana Çerçeve */
+        #gameContainer {
+            width: 100%; max-width: 480px; height: 100%; max-height: 95vh;
+            display: flex; flex-direction: column; justify-content: space-between;
+            background: rgba(15, 15, 25, 0.95); border-radius: 16px; padding: 12px;
+            box-shadow: 0 0 35px rgba(0, 243, 255, 0.15), inset 0 0 20px rgba(0,0,0,0.5);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative; backdrop-filter: blur(12px);
+            transition: transform 0.1s;
+        }
+
+        /* Shake Animasyonu */
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        /* Üst Bilgi Paneli */
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .logo { 
+            color: var(--neon-pink); font-size: 22px; font-weight: 900; 
+            text-transform: uppercase; letter-spacing: 1px;
+            text-shadow: 0 0 10px var(--neon-pink), 2px 2px 0 #000;
+        }
+        
+        #stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+        .stat-box { 
+            background: linear-gradient(180deg, rgba(50,50,60,0.9), rgba(30,30,40,0.95)); 
+            border: 2px solid rgba(255,255,255,0.15); padding: 8px; border-radius: 10px; text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .stat-label { font-size: 11px; color: #ccc; font-weight: bold; margin-bottom: 3px; letter-spacing: 0.5px; }
+        .stat-val { font-size: 18px; font-weight: 900; color: #fff; text-shadow: 0 0 8px var(--neon-blue); }
+
+        /* Canvas */
+        #canvasWrapper {
+            flex-grow: 1; background: #000; border: 2px solid #444;
+            box-shadow: inset 0 0 50px #000; border-radius: 12px;
+            position: relative; overflow: hidden; margin-bottom: 12px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        canvas { width: 100%; height: 100%; object-fit: contain; }
+
+        /* Combo Yazısı */
+        #comboText {
+            position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 50px; font-weight: 900; color: var(--neon-yellow); font-style: italic;
+            text-shadow: 0 0 25px var(--neon-yellow), 4px 4px 0 #000; opacity: 0; pointer-events: none; z-index: 20;
+        }
+        .pop-anim { animation: popText 0.6s ease-out forwards; }
+        @keyframes popText { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 50% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
+
+        /* Kontrol Butonları */
+        #controls { display: flex; gap: 8px; justify-content: center; min-height: 75px; }
+        .btn {
+            position: relative; width: 68px; height: 68px;
+            background: linear-gradient(145deg, #2a2a3a, #1a1a25);
+            border: 1px solid rgba(255,255,255,0.3); border-radius: 14px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s; color: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        }
+        .btn:active { transform: scale(0.92); }
+        .btn i { font-size: 26px; margin-bottom: 4px; font-style: normal; filter: drop-shadow(0 0 4px white); }
+        .btn span { font-size: 10px; color: #ddd; font-weight: bold; }
+        
+        .badge {
+            position: absolute; top: -6px; right: -6px; 
+            background: var(--neon-blue); color: #000;
+            width: 22px; height: 22px; border-radius: 50%; 
+            font-size: 12px; font-weight: 900;
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 0 8px var(--neon-blue); border: 2px solid #fff;
+        }
+
+        .btn[data-active="true"][data-type="bomb"] { border-color: var(--neon-pink); box-shadow: 0 0 20px var(--neon-pink); background: rgba(188, 19, 254, 0.3); }
+        .btn[data-active="true"][data-type="rainbow"] { border-color: var(--neon-green); box-shadow: 0 0 20px var(--neon-green); background: rgba(10, 255, 0, 0.3); }
+        .btn[data-active="true"][data-type="lightning"] { border-color: var(--neon-yellow); box-shadow: 0 0 20px var(--neon-yellow); background: rgba(255, 255, 0, 0.3); }
+
+        /* Modal Pencereler */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(8px);
+        }
+        .modal.open { opacity: 1; pointer-events: auto; }
+        .modal-box {
+            background: #12121c; padding: 40px; border-radius: 24px; text-align: center;
+            border: 2px solid var(--neon-blue); box-shadow: 0 0 60px rgba(0, 243, 255, 0.25);
+            transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); min-width: 320px;
+        }
+        .modal.open .modal-box { transform: scale(1); }
+        .modal h2 { color: #fff; margin-bottom: 25px; font-size: 32px; text-shadow: 0 0 15px currentColor; font-weight: 900; letter-spacing: 1px; }
+        .big-btn {
+            background: transparent; color: var(--neon-green); border: 3px solid var(--neon-green);
+            padding: 15px 35px; font-size: 20px; font-weight: 900; border-radius: 30px; cursor: pointer;
+            margin-top: 25px; box-shadow: 0 0 15px rgba(10,255,0,0.2); transition: 0.2s; width: 100%;
+            text-transform: uppercase;
+        }
+        .big-btn:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 30px var(--neon-green); transform: scale(1.05); }
+
+        /* Tavan Barı */
+        .drop-bar-bg { height: 8px; background: #222; margin-top: 6px; border-radius: 4px; overflow: hidden; border: 1px solid #555; }
+        .drop-bar-fill { height: 100%; background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple)); width: 0%; transition: 0.3s; box-shadow: 0 0 10px var(--neon-pink); }
+
+    </style>
+</head>
+<body>
+
+    <div id="gameContainer">
+        <!-- Header -->
+        <div>
+            <div class="header-row">
+                <div class="logo">NEON BUBBLE V3</div>
+                <div style="font-size: 28px; cursor: pointer; filter: drop-shadow(0 0 5px var(--neon-blue));" onclick="toggleSound()">🔊</div>
+            </div>
+            
+            <div id="stats">
+                <div class="stat-box"><div class="stat-label">PUAN</div><div class="stat-val" id="scoreEl">0</div></div>
+                <div class="stat-box"><div class="stat-label">SEVİYE</div><div class="stat-val" id="levelEl">1</div></div>
+                <div class="stat-box"><div class="stat-label">TOPLAR</div><div class="stat-val" id="ballsEl">0</div></div>
+                <div class="stat-box"><div class="stat-label">COMBO</div><div class="stat-val" id="comboEl" style="color:var(--neon-yellow)">x0</div></div>
+            </div>
+
+            <div style="padding: 0 5px;">
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:#fff; font-weight:bold; margin-bottom:2px;">
+                    <span>⚠️ TAVAN DÜŞMESİ</span>
+                    <span id="dropText">5 HAK</span>
+                </div>
+                <div class="drop-bar-bg"><div class="drop-bar-fill" id="dropFill"></div></div>
+            </div>
+        </div>
+
+        <!-- Canvas -->
+        <div id="canvasWrapper">
+            <canvas id="gameCanvas" width="460" height="600"></canvas>
+            <div id="comboText">COMBO!</div>
+        </div>
+
+        <!-- Controls -->
+        <div id="controls">
+            <div class="btn" id="btnBomb" data-type="bomb" onclick="activatePower('bomb')">
+                <i>💣</i><span>BOMBA</span>
+                <div class="badge" id="bombCount">3</div>
+            </div>
+            <div class="btn" id="btnRainbow" data-type="rainbow" onclick="activatePower('rainbow')">
+                <i>🌈</i><span>RENK</span>
+                <div class="badge" id="rainbowCount">2</div>
+            </div>
+             <div class="btn" id="btnLightning" data-type="lightning" onclick="activatePower('lightning')">
+                <i>⚡</i><span>YILDIRIM</span>
+                <div class="badge" id="lightningCount">1</div>
+            </div>
+            <div class="btn" onclick="swapBall()">
+                <i>🔄</i><span>DEĞİŞ</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="modalGameOver">
+        <div class="modal-box">
+            <h2 style="color: #ff4444;">OYUN BİTTİ</h2>
+            <div style="font-size: 60px; margin: 20px;">💀</div>
+            <p style="color:#bbb; font-size:16px; margin-bottom:5px; font-weight:bold;">TOPLAM PUAN</p>
+            <p style="font-size: 40px; color:white; font-weight:900;" id="finalScore">0</p>
+            <button class="big-btn" onclick="restartLevel()">TEKRAR DENE</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modalLevelUp">
+        <div class="modal-box">
+            <h2 style="color: var(--neon-green);">SEVİYE GEÇİLDİ!</h2>
+            <div style="font-size: 60px; margin: 20px;">⭐</div>
+            <p style="color:#bbb; font-size:16px; font-weight:bold;">BONUS PUAN</p>
+            <p style="font-size: 40px; color:var(--neon-blue); font-weight:900;" id="bonusScore">0</p>
+            <button class="big-btn" onclick="nextLevel()">SONRAKİ SEVİYE</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const R = 20; // Top Yarıçapı
+        const COLS = 11;
+        const CANVAS_W = 460;
+        const CANVAS_H = 600;
+
+        const COLORS = [
+            '#FF0055', // Neon Kırmızı
+            '#00FF99', // Neon Yeşil
+            '#00CCFF', // Neon Mavi
+            '#FFFF00', // Neon Sarı
+            '#BD00FF', // Neon Mor
+            '#FF9900'  // Neon Turuncu
+        ];
+
+        let state = {
+            active: false,
+            waitingForLevelEnd: false, // Yeni durum: Seviye bitti ama animasyon bekleniyor
+            score: 0,
+            level: 1,
+            grid: [], 
+            particles: [],
+            currBall: null,
+            nextBall: null,
+            shooting: false,
+            combo: 0,
+            missedShots: 0,
+            dropLimit: 5,
+            powers: { bomb: 3, rainbow: 2, lightning: 1 },
+            activePower: null 
+        };
+
+        let mouse = { x: CANVAS_W/2, y: 300 };
+        let audioCtx = null;
+        let soundOn = true;
+
+        window.onload = () => { initGame(); loop(); };
+
+        function initGame() { startLevel(1); }
+
+        function getLevelConfig(lvl) {
+            let colors = 3 + Math.floor((lvl-1)/3);
+            if(colors > 6) colors = 6;
+            let rows = 4 + Math.floor((lvl-1)/2);
+            if(rows > 8) rows = 8;
+            return { colors, rows, stoneChance: lvl * 0.03 };
+        }
+
+        function startLevel(lvl) {
+            state.level = lvl;
+            state.active = true;
+            state.waitingForLevelEnd = false;
+            state.grid = [];
+            state.combo = 0;
+            state.missedShots = 0;
+            state.activePower = null;
+            
+            // Power-up miktarları
+            state.powers.bomb = 3; 
+            state.powers.rainbow = 2;
+            state.powers.lightning = 1;
+
+            updateUI();
+            closeModals();
+
+            const cfg = getLevelConfig(lvl);
+            state.dropLimit = Math.max(3, 6 - Math.floor(lvl/4));
+
+            // Grid Oluştur
+            for(let r=0; r<cfg.rows; r++) {
+                state.grid[r] = [];
+                let colsInRow = (r % 2 === 0) ? COLS : COLS - 1;
+                let xOff = (r % 2 === 0) ? 0 : R;
+                
+                for(let c=0; c<colsInRow; c++) {
+                    let type = 'normal';
+                    let color = COLORS[Math.floor(Math.random() * cfg.colors)];
+                    if(Math.random() < cfg.stoneChance) { type = 'stone'; color = '#444'; }
+                    
+                    state.grid[r][c] = {
+                        x: c * 2 * R + R + xOff + 10,
+                        y: r * 2 * R + R + 10,
+                        c: color, type: type
+                    };
+                }
+            }
+
+            state.currBall = spawnBall(cfg.colors);
+            state.nextBall = spawnBall(cfg.colors);
+        }
+
+        function spawnBall(colorLimit) {
+            const availColors = COLORS.slice(0, colorLimit);
+            return {
+                x: CANVAS_W / 2, y: 540,
+                c: availColors[Math.floor(Math.random() * availColors.length)],
+                type: 'normal', vx: 0, vy: 0
+            };
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        function update() {
+            // Parçacıkları her zaman güncelle (Oyun bitse bile patlama görünsün)
+            for(let i = state.particles.length - 1; i >= 0; i--) {
+                let p = state.particles[i];
+                p.x += p.vx; p.y += p.vy; p.life -= 0.03; // Biraz daha yavaş sönümlensin
+                if(p.life <= 0) state.particles.splice(i, 1);
+            }
+
+            // Eğer oyun aktif değilse veya seviye sonu animasyonu bekleniyorsa top hareketlerini durdur
+            if(!state.active || state.waitingForLevelEnd) return;
+
+            // Mermi
+            if(state.shooting && state.currBall) {
+                const b = state.currBall;
+                const steps = 8; // Daha akıcı çarpışma
+                for(let i=0; i<steps; i++) {
+                    b.x += b.vx / steps;
+                    b.y += b.vy / steps;
+
+                    // Duvar
+                    if(b.x < R || b.x > CANVAS_W - R) {
+                        b.vx *= -1;
+                        b.x = Math.max(R, Math.min(CANVAS_W-R, b.x));
+                    }
+                    
+                    // Tavan
+                    if(b.y < R) { snapBubble(); return; }
+
+                    // Çarpışma
+                    if(checkCollision(b)) { snapBubble(); return; }
+                }
+            }
+        }
+
+        function checkCollision(ball) {
+            for(let r=0; r<state.grid.length; r++) {
+                if(!state.grid[r]) continue;
+                for(let c=0; c<state.grid[r].length; c++) {
+                    let t = state.grid[r][c];
+                    if(t) {
+                        let dist = Math.hypot(ball.x - t.x, ball.y - t.y);
+                        if(dist < R * 1.85) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function snapBubble() {
+            state.shooting = false;
+            const b = state.currBall;
+            playSound('thud');
+
+            // --- POWER UP LOGIC ---
+            if(b.type === 'lightning') {
+                let r = Math.round((b.y - 10) / (2 * R));
+                r = Math.max(0, Math.min(state.grid.length, r));
+                shakeScreen(); playSound('boom');
+                let destroyed = 0;
+                let targetY = b.y;
+                for(let row=0; row<state.grid.length; row++) {
+                    if(!state.grid[row]) continue;
+                    for(let col=0; col<state.grid[row].length; col++) {
+                        let bub = state.grid[row][col];
+                        if(bub && Math.abs(bub.y - targetY) < R * 3) {
+                            createParticles(bub.x, bub.y, '#ffff00');
+                            state.grid[row][col] = null;
+                            destroyed++;
+                        }
+                    }
+                }
+                state.score += destroyed * 20;
+                dropFloatingBubbles();
+                finishTurn();
+                return;
+            }
+
+            if(b.type === 'bomb') {
+                explodeArea(b.x, b.y, R * 4.5);
+                finishTurn();
+                return;
+            }
+
+            // --- STANDART YERLEŞTİRME ---
+            let r = Math.round((b.y - 10) / (2 * R));
+            if(r < 0) r = 0;
+            if(!state.grid[r]) state.grid[r] = [];
+
+            let isEven = (r % 2 === 0);
+            let xOff = isEven ? 0 : R;
+            let c = Math.round((b.x - 10 - R - xOff) / (2 * R));
+            let maxCols = isEven ? COLS : COLS - 1;
+            c = Math.max(0, Math.min(maxCols - 1, c));
+
+            if(state.grid[r][c]) {
+                r++; 
+                if(!state.grid[r]) state.grid[r] = [];
+                isEven = (r % 2 === 0);
+                xOff = isEven ? 0 : R;
+                c = Math.round((b.x - 10 - R - xOff) / (2 * R));
+                maxCols = isEven ? COLS : COLS - 1;
+                c = Math.max(0, Math.min(maxCols - 1, c));
+            }
+
+            state.grid[r][c] = {
+                x: c * 2 * R + R + (r%2===0?0:R) + 10,
+                y: r * 2 * R + R + 10,
+                c: b.c, type: b.type
+            };
+
+            // EŞLEŞME KONTROLLERİ
+            if(b.type === 'rainbow') {
+                const neighbors = getNeighbors(r, c);
+                let targetColor = null;
+                for(let n of neighbors) {
+                    if(state.grid[n.r] && state.grid[n.r][n.c] && state.grid[n.r][n.c].type !== 'stone') {
+                        targetColor = state.grid[n.r][n.c].c;
+                        break;
+                    }
+                }
+                if(targetColor) {
+                    state.grid[r][c].c = targetColor;
+                    state.grid[r][c].type = 'normal';
+                    const matches = findMatches(r, c, targetColor);
+                    popBubbles(matches);
+                    state.combo++; showCombo(state.combo); state.missedShots = 0;
+                } else {
+                    state.missedShots++;
+                }
+            } else {
+                const matches = findMatches(r, c, b.c);
+                if(matches.length >= 3) {
+                    popBubbles(matches);
+                    state.combo++; showCombo(state.combo); state.missedShots = 0;
+                } else {
+                    state.combo = 0; state.missedShots++;
+                }
+            }
+
+            dropFloatingBubbles();
+            finishTurn();
+        }
+
+        function findMatches(r, c, color) {
+            let matches = [];
+            let queue = [[r,c]];
+            let visited = new Set([r+","+c]);
+            matches.push([r,c]);
+            let head = 0;
+            while(head < matches.length) {
+                let [currR, currC] = matches[head++];
+                let nbs = getNeighbors(currR, currC);
+                for(let n of nbs) {
+                    let key = n.r+","+n.c;
+                    if(!visited.has(key)) {
+                        let t = state.grid[n.r] && state.grid[n.r][n.c];
+                        if(t && t.type !== 'stone' && t.c === color) {
+                            visited.add(key); matches.push([n.r, n.c]);
+                        }
+                    }
+                }
+            }
+            return matches;
+        }
+
+        function getNeighbors(r, c) {
+            let isEven = (r % 2 === 0);
+            let offsets = isEven ? 
+                [[-1,-1], [-1,0], [0,-1], [0,1], [1,-1], [1,0]] :
+                [[-1,0], [-1,1], [0,-1], [0,1], [1,0], [1,1]];
+            let res = [];
+            for(let o of offsets) res.push({r: r+o[0], c: c+o[1]});
+            return res;
+        }
+
+        function popBubbles(list) {
+            if(list.length > 0) playSound('pop');
+            list.forEach(([r, c]) => {
+                let b = state.grid[r][c];
+                createParticles(b.x, b.y, b.c); // Parçacık oluştur
+                state.grid[r][c] = null; // Grid'den sil
+                state.score += 10 * (state.combo + 1);
+            });
+        }
+
+        function explodeArea(x, y, radius) {
+            playSound('boom'); shakeScreen();
+            for(let r=0; r<state.grid.length; r++) {
+                if(!state.grid[r]) continue;
+                for(let c=0; c<state.grid[r].length; c++) {
+                    let b = state.grid[r][c];
+                    if(b && Math.hypot(b.x - x, b.y - y) < radius) {
+                        createParticles(b.x, b.y, b.c);
+                        state.grid[r][c] = null;
+                        state.score += 20;
+                    }
+                }
+            }
+            dropFloatingBubbles();
+        }
+
+        function dropFloatingBubbles() {
+            let connected = new Set();
+            let queue = [];
+            if(state.grid[0]) {
+                for(let c=0; c<state.grid[0].length; c++) {
+                    if(state.grid[0][c]) { queue.push([0, c]); connected.add("0,"+c); }
+                }
+            }
+            let head = 0;
+            while(head < queue.length) {
+                let [r, c] = queue[head++];
+                let nbs = getNeighbors(r, c);
+                for(let n of nbs) {
+                    if(state.grid[n.r] && state.grid[n.r][n.c] && !connected.has(n.r+","+n.c)) {
+                        connected.add(n.r+","+n.c); queue.push([n.r, n.c]);
+                    }
+                }
+            }
+            let dropped = 0;
+            for(let r=0; r<state.grid.length; r++) {
+                if(!state.grid[r]) continue;
+                for(let c=0; c<state.grid[r].length; c++) {
+                    if(state.grid[r][c] && !connected.has(r+","+c)) {
+                        createParticles(state.grid[r][c].x, state.grid[r][c].y, state.grid[r][c].c);
+                        state.grid[r][c] = null; dropped++;
+                    }
+                }
+            }
+            if(dropped > 0) { state.score += dropped * 50; playSound('fall'); }
+        }
+
+        function finishTurn() {
+            if(state.activePower) {
+                document.querySelectorAll('.btn').forEach(b => b.setAttribute('data-active', 'false'));
+                state.activePower = null;
+            }
+            
+            if(state.missedShots >= state.dropLimit) { 
+                addTopRow(); 
+                state.missedShots = 0; 
+            }
+            
+            updateUI();
+            
+            // Oyun Durumunu Kontrol Et (Gecikmeli)
+            if(checkGameState()) return;
+
+            if(state.active) {
+                state.currBall = state.nextBall;
+                const cfg = getLevelConfig(state.level);
+                state.nextBall = spawnBall(cfg.colors);
+            }
+        }
+
+        function addTopRow() {
+            playSound('slide'); shakeScreen();
+            for(let r = state.grid.length - 1; r >= 0; r--) {
+                state.grid[r+1] = state.grid[r];
+                if(state.grid[r+1]) {
+                    let isEven = ((r+1) % 2 === 0);
+                    let xOff = isEven ? 0 : R;
+                    state.grid[r+1].forEach((b, c) => {
+                        if(b) { b.y += 2*R; b.x = c * 2 * R + R + xOff + 10; }
+                    });
+                }
+            }
+            state.grid[0] = [];
+            const cfg = getLevelConfig(state.level);
+            for(let c=0; c<COLS; c++) {
+                let type = (Math.random() < cfg.stoneChance) ? 'stone' : 'normal';
+                let color = COLORS[Math.floor(Math.random() * cfg.colors)];
+                state.grid[0][c] = {
+                    x: c * 2 * R + R + 10, y: R + 10,
+                    c: (type === 'stone' ? '#444' : color), type: type
+                };
+            }
+        }
+
+        function checkGameState() {
+            let hasBubble = false;
+            for(let r of state.grid) if(r) for(let b of r) if(b) hasBubble = true;
+            
+            if(!hasBubble) {
+                // KAZANMA DURUMU
+                state.waitingForLevelEnd = true; // Girişi engelle ama render'ı sürdür
+                
+                // 1 Saniye bekle ki patlama efekti görünsün
+                setTimeout(() => {
+                    state.active = false;
+                    state.waitingForLevelEnd = false;
+                    let bonus = (state.dropLimit - state.missedShots) * 500;
+                    state.score += bonus;
+                    document.getElementById('bonusScore').innerText = bonus;
+                    document.getElementById('modalLevelUp').classList.add('open');
+                    playSound('win');
+                }, 1000); 
+                return true;
+            }
+            
+            let lost = false;
+            for(let r of state.grid) if(r) for(let b of r) if(b && b.y > 500) lost = true;
+            if(lost) {
+                state.active = false;
+                document.getElementById('finalScore').innerText = state.score;
+                document.getElementById('modalGameOver').classList.add('open');
+                playSound('lose');
+                return true;
+            }
+            return false;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+
+            // Grid
+            state.grid.forEach(row => { if(row) row.forEach(b => { if(b) drawBubble(b); }); });
+
+            // Particles
+            state.particles.forEach(p => {
+                ctx.globalAlpha = p.life; ctx.fillStyle = p.c;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+                ctx.globalAlpha = 1;
+            });
+
+            // Aim Line
+            if(state.active && !state.waitingForLevelEnd && !state.shooting && state.currBall) drawRaycastAim();
+
+            // Balls
+            if(state.currBall && !state.waitingForLevelEnd) {
+                let b = state.currBall;
+                let drawX = state.shooting ? b.x : CANVAS_W/2;
+                let drawY = state.shooting ? b.y : 540;
+                drawBubble({x:drawX, y:drawY, c:b.c, type:b.type}, true);
+            }
+            if(state.nextBall && !state.waitingForLevelEnd) {
+                drawBubble({...state.nextBall, x:380, y:560}, false);
+                ctx.fillStyle = '#888'; ctx.font = 'bold 10px Verdana';
+                ctx.textAlign = 'center'; ctx.fillText('SONRAKİ', 380, 590);
+            }
+        }
+
+        function drawBubble(b, glow=false) {
+            ctx.beginPath(); ctx.arc(b.x, b.y, R-2, 0, Math.PI*2);
+
+            if(b.type === 'stone') {
+                ctx.fillStyle = '#333'; ctx.fill(); ctx.strokeStyle = '#666'; ctx.stroke();
+                ctx.moveTo(b.x-6, b.y-6); ctx.lineTo(b.x+6, b.y+6); ctx.stroke();
+                ctx.moveTo(b.x+6, b.y-6); ctx.lineTo(b.x-6, b.y+6); ctx.stroke();
+            } else if(b.type === 'bomb') {
+                ctx.fillStyle = '#000'; ctx.fill(); ctx.strokeStyle = '#f00'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.fillStyle = '#f00'; ctx.font = '20px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('💣', b.x, b.y);
+            } else if(b.type === 'lightning') {
+                ctx.fillStyle = '#ffaa00'; ctx.fill(); ctx.strokeStyle = '#ffff00'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.fillStyle = '#fff'; ctx.font = '20px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('⚡', b.x, b.y);
+                if(glow) { ctx.shadowBlur = 15; ctx.shadowColor = '#ffff00'; ctx.stroke(); ctx.shadowBlur = 0; }
+            } else if(b.type === 'rainbow') {
+                let grad = ctx.createRadialGradient(b.x, b.y, 2, b.x, b.y, R);
+                grad.addColorStop(0, '#fff'); grad.addColorStop(0.3, '#f0f'); grad.addColorStop(0.6, '#0ff'); grad.addColorStop(1, '#ff0');
+                ctx.fillStyle = grad; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+                if(glow) { ctx.shadowBlur = 15; ctx.shadowColor = '#fff'; ctx.stroke(); ctx.shadowBlur = 0; }
+            } else {
+                ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fill();
+                ctx.shadowBlur = 12; ctx.shadowColor = b.c;
+                ctx.strokeStyle = b.c; ctx.lineWidth = 2.5; ctx.stroke(); ctx.shadowBlur = 0;
+                ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.beginPath(); ctx.arc(b.x-5, b.y-5, 5, 0, Math.PI*2); ctx.fill();
+            }
+        }
+
+        function drawRaycastAim() {
+            let sx = CANVAS_W/2, sy = 540;
+            let angle = Math.atan2(mouse.y - sy, mouse.x - sx);
+            
+            if(angle > -0.2 || angle < -2.94) return;
+
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            
+            if(state.currBall.type === 'rainbow') ctx.strokeStyle = '#fff';
+            else if(state.currBall.type === 'bomb') ctx.strokeStyle = '#f00';
+            else if(state.currBall.type === 'lightning') ctx.strokeStyle = '#ff0';
+            else ctx.strokeStyle = state.currBall.c;
+            
+            ctx.setLineDash([6, 6]);
+
+            let x = sx, y = sy;
+            let vx = Math.cos(angle);
+            let vy = Math.sin(angle);
+            
+            ctx.moveTo(x, y);
+            
+            let totalDist = 0;
+            const maxDist = 800; 
+
+            while(totalDist < maxDist) {
+                x += vx * 10;
+                y += vy * 10;
+                totalDist += 10;
+
+                if(x < R || x > CANVAS_W - R) {
+                    vx = -vx;
+                    x = Math.max(R, Math.min(CANVAS_W-R, x));
+                }
+                ctx.lineTo(x, y);
+                if(y < R + 20) break; 
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.beginPath(); ctx.fillStyle = ctx.strokeStyle; ctx.arc(x, y, 4, 0, Math.PI*2); ctx.fill();
+        }
+
+        function activatePower(type) {
+            if(!state.active || state.waitingForLevelEnd) return;
+            const btn = document.querySelector(`.btn[data-type="${type}"]`);
+            if(state.activePower === type) {
+                state.activePower = null;
+                btn.setAttribute('data-active', 'false');
+                state.currBall.type = 'normal';
+            } else {
+                if(state.powers[type] > 0) {
+                    document.querySelectorAll('.btn').forEach(b => b.setAttribute('data-active', 'false'));
+                    state.activePower = type;
+                    btn.setAttribute('data-active', 'true');
+                    state.currBall.type = type;
+                    state.powers[type]--;
+                    updateUI();
+                }
+            }
+        }
+
+        function swapBall() {
+            if(!state.active || state.shooting || state.waitingForLevelEnd) return;
+            let tmp = state.currBall; state.currBall = state.nextBall; state.nextBall = tmp;
+            if(state.activePower) state.currBall.type = state.activePower;
+            playSound('swap');
+        }
+
+        const getPos = (e) => {
+            const r = canvas.getBoundingClientRect();
+            const cx = e.touches ? e.touches[0].clientX : e.clientX;
+            const cy = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: (cx - r.left) * (CANVAS_W/r.width), y: (cy - r.top) * (CANVAS_H/r.height) };
+        };
+        ['mousemove','touchmove'].forEach(e=>canvas.addEventListener(e, ev=>{ ev.preventDefault(); const p=getPos(ev); mouse.x=p.x; mouse.y=p.y; }, {passive:false}));
+        ['mouseup','touchend'].forEach(e=>canvas.addEventListener(e, ev=>{ 
+            ev.preventDefault(); 
+            if(!state.active || state.shooting || state.waitingForLevelEnd) return;
+            let angle = Math.atan2(mouse.y - 540, mouse.x - CANVAS_W/2);
+            if(angle > -0.2 || angle < -2.94) return;
+            state.shooting = true;
+            let speed = 16;
+            state.currBall.vx = Math.cos(angle) * speed;
+            state.currBall.vy = Math.sin(angle) * speed;
+            playSound('shoot');
+        }));
+
+        function updateUI() {
+            document.getElementById('scoreEl').innerText = state.score;
+            document.getElementById('levelEl').innerText = state.level;
+            document.getElementById('bombCount').innerText = state.powers.bomb;
+            document.getElementById('rainbowCount').innerText = state.powers.rainbow;
+            document.getElementById('lightningCount').innerText = state.powers.lightning;
+            
+            let cnt = 0; state.grid.forEach(r => { if(r) r.forEach(b => { if(b) cnt++; }); });
+            document.getElementById('ballsEl').innerText = cnt;
+
+            let left = state.dropLimit - state.missedShots;
+            document.getElementById('dropText').innerText = left + " HAK";
+            document.getElementById('dropFill').style.width = ((left/state.dropLimit)*100) + "%";
+        }
+
+        function createParticles(x, y, color) {
+            for(let i=0; i<15; i++) {
+                state.particles.push({
+                    x:x, y:y, vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10,
+                    c: color, life: 1, size: Math.random()*3+2
+                });
+            }
+        }
+        function shakeScreen() {
+            const el = document.getElementById('gameContainer');
+            el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+        }
+        function showCombo(val) {
+            if(val > 1) {
+                const el = document.getElementById('comboText');
+                el.innerText = val + "x COMBO!";
+                el.classList.remove('pop-anim'); void el.offsetWidth; el.classList.add('pop-anim');
+                document.getElementById('comboEl').innerText = "x" + val;
+            } else document.getElementById('comboEl').innerText = "x0";
+        }
+        function nextLevel() { startLevel(state.level + 1); }
+        function restartLevel() { startLevel(state.level); }
+        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('open')); }
+        function toggleSound() { soundOn = !soundOn; }
+        
+        function playSound(type) {
+            if(!soundOn) return;
+            if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            osc.connect(g); g.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+            if(type === 'shoot') {
+                osc.type='triangle'; osc.frequency.setValueAtTime(300,now); osc.frequency.linearRampToValueAtTime(100,now+0.1);
+                g.gain.setValueAtTime(0.1,now); g.gain.linearRampToValueAtTime(0,now+0.1);
+                osc.start(now); osc.stop(now+0.1);
+            } else if(type === 'pop') {
+                osc.frequency.setValueAtTime(500+Math.random()*300,now);
+                g.gain.setValueAtTime(0.1,now); g.gain.exponentialRampToValueAtTime(0.01,now+0.1);
+                osc.start(now); osc.stop(now+0.1);
+            } else if(type === 'thud') {
+                osc.type='square'; osc.frequency.setValueAtTime(100,now);
+                g.gain.setValueAtTime(0.05,now); g.gain.linearRampToValueAtTime(0,now+0.05);
+                osc.start(now); osc.stop(now+0.05);
+            } else if(type === 'boom') {
+                osc.type='sawtooth'; osc.frequency.setValueAtTime(100,now); osc.frequency.exponentialRampToValueAtTime(10,now+0.4);
+                g.gain.setValueAtTime(0.2,now); g.gain.linearRampToValueAtTime(0,now+0.4);
+                osc.start(now); osc.stop(now+0.4);
+            } else if(type === 'win') {
+                 osc.type='sine'; osc.frequency.setValueAtTime(400,now); osc.frequency.linearRampToValueAtTime(800,now+0.4);
+                 g.gain.setValueAtTime(0.1,now); g.gain.linearRampToValueAtTime(0,now+0.6);
+                 osc.start(now); osc.stop(now+0.6);
+            }
+        }
+    </script>
+</body>
+</html>
