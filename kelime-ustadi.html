@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kelime Üstadı</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-purple: #bc13fe;
+            --neon-green: #0aff68;
+            --bg-deep: #050510;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- ARKA PLAN EFEKTLERİ --- */
+        .universe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* Hafif Vignette (Köşe Karartma) */
+        .universe::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, #000 120%);
+            z-index: 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg);
+            animation: gridMove 20s linear infinite;
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%);
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        }
+
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+
+        .nebula-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--neon-purple), transparent 70%);
+            top: -20%;
+            left: -10%;
+        }
+
+        .nebula-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--neon-blue), transparent 70%);
+            bottom: -10%;
+            right: -10%;
+            animation-delay: -5s;
+        }
+
+        /* --- CONTAINER --- */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* --- BAŞLIK --- */
+        .main-title {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: titleEntrance 1s ease-out;
+            position: relative;
+        }
+
+        .main-title h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            text-shadow: 
+                0 0 10px rgba(0, 243, 255, 0.5),
+                0 0 20px rgba(0, 243, 255, 0.3),
+                0 0 60px rgba(0, 243, 255, 0.1);
+        }
+
+        .main-title p {
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            color: var(--neon-blue);
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        /* --- OYUN KARTLARI (GELİŞMİŞ ARAYÜZ) --- */
+        .games-grid {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            width: 100%;
+            max-width: 1000px;
+            perspective: 1000px;
+        }
+
+        .game-card {
+            flex: 1;
+            min-width: 300px;
+            max-width: 450px;
+            
+            /* Glassmorphism Upgrade */
+            background: linear-gradient(160deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255,255,255,0.02);
+            
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Hover Efekti: Kart Parlaması */
+        .game-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 24px;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.06), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .game-card:hover::after {
+            opacity: 1;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* İkonlar */
+        .game-icon {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.3));
+            transition: transform 0.4s ease;
+        }
+
+        .game-card:hover .game-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Başlıklar */
+        .game-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+            background: linear-gradient(to right, #fff, #ccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Açıklamalar */
+        .game-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.5;
+            margin-bottom: 30px;
+            flex-grow: 1;
+            font-weight: 300;
+        }
+
+        /* Modern Buton */
+        .play-button {
+            position: relative;
+            background: transparent;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 14px 40px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            width: 100%;
+            max-width: 200px;
+            z-index: 2;
+        }
+
+        .play-button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            opacity: 0.1;
+            z-index: -1;
+            transition: opacity 0.3s;
+        }
+
+        .game-card:hover .play-button {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .game-card:hover .play-button::before {
+            opacity: 1;
+        }
+        
+        /* Özel Kart Renkleri */
+        .game-card:nth-child(1):hover .game-title {
+            text-shadow: 0 0 20px var(--neon-blue);
+        }
+        
+        .game-card:nth-child(2):hover .game-title {
+            text-shadow: 0 0 20px var(--neon-purple);
+        }
+
+        .game-card:nth-child(2):hover .play-button::before {
+             background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+        }
+        .game-card:nth-child(2):hover .play-button {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 20px rgba(188, 19, 254, 0.2);
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.85rem;
+        }
+
+        .privacy-link {
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            margin-left: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .privacy-link:hover {
+            color: var(--neon-blue);
+            border-color: var(--neon-blue);
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: #111;
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.15);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            padding: 40px;
+            position: relative;
+            color: #ddd;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px; right: 20px;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .modal-title { color: var(--neon-blue); margin-bottom: 20px; font-size: 1.5rem; }
+        .modal-text h3 { color: #fff; margin: 20px 0 10px 0; font-size: 1.1rem; }
+        .modal-text p { font-size: 0.95rem; line-height: 1.6; color: #aaa; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- MOBİL OPTİMİZASYON (2 SÜTUN KORUNDU) --- */
+        @media (max-width: 768px) {
+            .main-title { margin-bottom: 30px; }
+            .main-title img { width: 100px !important; height: 100px !important; }
+            
+            .games-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr; /* Yan yana iki kutu */
+                gap: 12px;
+                padding: 0 10px;
+            }
+
+            .game-card {
+                min-width: 0;
+                padding: 20px 12px; /* Daha kompakt */
+                border-radius: 16px;
+                background: rgba(255,255,255,0.03); /* Mobilde daha hafif */
+            }
+
+            .game-icon {
+                font-size: 2.2rem;
+                margin-bottom: 8px;
+            }
+
+            .game-title {
+                font-size: 1rem;
+                margin-bottom: 5px;
+            }
+
+            .game-description {
+                font-size: 0.75rem;
+                margin-bottom: 12px;
+                line-height: 1.3;
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .play-button {
+                padding: 8px 0;
+                font-size: 0.8rem;
+                border-radius: 8px;
+                width: 100%;
+                background: rgba(255,255,255,0.1); /* Mobilde belirgin olsun */
+            }
+        }
+        
+        /* Parçacık Efekti */
+        .particle {
+            position: fixed;
+            width: 4px; height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat 1s ease-out forwards;
+            z-index: 100;
+            box-shadow: 0 0 10px var(--color);
+        }
+        @keyframes particleFloat {
+            to { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Arka Plan -->
+    <div class="universe">
+        <div class="grid-overlay"></div>
+        <div class="nebula nebula-1"></div>
+        <div class="nebula nebula-2"></div>
+    </div>
+
+    <!-- Ana İçerik -->
+    <div class="container">
+        <div class="main-title">
+            <div style="margin-bottom: 20px;">
+                <!-- Logo Görseli (Değiştirilmedi) -->
+                <img src="kelime/kelime_ustadi_logo.png" alt="Kelime Üstadı Logo" style="width: 180px; height: 180px; object-fit: contain; filter: drop-shadow(0 0 30px rgba(0, 243, 255, 0.4)); animation: logoFloat 4s ease-in-out infinite;">
+            </div>
+            <h1>Kelime Üstadı</h1>
+            <p>ZEKANIN SINIRLARINI ZORLA</p>
+        </div>
+
+        <div class="games-grid" id="gamesGrid">
+            <!-- Oyun 1: Kelime Tahmin -->
+            <div class="game-card" onclick="startGame('kelime-tahmin')">
+                <div class="game-icon">🎯</div>
+                <h2 class="game-title">Kelime Tahmin</h2>
+                <p class="game-description">
+                    6 denemede doğru kelimeyi bul! Stratejini kur.
+                </p>
+                <div class="play-button">Oyna</div>
+            </div>
+
+            <!-- Oyun 2: Kelime Avı -->
+            <div class="game-card" onclick="startGame('kelime-avi')">
+                <div class="game-icon">🔍</div>
+                <h2 class="game-title">Kelime Avı</h2>
+                <p class="game-description">
+                    Izgaradaki gizli kelimeleri keşfet! Zamana meydan oku.
+                </p>
+                <div class="play-button">Oyna</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>
+            © 2026 Kelime Üstadı 
+            <span onclick="togglePrivacy()" class="privacy-link">Gizlilik Politikası</span>
+        </p>
+    </div>
+
+    <!-- GİZLİLİK POLİTİKASI MODALI -->
+    <div id="privacyModal" class="modal-overlay" onclick="closePrivacyOutside(event)">
+        <div class="modal-content">
+            <span class="close-modal" onclick="togglePrivacy()">&times;</span>
+            <h2 class="modal-title">Gizlilik Politikası</h2>
+            <div class="modal-text">
+                <p>Kelime Üstadı gizliliğinize önem vermektedir.</p>
+                <h3>1. Veri Toplama</h3>
+                <p>Hiçbir kişisel veri sunucularımızda saklanmaz. Tüm oyun ilerlemeniz cihazınızda (Local Storage) tutulur.</p>
+                <h3>2. Çerezler</h3>
+                <p>Sadece oyun ayarlarını hatırlamak için yerel depolama kullanılır.</p>
+                <br>
+                <p style="opacity: 0.6; font-size: 0.8rem">Son Güncelleme: 2026</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mouse hareketi ile kart parlaması efekti
+        document.getElementById('gamesGrid').onmousemove = e => {
+            for(const card of document.getElementsByClassName("game-card")) {
+                const rect = card.getBoundingClientRect(),
+                      x = e.clientX - rect.left,
+                      y = e.clientY - rect.top;
+
+                card.style.setProperty("--mouse-x", `${x}px`);
+                card.style.setProperty("--mouse-y", `${y}px`);
+            };
+        }
+
+        function startGame(gameType) {
+            createParticles(event);
+            setTimeout(() => {
+                if (gameType === 'kelime-tahmin') {
+                    window.location.href = 'kelime/kelime_tahmini.html';
+                } else if (gameType === 'kelime-avi') {
+                    window.location.href = 'kelime/kelime_avi.html';
+                }
+            }, 400);
+        }
+
+        function createParticles(event) {
+            const colors = ['#00f3ff', '#ff00ff', '#bc13fe', '#0aff68'];
+            // Tıklama koordinatı veya merkezden patlama
+            const x = event.clientX || window.innerWidth / 2;
+            const y = event.clientY || window.innerHeight / 2;
+
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.background = color;
+                particle.style.setProperty('--color', color);
+                
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 150 + 50;
+                
+                particle.style.setProperty('--tx', Math.cos(angle) * velocity + 'px');
+                particle.style.setProperty('--ty', Math.sin(angle) * velocity + 'px');
+                
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 1000);
+            }
+        }
+
+        function togglePrivacy() {
+            const modal = document.getElementById('privacyModal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function closePrivacyOutside(event) {
+            const modal = document.getElementById('privacyModal');
+            if (event.target === modal) modal.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
