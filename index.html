@@ -455,10 +455,16 @@
                     <button class="filter-btn active" id="filter-all" onclick="filterGames('all')">Tümü</button>
                     <button class="filter-btn" id="filter-action" onclick="filterGames('action')">Aksiyon</button>
                     <button class="filter-btn" id="filter-puzzle" onclick="filterGames('puzzle')">Zeka</button>
+                    <button class="filter-btn" id="filter-simulation" onclick="filterGames('simulation')">✈️ Simülasyon</button>
                 </div>
 
                 <!-- OYUN LİSTESİ -->
                 <div class="games-grid">
+                    <!-- UÇAK SİMÜLASYONU -->
+                    <div class="game-card" data-category="simulation" onclick="openGame('ucak-simulasyonu.html')" style="border-color: rgba(14, 165, 233, 0.4);">
+                        <div class="game-thumb" style="background: linear-gradient(45deg, #0369a1, #38bdf8) !important;">✈️</div>
+                        <div class="game-info"><div class="game-title">Uçak Simülasyonu</div><div class="game-cat">Simülasyon</div></div>
+                    </div>
                     <!-- YENİ EKLENEN OYUN -->
                     <div class="game-card" data-category="puzzle" onclick="openGame('block-puzzle.html')">
                         <div class="game-thumb">🧩</div>
@@ -512,7 +518,7 @@
                 </div>
 
                 <div class="footer-menu">
-                    <p style="color:#64748b; font-size:0.8rem; margin-bottom:10px;">MuGöl GAMES v4.3</p>
+                    <p style="color:#64748b; font-size:0.8rem; margin-bottom:10px;">MuGöl GAMES v4.4</p>
                     <span class="privacy-link" onclick="openPrivacy()">Gizlilik Politikası</span>
                 </div>
             </div>
@@ -537,6 +543,7 @@
     <script>
         // OYUN VERİTABANI (Günün Oyunu İçin) - YENİ OYUN EKLENDİ!
         const gamesDB =[
+            { title: "Uçak Simülasyonu", desc: "3D kokpite geç, uçağını kontrol et ve gökyüzünü fethet! Gerçekçi uçuş deneyimi.", icon: "✈️", url: "ucak-simulasyonu.html", color: "#0ea5e9" },
             { title: "Block Legend", desc: "Blokları yerleştir, satırları yok et ve efsanevi kombolar yap!", icon: "🧩", url: "block-puzzle.html", color: "#9b59b6" },
             { title: "Fruit Ninja", desc: "Bıçaklarını bile, reflekslerini hazırla! Bombalara dokunmadan meyveleri kes.", icon: "🍉", url: "fruit-ninja.html", color: "#ef4444" },
             { title: "Space Shooter", desc: "Uzay gemini yönet, galaksiyi düşman istilasından kurtar!", icon: "🚀", url: "space-shooter.html", color: "#3b82f6" },

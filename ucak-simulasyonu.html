@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>3D Uçak Simülasyonu - Gelişmiş Direksiyon</title>
+    <style>
+        body {
+            margin: 0; overflow: hidden; background-color: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none; touch-action: none;
+        }
+
+        /* --- UI VE GÖSTERGELER --- */
+        #ui-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+        #info-panel {
+            position: absolute; top: 15px; left: 15px;
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px);
+            color: #fff; padding: 15px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+            pointer-events: auto; transition: opacity 0.3s;
+        }
+        
+        #info-panel h2 { margin: 0 0 10px 0; font-size: 16px; color: #10b981; text-transform: uppercase; letter-spacing: 1px;}
+        #info-panel p { margin: 5px 0; font-size: 12px; color: #cbd5e1; }
+        .key { display: inline-block; background: #334155; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #fff;}
+
+        #hud {
+            position: absolute; top: 15px; right: 15px;
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px);
+            color: #38bdf8; padding: 15px; border-radius: 12px;
+            font-size: 14px; font-weight: bold; font-family: monospace;
+            text-align: right; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .hud-val { color: #fff; font-size: 18px; }
+        .score-val { color: #facc15; font-size: 24px; text-shadow: 0 0 10px rgba(250, 204, 21, 0.5); }
+
+        /* Uçuş Nişangahı (Crosshair) - Sadece FPS modunda görünür */
+        #crosshair {
+            position: absolute; top: 50%; left: 50%;
+            width: 40px; height: 40px; transform: translate(-50%, -50%);
+            border: 2px solid rgba(56, 189, 248, 0.5); border-radius: 50%;
+            pointer-events: none; opacity: 0; transition: opacity 0.3s;
+            display: flex; justify-content: center; align-items: center;
+        }
+        #crosshair::before { content: ''; width: 60px; height: 2px; background: rgba(56, 189, 248, 0.8); position: absolute; }
+        #crosshair::after { content: ''; width: 2px; height: 20px; background: rgba(56, 189, 248, 0.8); position: absolute; top: -10px; }
+
+        /* --- MOBİL KONTROLLER --- */
+        #mobile-controls {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 200px;
+            pointer-events: none; display: flex; justify-content: space-between; align-items: flex-end; padding: 20px; box-sizing: border-box;
+        }
+
+        #joystick-zone {
+            width: 120px; height: 120px; background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.2); border-radius: 50%;
+            position: relative; pointer-events: auto; touch-action: none;
+            display: flex; justify-content: center; align-items: center;
+        }
+        /* Joystick Arka Plan Çizgileri */
+        #joystick-zone::before { content: ''; width: 1px; height: 100%; background: rgba(255,255,255,0.1); position: absolute; }
+        #joystick-zone::after { content: ''; width: 100%; height: 1px; background: rgba(255,255,255,0.1); position: absolute; }
+        
+        #joystick-knob {
+            width: 50px; height: 50px; background: radial-gradient(circle, rgba(56,189,248,1) 0%, rgba(14,165,233,0.8) 100%);
+            border-radius: 50%; position: absolute; top: 35px; left: 35px;
+            box-shadow: 0 0 15px rgba(56,189,248,0.5), inset 0 0 10px rgba(255,255,255,0.5);
+            transition: transform 0.1s ease-out; z-index: 10;
+        }
+
+        .action-buttons { display: flex; flex-direction: column; gap: 10px; pointer-events: auto; align-items: flex-end; }
+        .row-btns { display: flex; gap: 10px; }
+        
+        .btn {
+            background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.5);
+            color: white; padding: 12px 20px; border-radius: 8px; font-size: 14px;
+            font-weight: bold; text-transform: uppercase; touch-action: none; cursor: pointer; min-width: 90px;
+            text-align: center; backdrop-filter: blur(5px); transition: all 0.1s;
+        }
+        .btn:active { background: rgba(56, 189, 248, 0.8); transform: scale(0.95); }
+        .btn-cam { border-color: #facc15; color: #facc15; }
+        .btn-gyro { border-color: #10b981; color: #10b981; }
+        .gyro-active { background: rgba(16, 185, 129, 0.6) !important; color: white; border-color: #fff; }
+
+        @media (max-width: 768px) {
+            #info-panel { display: none; } 
+            #mobile-controls { padding: 15px; }
+            #joystick-zone { width: 100px; height: 100px; }
+            #joystick-knob { width: 40px; height: 40px; top: 30px; left: 30px;}
+            .btn { padding: 10px 15px; font-size: 12px; min-width: 75px; }
+        }
+    </style>
+    <!-- Three.js Kütüphanesi -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+    <div id="ui-container">
+        <!-- Crosshair (Nişangah) -->
+        <div id="crosshair"></div>
+
+        <div id="info-panel">
+            <h2>Gelişmiş Uçuş</h2>
+            <p><span class="key">Ok Tuşları</span> Yönlendir</p>
+            <p><span class="key">W / S</span> Hızlan / Yavaşla</p>
+            <p><span class="key">C</span> Kamera</p>
+            <p><i>İpucu: Kokpite geçip direksiyonu izle!</i></p>
+        </div>
+
+        <div id="hud">
+            PUAN<br><span id="score" class="score-val">0</span><br><br>
+            İRTİFA<br><span id="alt" class="hud-val">50</span> m<br><br>
+            HIZ<br><span id="spd" class="hud-val">100</span> km/s
+        </div>
+
+        <!-- Mobil Kontroller -->
+        <div id="mobile-controls">
+            <div id="joystick-zone"><div id="joystick-knob"></div></div>
+            <div class="action-buttons">
+                <div class="row-btns">
+                    <button class="btn btn-gyro" id="btn-gyro">Sensör (Kapalı)</button>
+                    <button class="btn btn-cam" id="btn-cam">Kamera</button>
+                </div>
+                <div class="row-btns">
+                    <button class="btn" id="btn-down">Yavaşla</button>
+                    <button class="btn" id="btn-up">Hızlan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. SAHNE VE KAMERA ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 4000);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        // --- 2. IŞIKLANDIRMA ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(200, 500, 300); dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 1024; dirLight.shadow.mapSize.height = 1024;
+        dirLight.shadow.camera.near = 0.5; dirLight.shadow.camera.far = 2000;
+        dirLight.shadow.camera.left = -600; dirLight.shadow.camera.right = 600;
+        dirLight.shadow.camera.top = 600; dirLight.shadow.camera.bottom = -600;
+        scene.add(dirLight);
+
+        scene.background = new THREE.Color(0x60A5FA);
+        scene.fog = new THREE.Fog(0x60A5FA, 300, 2000);
+
+        // --- 3. ÇEVRE (Zemin, Binalar) ---
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(20000, 20000), new THREE.MeshStandardMaterial({ color: 0x22c55e, roughness: 0.9 }));
+        ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+
+        const buildingColors =[0xd1d5db, 0x9ca3af, 0x64748b, 0xe2e8f0, 0x475569];
+        const cityGroup = new THREE.Group();
+        for (let i = 0; i < 300; i++) {
+            const h = Math.random() * 150 + 30; 
+            const bMat = new THREE.MeshStandardMaterial({ color: buildingColors[Math.floor(Math.random() * buildingColors.length)], roughness: 0.7});
+            const building = new THREE.Mesh(new THREE.BoxGeometry(Math.random()*25+15, h, Math.random()*25+15), bMat);
+            const px = (Math.random() - 0.5) * 4000; const pz = (Math.random() - 0.5) * 4000;
+            if (Math.abs(px) < 150 && Math.abs(pz) < 150) continue; 
+            building.position.set(px, h / 2, pz); building.castShadow = true; building.receiveShadow = true;
+            cityGroup.add(building);
+        }
+        scene.add(cityGroup);
+
+        // --- 4. HALKALAR ---
+        const rings =[];
+        const ringMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xd97706, emissiveIntensity: 0.8, roughness: 0.2});
+        function spawnRing(zOffset = 0) {
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(14, 1.5, 16, 50), ringMat);
+            const rx = airplane ? airplane.position.x + (Math.random() - 0.5) * 500 : (Math.random() - 0.5) * 500;
+            const ry = Math.random() * 150 + 60;
+            const rz = airplane ? airplane.position.z - (Math.random() * 500 + 400 + zOffset) : - (Math.random() * 500 + 400 + zOffset);
+            ring.position.set(rx, ry, rz); ring.rotation.y = Math.random() * Math.PI;
+            scene.add(ring); rings.push(ring);
+        }
+        let airplane; for(let i=0; i<15; i++) spawnRing(i * 120);
+
+        // --- 5. UÇAK VE 3D DİREKSİYON (YOKE) MODELİ ---
+        airplane = new THREE.Group(); scene.add(airplane);
+        const planeMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.3, metalness: 0.4 });
+        const darkMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.6 });
+
+        // Uçak Gövdesi ve Kanatlar
+        const fuselage = new THREE.Mesh(new THREE.BoxGeometry(2, 2.5, 12), planeMat); fuselage.castShadow = true; airplane.add(fuselage);
+        const wing = new THREE.Mesh(new THREE.BoxGeometry(22, 0.4, 3.5), planeMat); wing.position.set(0, -0.5, -1); wing.castShadow = true; airplane.add(wing);
+        const tail = new THREE.Mesh(new THREE.BoxGeometry(7, 0.3, 2.5), planeMat); tail.position.set(0, 0, 5); tail.castShadow = true; airplane.add(tail);
+        const fin = new THREE.Mesh(new THREE.BoxGeometry(0.4, 4, 2.5), planeMat); fin.position.set(0, 2, 5); fin.castShadow = true; airplane.add(fin);
+        const engine = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.8, 1), darkMat); engine.position.set(0, 0, -6.5); airplane.add(engine);
+        const propeller = new THREE.Mesh(new THREE.BoxGeometry(6, 0.2, 0.3), darkMat); propeller.position.set(0, 0, -7.1); propeller.castShadow = true; airplane.add(propeller);
+
+        // Kokpit Camı (İçerisi görünsün diye arkasını şeffaf yaptık)
+        const glassMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.4, roughness: 0.1, side: THREE.DoubleSide });
+        const cockpit = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.2, 3), glassMat); cockpit.position.set(0, 1.5, -1.5); airplane.add(cockpit);
+
+        // --- 3D DİREKSİYON (YOKE) OLUŞTURMA ---
+        const yokeGroup = new THREE.Group(); // Tüm direksiyon sistemi
+        
+        // Direksiyon Borusu (İleri geri hareket edecek)
+        const yokeShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.5), darkMat);
+        yokeShaft.rotation.x = Math.PI / 2;
+        yokeShaft.position.z = -0.5;
+        yokeGroup.add(yokeShaft);
+
+        // Direksiyon Simidi (Sağa Sola Dönecek Kısım)
+        const yokeWheel = new THREE.Group();
+        const yokeCenter = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.3, 0.1), darkMat); // Göbek
+        yokeWheel.add(yokeCenter);
+        const yokeHandleL = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.6), new THREE.MeshStandardMaterial({color: 0x333333})); // Sol Tutma yeri
+        yokeHandleL.position.set(-0.4, 0.2, 0); yokeWheel.add(yokeHandleL);
+        const yokeHandleR = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.6), new THREE.MeshStandardMaterial({color: 0x333333})); // Sağ Tutma yeri
+        yokeHandleR.position.set(0.4, 0.2, 0); yokeWheel.add(yokeHandleR);
+        const yokeArm = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.08, 0.08), darkMat); // Kolları birleştiren çubuk
+        yokeArm.position.y = -0.1; yokeWheel.add(yokeArm);
+        
+        yokeWheel.position.z = -1.25; // Direksiyon simidini borunun ucuna tak
+        yokeGroup.add(yokeWheel);
+        
+        yokeGroup.position.set(0, 1.2, -0.5); // Kokpit içine yerleştir
+        airplane.add(yokeGroup);
+        // -------------------------------------
+
+        airplane.position.set(0, 80, 0);
+
+        // --- 6. KONTROLLER VE FİZİK DEĞİŞKENLERİ ---
+        let speed = 1.0; let score = 0; let cameraMode = 0;
+        const keys = {};
+        
+        // Hedef Input (Kullanıcının verdiği komut)
+        let targetRollInput = 0; 
+        let targetPitchInput = 0;
+        
+        // Yumuşatılmış Input (Uçağın ağırlığını hissettiren gecikmeli komut)
+        let smoothRoll = 0;
+        let smoothPitch = 0;
+
+        // Jiroskop Değişkenleri
+        let useGyro = false;
+        let baseBeta = null; // Telefonun ilk tutuş açısı
+        let gyroJoyX = 0, gyroJoyY = 0;
+
+        const scoreDisplay = document.getElementById('score');
+        const altDisplay = document.getElementById('alt');
+        const spdDisplay = document.getElementById('spd');
+        const crosshair = document.getElementById('crosshair');
+
+        // Klavye Dinleyicileri
+        window.addEventListener('keydown', (e) => { keys[e.code] = true; if(e.code === 'KeyC') toggleCamera(); });
+        window.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+        function toggleCamera() {
+            cameraMode = cameraMode === 0 ? 1 : 0;
+            if(cameraMode === 1) {
+                document.getElementById('info-panel').style.opacity = '0';
+                crosshair.style.opacity = '1'; // FPS modunda nişangahı aç
+            } else {
+                document.getElementById('info-panel').style.opacity = '1';
+                crosshair.style.opacity = '0';
+            }
+        }
+        document.getElementById('btn-cam').addEventListener('mousedown', toggleCamera);
+        document.getElementById('btn-cam').addEventListener('touchstart', (e) => { e.preventDefault(); toggleCamera(); }, {passive: false});
+
+        // --- JİROSKOP (SENSÖR) MANTIĞI ---
+        const btnGyro = document.getElementById('btn-gyro');
+        btnGyro.addEventListener('click', () => {
+            // iOS 13+ için sensör izni isteme prosedürü
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission().then(permissionState => {
+                    if (permissionState === 'granted') toggleGyroMode();
+                    else alert("Sensör izni verilmedi!");
+                }).catch(console.error);
+            } else {
+                toggleGyroMode(); // Android ve diğer cihazlar
+            }
+        });
+
+        function toggleGyroMode() {
+            useGyro = !useGyro;
+            if (useGyro) {
+                btnGyro.innerText = "Sensör (AÇIK)";
+                btnGyro.classList.add("gyro-active");
+                baseBeta = null; // Yeniden kalibre et
+            } else {
+                btnGyro.innerText = "Sensör (Kapalı)";
+                btnGyro.classList.remove("gyro-active");
+                gyroJoyX = 0; gyroJoyY = 0;
+            }
+        }
+
+        window.addEventListener('deviceorientation', (e) => {
+            if (!useGyro || e.beta === null) return;
+            
+            // Telefonun öne/arkaya eğimi (Yunuslama / Pitch)
+            if (baseBeta === null) baseBeta = e.beta; // Kalibrasyon (Oyuncunun telefonu ilk tuttuğu açı sıfır kabul edilir)
+            let pitchAngle = e.beta - baseBeta; 
+            
+            // Telefonun sağa/sola eğimi (Yatma / Roll)
+            let rollAngle = e.gamma; 
+            
+            // Ekran yatay (landscape) moddaysa eksenleri çevir
+            if (window.orientation === 90 || window.orientation === -90) {
+                pitchAngle = e.gamma * Math.sign(window.orientation);
+                rollAngle = e.beta * Math.sign(window.orientation);
+            }
+
+            // Açıları -1 ile 1 arasında sınırla (30 derece maksimum kabul ediliyor)
+            gyroJoyY = Math.max(-1, Math.min(1, pitchAngle / 30));
+            gyroJoyX = Math.max(-1, Math.min(1, rollAngle / 30));
+        });
+
+        // --- JOYSTICK MANTIĞI ---
+        const joystickZone = document.getElementById('joystick-zone');
+        const joystickKnob = document.getElementById('joystick-knob');
+        let isDragging = false, joyX = 0, joyY = 0; const maxJoyRadius = 35;
+
+        joystickZone.addEventListener('touchstart', handleJoyStart, {passive: false});
+        joystickZone.addEventListener('touchmove', handleJoyMove, {passive: false});
+        joystickZone.addEventListener('touchend', handleJoyEnd);
+        joystickZone.addEventListener('mousedown', handleJoyStart);
+        window.addEventListener('mousemove', handleJoyMove); window.addEventListener('mouseup', handleJoyEnd);
+
+        function handleJoyStart(e) { if(e.target === joystickZone || e.target === joystickKnob) { isDragging = true; updateJoystick(e); } }
+        function handleJoyMove(e) { if (!isDragging) return; if(e.cancelable) e.preventDefault(); updateJoystick(e); }
+        function handleJoyEnd() { isDragging = false; joyX = 0; joyY = 0; joystickKnob.style.transform = `translate(0px, 0px)`; }
+        function updateJoystick(e) {
+            if(useGyro) return; // Sensör açıksa joystick devre dışı
+            const rect = joystickZone.getBoundingClientRect();
+            let cX = e.touches ? e.touches[0].clientX : e.clientX; let cY = e.touches ? e.touches[0].clientY : e.clientY;
+            let x = cX - rect.left - 60; let y = cY - rect.top - 60;
+            const dist = Math.sqrt(x*x + y*y);
+            if(dist > maxJoyRadius) { x = (x/dist)*maxJoyRadius; y = (y/dist)*maxJoyRadius; }
+            joystickKnob.style.transform = `translate(${x}px, ${y}px)`;
+            joyX = x / maxJoyRadius; joyY = y / maxJoyRadius;
+        }
+
+        // Hız Butonları
+        let isSpeedUp = false, isSpeedDown = false;
+        const bindBtn = (id, setter) => {
+            const btn = document.getElementById(id);
+            btn.addEventListener('mousedown', () => setter(true)); btn.addEventListener('touchstart', (e) => { e.preventDefault(); setter(true); }, {passive: false});
+            btn.addEventListener('mouseup', () => setter(false)); btn.addEventListener('touchend', () => setter(false)); btn.addEventListener('mouseleave', () => setter(false));
+        };
+        bindBtn('btn-up', v => isSpeedUp = v); bindBtn('btn-down', v => isSpeedDown = v);
+
+        // --- 7. ANA OYUN DÖNGÜSÜ ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Motor ve Hız
+            propeller.rotation.z += 0.5 * speed;
+            if (keys['KeyW'] || isSpeedUp) speed += 0.02;
+            if (keys['KeyS'] || isSpeedDown) speed -= 0.02;
+            speed = Math.max(0.6, Math.min(speed, 3.5)); 
+
+            // GİRDİLERİ HESAPLA (Klavye + Joystick + Gyro)
+            targetRollInput = 0; targetPitchInput = 0;
+            
+            // Klavye
+            if (keys['ArrowLeft']) targetRollInput -= 1;
+            if (keys['ArrowRight']) targetRollInput += 1;
+            if (keys['ArrowDown']) targetPitchInput -= 1; // Burnu Kaldır (Aşağı Çek)
+            if (keys['ArrowUp']) targetPitchInput += 1;   // Burnu İndir (İleri İt)
+
+            // Joystick veya Gyro ekle
+            targetRollInput += useGyro ? gyroJoyX : joyX;
+            targetPitchInput += useGyro ? gyroJoyY : joyY;
+
+            // Sınırla
+            targetRollInput = Math.max(-1, Math.min(1, targetRollInput));
+            targetPitchInput = Math.max(-1, Math.min(1, targetPitchInput));
+
+            // FİZİK / AĞIRLIK (LİNEER İNTERPOLASYON - LERP)
+            // Uçak verilen emre anında uymaz, yavaşça o değere yaklaşır. Bu ağırlık hissi verir.
+            smoothRoll += (targetRollInput - smoothRoll) * 0.05;
+            smoothPitch += (targetPitchInput - smoothPitch) * 0.05;
+
+            // Uçağı Çevir
+            airplane.rotateZ(smoothRoll * -0.04); // Yatma
+            airplane.rotateX(smoothPitch * 0.03); // Yunuslama
+            airplane.rotateY(airplane.rotation.z * 0.02); // Yatışa göre otomatik dönüş (Yaw/Rudder etkisi)
+
+            // Auto-level (Tuş bırakılınca kendini yavaşça teraziye alır)
+            if (Math.abs(targetRollInput) < 0.1 && Math.abs(smoothRoll) < 0.1) airplane.rotation.z *= 0.96; 
+
+            // 3D DİREKSİYON (YOKE) ANİMASYONU
+            // Sağa sola yatış (Roll) direksiyon simidini Z ekseninde döndürür.
+            yokeWheel.rotation.z = smoothRoll * -(Math.PI / 2.5); // Maks 70 derece dönüş
+            // İleri geri yunuslama (Pitch) direksiyonu oyuncuya doğru çeker veya iter.
+            yokeWheel.position.z = -1.25 + (smoothPitch * 0.3);
+
+            // Uçağı İlerlet
+            airplane.translateZ(-speed);
+
+            // Yerden Sekme
+            if (airplane.position.y < 3) { airplane.position.y = 3; airplane.rotation.x *= 0.8; }
+
+            // Halkalar (Çarpışma Kontrolü)
+            for (let i = 0; i < rings.length; i++) {
+                rings[i].rotation.y += 0.01; rings[i].rotation.z += 0.005;
+                if (rings[i].position.z - airplane.position.z > 200) {
+                    rings[i].position.set(airplane.position.x + (Math.random()-0.5)*500, Math.random()*150+60, airplane.position.z - (Math.random()*500+400));
+                }
+                if (airplane.position.distanceTo(rings[i].position) < 18) {
+                    score += 10; scoreDisplay.innerText = score;
+                    rings[i].position.set(airplane.position.x + (Math.random()-0.5)*500, Math.random()*150+60, airplane.position.z - (Math.random()*500+400));
+                }
+            }
+
+            // KAMERA TAKİBİ
+            if (cameraMode === 0) {
+                // Dış Kamera (TPS)
+                const camOffset = new THREE.Vector3(0, 8, 30).applyMatrix4(airplane.matrixWorld);
+                camera.position.lerp(camOffset, 0.1);
+                camera.lookAt(airplane.position);
+            } else {
+                // Kokpit Kamerası (FPS)
+                const fpsOffset = new THREE.Vector3(0, 1.4, -0.6).applyMatrix4(airplane.matrixWorld);
+                camera.position.copy(fpsOffset);
+                // Direksiyonun üzerinden, burnun ilerisine bak
+                const lookTarget = new THREE.Vector3(0, 1.4, -100).applyMatrix4(airplane.matrixWorld);
+                camera.lookAt(lookTarget);
+            }
+
+            dirLight.position.set(airplane.position.x + 200, airplane.position.y + 500, airplane.position.z + 300);
+            dirLight.target = airplane;
+
+            altDisplay.innerText = Math.max(0, Math.round(airplane.position.y));
+            spdDisplay.innerText = Math.round(speed * 120);
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+
+        // Oyunu Başlat
+        animate();
+    </script>
+</body>
+</html>
