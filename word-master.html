@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Siber Kelime: İngilizce Öğren</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-deep: #08080c;
+            --neon-cyan: #00f0ff;
+            --neon-purple: #8a2be2;
+            --neon-pink: #ff007f;
+            
+            --correct: #00e676; 
+            --present: #ffc400; 
+            --absent-bg: #1a1a24;
+            --absent-text: #6e6e80;
+            
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            
+            --word-len: 5; /* JS tarafından güncellenecek */
+            
+            /* KUSURSUZ HÜCRE BOYUT HESAPLAMASI */
+            /* Genişliğe göre (85vw / harf), Yüksekliğe göre (8vh), Min 40px, Max 65px */
+            --tile-size: clamp(40px, min(calc(85vw / var(--word-len)), 8vh), 65px);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            touch-action: manipulation; 
+            user-select: none; 
+            -webkit-tap-highlight-color: transparent; 
+            font-family: 'Outfit', sans-serif; 
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-deep);
+            color: #ffffff;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            overscroll-behavior: none;
+        }
+
+        /* --- PREMIUM ARKA PLAN EFEKTLERİ --- */
+        .ambient-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+            background-color: var(--bg-deep);
+        }
+        
+        .orb {
+            position: absolute; border-radius: 50%;
+            filter: blur(120px); opacity: 0.4;
+            animation: drift 30s infinite alternate ease-in-out;
+            will-change: transform;
+        }
+        .orb-1 { width: 50vw; height: 50vw; min-width: 400px; min-height: 400px; background: var(--neon-purple); top: -10%; left: -10%; }
+        .orb-2 { width: 60vw; height: 60vw; min-width: 500px; min-height: 500px; background: var(--neon-cyan); bottom: -20%; right: -10%; animation-delay: -15s; }
+        
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.03; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        @keyframes drift { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(10vw, 15vh) scale(1.1); } }
+
+        /* --- HEADER --- */
+        header {
+            flex: 0 0 clamp(55px, 8vh, 75px); 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 clamp(10px, 4vw, 20px); 
+            background: rgba(8, 8, 12, 0.6); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 10; position: relative;
+        }
+
+        .level-info { display: flex; flex-direction: column; align-items: center; }
+        .rank-badge { font-size: clamp(0.55rem, 2vw, 0.7rem); color: var(--neon-cyan); font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px; }
+        .level-badge { font-size: clamp(1.1rem, 4vw, 1.3rem); font-weight: 800; letter-spacing: 1px; }
+        .word-len-badge { font-size: clamp(0.55rem, 1.8vw, 0.65rem); color: #888; background: var(--glass-bg); padding: 2px 8px; border-radius: 12px; margin-top: 3px; border: 1px solid var(--glass-border); }
+
+        .header-right { display: flex; gap: clamp(6px, 1.5vw, 10px); align-items: center; }
+
+        .gold-display {
+            background: linear-gradient(135deg, rgba(255, 238, 0, 0.15), rgba(255, 238, 0, 0.05));
+            border: 1px solid rgba(255, 238, 0, 0.3); color: #ffe600;
+            padding: clamp(4px, 1vh, 6px) clamp(8px, 2vw, 14px); 
+            font-size: clamp(0.85rem, 3vw, 1rem); font-weight: 700; border-radius: 20px;
+            display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 15px rgba(255, 238, 0, 0.1);
+        }
+
+        .icon-btn {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            color: #fff; width: clamp(34px, 8vw, 42px); height: clamp(34px, 8vw, 42px); border-radius: 10px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: clamp(1rem, 3.5vw, 1.2rem); cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .icon-btn:active { transform: scale(0.9); }
+        .icon-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); }
+        .btn-bomb:hover { border-color: #ff3b30; box-shadow: 0 0 15px rgba(255, 59, 48, 0.3); }
+
+        .muted-line, .blind-line { position: absolute; width: 2px; height: 22px; background: #ff3b30; transform: rotate(45deg); display: none; border-radius: 2px; }
+        .muted .muted-line { display: block; }
+        .blind-active { border-color: #ff3b30 !important; color: #ff3b30 !important; }
+        .blind-active .blind-line { display: block; }
+
+        .time-bar-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: transparent; }
+        .time-bar { height: 100%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple)); width: 100%; box-shadow: 0 0 10px var(--neon-cyan); }
+
+        /* --- OYUN ALANI (SIFIR SIKIŞMA İÇİN SCROLL FALLBACK) --- */
+        #game-area { 
+            flex: 1 1 auto; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            width: 100%; padding: clamp(5px, 2vh, 15px); z-index: 5; position: relative; 
+            min-height: 0; 
+            overflow-y: auto; /* Ekran çok küçülürse birbirine girmemesi için */
+            -ms-overflow-style: none; scrollbar-width: none;
+        }
+        #game-area::-webkit-scrollbar { display: none; }
+        
+        /* İPUCU KUTUSU */
+        #hint-container {
+            width: 95%; max-width: 450px; 
+            margin-bottom: clamp(10px, 2.5vh, 25px);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px; padding: clamp(8px, 1.5vh, 12px) 15px; 
+            text-align: center; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        #hint-label { font-size: clamp(0.6rem, 2vw, 0.7rem); color: var(--neon-cyan); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; display: block; margin-bottom: 4px; opacity: 0.8; }
+        #hint-text { color: #f0f0f5; font-size: clamp(0.95rem, 3.5vw, 1.1rem); font-weight: 400; line-height: 1.3; }
+
+        /* KELİME TABLOSU */
+        #board { display: flex; flex-direction: column; gap: clamp(4px, 1.2vh, 8px); align-items: center; width: 100%; }
+        .row { display: flex; justify-content: center; gap: clamp(4px, 1.2vw, 8px); width: 100%; }
+
+        .tile {
+            width: var(--tile-size);
+            height: var(--tile-size);
+            background: var(--glass-bg); 
+            border: 2px solid var(--glass-border);
+            border-radius: clamp(8px, 2vw, 14px);
+            display: flex; justify-content: center; align-items: center;
+            font-size: calc(var(--tile-size) * 0.55); /* Font boyutu kutuya tam uyar */
+            font-weight: 700; color: #fff; text-transform: uppercase;
+            transition: transform 0.15s, border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); will-change: transform;
+        }
+
+        .tile[data-state="active"] { border-color: var(--neon-cyan); background: rgba(0, 240, 255, 0.05); box-shadow: 0 0 20px rgba(0, 240, 255, 0.2); transform: scale(1.08); animation: pulseActive 1.5s infinite alternate ease-in-out; }
+        @keyframes pulseActive { 0% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); } 100% { box-shadow: 0 0 25px rgba(0, 240, 255, 0.5); } }
+        .tile.locked-hint { border-color: var(--neon-purple); color: #d896ff; background: rgba(138, 43, 226, 0.1); text-shadow: 0 0 10px var(--neon-purple); }
+        .tile[data-state="autofilled"] { border-color: var(--correct); color: var(--correct); animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { 0% { transform: scale(0.8); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+        .tile.flip { transform: rotateX(90deg); transition: transform 0.25s ease-in; }
+        .tile.correct { background: var(--correct) !important; border-color: var(--correct) !important; color: #000 !important; box-shadow: 0 0 25px rgba(0, 230, 118, 0.4) !important; }
+        .tile.present { background: var(--present) !important; border-color: var(--present) !important; color: #000 !important; box-shadow: 0 0 25px rgba(255, 196, 0, 0.4) !important; }
+        .tile.absent { background: var(--absent-bg) !important; border-color: transparent !important; color: var(--absent-text) !important; box-shadow: none !important; }
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translateX(-3px); } 20%, 80% { transform: translateX(3px); } 30%, 50%, 70% { transform: translateX(-5px); } 40%, 60% { transform: translateX(5px); } }
+
+        /* --- İNGİLİZCE KLAVYE --- */
+        #keyboard-container { 
+            width: 100%; max-width: 600px; margin: 0 auto; 
+            padding: 5px 6px calc(15px + env(safe-area-inset-bottom)) 6px; 
+            z-index: 10; position: relative; 
+            display: flex; flex-direction: column; gap: clamp(4px, 1vh, 8px);
+        }
+        .kb-row { display: flex; width: 100%; justify-content: center; gap: clamp(3px, 1vw, 6px); }
+        .key {
+            flex: 1; 
+            height: clamp(40px, 7vh, 58px); /* Klavyenin aşırı ezilmesini engeller */
+            border: none; border-radius: clamp(6px, 1.5vw, 10px);
+            background: rgba(255, 255, 255, 0.08); 
+            color: #fff; font-size: clamp(0.9rem, 3.5vw, 1.2rem); font-weight: 600;
+            cursor: pointer; transition: all 0.15s;
+            backdrop-filter: blur(5px); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .key:active { transform: translateY(2px) scale(0.95); background: rgba(255, 255, 255, 0.15); }
+        .key-wide { flex: 1.5; font-size: clamp(0.75rem, 3vw, 0.9rem); background: rgba(255, 255, 255, 0.05); }
+
+        .key.correct { background: var(--correct); color: #000; }
+        .key.present { background: var(--present); color: #000; }
+        .key.absent { background: var(--absent-bg); color: var(--absent-text); opacity: 0.6; }
+
+        /* --- MODALLAR --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            display: none; justify-content: center; align-items: center; z-index: 100;
+        }
+        .modal-content {
+            background: rgba(15, 15, 22, 0.85); border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
+            padding: clamp(20px, 4vh, 40px) clamp(15px, 4vw, 30px); 
+            text-align: center; border-radius: 24px;
+            width: 90%; max-width: 400px; 
+            max-height: 85vh; overflow-y: auto;
+            animation: zoomIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); position: relative;
+        }
+        @keyframes zoomIn { from { transform: scale(0.9) translateY(20px); opacity: 0;} to { transform: scale(1) translateY(0); opacity: 1;} }
+
+        .close-btn { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer; transition: color 0.2s; }
+        .close-btn:hover { color: #fff; }
+        
+        .star-box { display: flex; justify-content: center; gap: 15px; margin: clamp(10px, 2vh, 20px) 0; }
+        .star-icon { font-size: clamp(2.5rem, 8vw, 3.5rem); color: rgba(255,255,255,0.05); transition: all 0.3s; }
+        .star-icon.active { color: #ffe600; filter: drop-shadow(0 0 15px rgba(255, 230, 0, 0.6)); animation: starPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0; }
+        @keyframes starPop { 0% { transform: scale(0) rotate(-30deg); opacity: 0; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-cyan), #0099ff); color: #000; border: none;
+            padding: clamp(12px, 3vh, 16px) 20px; font-size: clamp(1rem, 3.5vw, 1.1rem); font-weight: 800; border-radius: 16px;
+            cursor: pointer; width: 100%; transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 240, 255, 0.3); letter-spacing: 1px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(0, 240, 255, 0.4); }
+        .btn-primary:active { transform: translateY(1px); }
+        
+        .btn-dict {
+            background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #ccc;
+            padding: clamp(8px, 2vh, 12px); font-size: clamp(0.85rem, 3vw, 0.95rem); font-weight: 600; border-radius: 14px;
+            margin-top: 15px; cursor: pointer; width: 100%; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn-dict:hover { background: rgba(255,255,255,0.05); color: #fff; border-color: rgba(255,255,255,0.4); }
+
+        #toast-container { position: fixed; top: clamp(70px, 12vh, 100px); left: 50%; transform: translateX(-50%); z-index: 200; pointer-events: none; width: 90%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+        .toast {
+            background: rgba(255, 255, 255, 0.95); color: #000; padding: 12px 24px; border-radius: 30px;
+            font-weight: 700; font-size: clamp(0.9rem, 3vw, 1rem); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: slideUp 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; margin-bottom: 10px; text-align: center;
+        }
+        .toast.error { background: #ff3b30; color: #fff; box-shadow: 0 10px 30px rgba(255, 59, 48, 0.3); }
+        @keyframes slideUp { from { transform: translateY(-20px); opacity: 0;} to { transform: translateY(0); opacity: 1;} }
+
+        /* YATAY EKRAN DÜZELTMELERİ (Landscape) */
+        @media screen and (max-height: 500px) and (orientation: landscape) {
+            header { flex: 0 0 45px; padding: 0 10px; }
+            .icon-btn { width: 32px; height: 32px; font-size: 1rem; }
+            .level-badge { font-size: 1rem; }
+            .gold-display { padding: 4px 10px; font-size: 0.85rem; }
+            
+            #hint-container { margin-bottom: 5px; padding: 5px 10px; }
+            #hint-label { font-size: 0.6rem; margin-bottom: 2px; }
+            #hint-text { font-size: 0.9rem; }
+            
+            /* Dikeyde çok küçülse bile kutuları koru */
+            :root { --tile-size: clamp(35px, 12vh, 45px); }
+            .tile { border-width: 1px; border-radius: 8px; font-size: 1.2rem; }
+            
+            .row { gap: 4px; } #board { gap: 4px; }
+            .key { height: 35px; font-size: 0.9rem; border-radius: 6px; }
+            .kb-row { gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PREMIUM ARKA PLAN -->
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="noise-overlay"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <button class="icon-btn btn-surrender" onclick="surrender()" title="Pes Et">🏳️</button>
+        
+        <div class="level-info">
+            <div id="rank-display" class="rank-badge">SİBER ÇIRAK</div>
+            <div class="level-badge">SEVİYE <span id="level-display" class="level-num">1</span></div>
+            <div id="word-len-display" class="word-len-badge">3 HARFLİ KELİME</div>
+        </div>
+
+        <div class="header-right">
+            <div class="gold-display"><span>⚡</span> <span id="gold-display">0</span></div>
+            <button class="icon-btn btn-bomb" onclick="eliminateKeys()" title="3 Yanlış Harfi Elet (-75)">💣</button>
+            <button class="icon-btn" onclick="useHint()" title="Harf Aç (-50)">💡</button>
+            <button class="icon-btn" id="blind-btn" onclick="toggleBlindMode()" title="Kör Mod (İpucunu Gizle)">
+                👁️<div class="blind-line"></div>
+            </button>
+            <button class="icon-btn" id="mute-btn" onclick="toggleMute()" title="Sesi Aç/Kapat">
+                🔊<div class="muted-line"></div>
+            </button>
+        </div>
+        <div class="time-bar-container"><div id="time-bar" class="time-bar"></div></div>
+    </header>
+
+    <div id="toast-container"></div>
+
+    <!-- OYUN ALANI -->
+    <div id="game-area">
+        <div id="hint-container">
+            <span id="hint-label">HEDEF KELİME ANLAMI</span>
+            <div id="hint-text">Kelimenin Türkçe anlamı burada görünecek...</div>
+        </div>
+        <div id="board"></div>
+    </div>
+    
+    <!-- İNGİLİZCE KLAVYE -->
+    <div id="keyboard-container"></div>
+
+    <!-- SONUÇ MODALI -->
+    <div id="result-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title" style="margin:0 0 5px 0; font-size: clamp(1.6rem, 6vw, 2.2rem); font-weight: 800; letter-spacing: 1px;"></h2>
+            
+            <div style="display:flex; justify-content:center; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;">
+                <div id="modal-reward" style="font-size:1.2rem; color:var(--neon-cyan); font-weight:800;"></div>
+                <div id="time-bonus" style="font-size:0.85rem; background:rgba(0, 240, 255, 0.1); color:var(--neon-cyan); padding:4px 10px; border-radius:20px; font-weight:600; display:none;"></div>
+            </div>
+            
+            <div id="stars-display" class="star-box"></div>
+            
+            <div style="background:var(--glass-bg); padding:clamp(15px, 3vh, 25px); border-radius:16px; border:1px solid var(--glass-border); margin:20px 0;">
+                <div style="color:#888; font-size:0.8rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px;">İngilizce Kelime</div>
+                <div id="word-reveal" style="color:#fff; font-size: clamp(1.8rem, 8vw, 2.5rem); font-weight:800; letter-spacing:3px;"></div>
+                
+                <button class="btn-dict" onclick="openDictionary()">
+                    📖 Cambridge Sözlük'te İncele
+                </button>
+            </div>
+
+            <button class="btn-primary" onclick="nextLevel()">
+                SONRAKİ SEVİYE ➔
+            </button>
+        </div>
+    </div>
+
+    <!-- GÜNLÜK ÖDÜL MODALI -->
+    <div id="daily-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="color:#ffe600; font-weight:800; font-size:clamp(1.5rem, 6vw, 1.8rem);">GÜNLÜK BONUS</h2>
+            <div style="font-size:clamp(3rem, 12vw, 4rem); margin:20px 0;">⚡</div>
+            <div style="font-size:clamp(1rem, 4vw, 1.2rem); color:#fff; font-weight:600; margin-bottom:25px;">Sisteme Girdiğin İçin +50 Enerji</div>
+            <button class="btn-primary" onclick="claimDaily()" style="background:linear-gradient(135deg, #ffc400, #ff9100)">TEŞEKKÜRLER</button>
+        </div>
+    </div>
+
+<script>
+    const STORAGE_KEY = 'premium_word_tr_en_v5';
+    
+    const DB = {
+        3:[
+            { w: "CAT", h: "Miyavlayan, evcil ve oyuncu hayvan (Kedi)." },
+            { w: "DOG", h: "İnsanın en sadık dostu, havlayan hayvan (Köpek)." },
+            { w: "SUN", h: "Gündüzleri dünyamızı ısıtan ve aydınlatan yıldız (Güneş)." },
+            { w: "CAR", h: "Dört tekerlekli, motorlu kara taşıtı (Araba)." },
+            { w: "RED", h: "Kanın, ateşin veya aşkın sembolü olan renk (Kırmızı)." },
+            { w: "EYE", h: "Dünyayı görmemizi sağlayan duyu organımız (Göz)." },
+            { w: "TEA", h: "Kahvaltılarda sıkça demlenerek içilen sıcak içecek (Çay)." },
+            { w: "BOX", h: "İçine eşya konulan saklama kabı (Kutu)." },
+            { w: "SKY", h: "Başımızı yukarı kaldırdığımızda gördüğümüz mavi sonsuzluk (Gökyüzü)." },
+            { w: "HAT", h: "Güneşten korunmak için başa giyilen aksesuar (Şapka)." }
+        ],
+        4:[
+            { w: "BLUE", h: "Açık bir gökyüzünün ve derin denizlerin rengi (Mavi)." },
+            { w: "MOON", h: "Geceleri gökyüzünde parlayan, Dünyanın doğal uydusu (Ay)." },
+            { w: "TREE", h: "Kökü, odunsu gövdesi ve yeşil yaprakları olan bitki (Ağaç)." },
+            { w: "BIRD", h: "Tüyleri olan, yumurtlayan ve genellikle uçabilen canlı (Kuş)." },
+            { w: "STAR", h: "Gece gökyüzünde parıldayan uzak gök cisimlerinden her biri (Yıldız)." },
+            { w: "RAIN", h: "Bulutlardan yeryüzüne düşen su damlaları (Yağmur)." },
+            { w: "TIME", h: "Geçmişten geleceğe doğru sürekli akan soyut kavram (Zaman)." },
+            { w: "BOOK", h: "İçinde hikayeler veya bilgiler barındıran ciltli kağıtlar (Kitap)." },
+            { w: "FIRE", h: "Isınmak veya yemek pişirmek için kullanılan alev (Ateş)." },
+            { w: "FISH", h: "Solungaçlarıyla nefes alan, suda yaşayan canlı (Balık)." }
+        ],
+        5:[
+            { w: "SPACE", h: "Gezegenlerin ve yıldızların içinde bulunduğu sonsuz boşluk (Uzay)." },
+            { w: "WATER", h: "Tüm canlıların yaşaması için şart olan renksiz sıvı (Su)." },
+            { w: "GREEN", h: "Doğanın, ağaçların ve çimenlerin temel rengi (Yeşil)." },
+            { w: "APPLE", h: "Kırmızı veya yeşil renkli, ısırılarak yenen popüler meyve (Elma)." },
+            { w: "LIGHT", h: "Karanlığı aydınlatan, görmemizi sağlayan fiziksel enerji (Işık)." },
+            { w: "MUSIC", h: "Seslerin kulağa hoş gelecek şekilde ritmik dizilimi (Müzik)." },
+            { w: "HOUSE", h: "İnsanların barınmak ve yaşamak için yaptığı yapı (Ev)." },
+            { w: "NIGHT", h: "Güneş battıktan sonra başlayan günün karanlık kısmı (Gece)." },
+            { w: "WATCH", h: "Zamanı öğrenmek için bileğe takılan küçük alet (Kol saati)." },
+            { w: "PLANT", h: "Toprakta yetişen, fotosentez yapan canlıların genel adı (Bitki)." }
+        ],
+        6:[
+            { w: "PLANET", h: "Güneş veya başka bir yıldızın etrafında dönen gök cismi (Gezegen)." },
+            { w: "ANIMAL", h: "Hareket edebilen canlı türlerinin geneli (Hayvan)." },
+            { w: "GUITAR", h: "Genellikle altı teli olan, parmakla çalınan müzik aleti (Gitar)." },
+            { w: "DOCTOR", h: "Hastaları muayene edip tedavi yöntemleri öneren uzman (Doktor)." },
+            { w: "SUMMER", h: "Yılın en sıcak, okulların tatil olduğu mevsim (Yaz)." },
+            { w: "WINTER", h: "Yılın en soğuk, genellikle kar yağan mevsimi (Kış)." },
+            { w: "COFFEE", h: "Kavrulmuş çekirdeklerden yapılan, uyanık tutan içecek (Kahve)." },
+            { w: "WINDOW", h: "Binalara ışık girmesini sağlayan camlı bölüm (Pencere)." },
+            { w: "ORANGE", h: "Turuncu renkli, C vitamini deposu sulu kış meyvesi (Portakal)." },
+            { w: "FOREST", h: "Büyük ağaçların ve vahşi yaşamın olduğu geniş yeşil alan (Orman)." }
+        ],
+        7:[
+            { w: "SCIENCE", h: "Doğayı ve olayları deneylerle anlama çalışmaları (Bilim)." },
+            { w: "TEACHER", h: "Okulda öğrencilere ders anlatan ve eğiten kişi (Öğretmen)." },
+            { w: "MORNING", h: "Güneşin doğuşuyla başlayan günün ilk saatleri (Sabah)." },
+            { w: "COUNTRY", h: "Bir milletin üzerinde yaşadığı bağımsız topraklar (Ülke)." },
+            { w: "PICTURE", h: "Çizilmiş veya kamerayla çekilmiş görsel eser (Resim/Fotoğraf)." },
+            { w: "DIAMOND", h: "Mücevherlerde kullanılan çok değerli, sert ve parlak taş (Elmas)." },
+            { w: "WEATHER", h: "Havadaki yağmur, güneş, rüzgar gibi olayların durumu (Hava)." },
+            { w: "MACHINE", h: "Belirli bir işi yapmak için çalışan düzenek (Makine)." },
+            { w: "FREEDOM", h: "Hiçbir kısıtlama olmadan özgürce yaşama hakkı (Özgürlük)." },
+            { w: "JOURNEY", h: "Bir yerden başka bir yere yapılan uzun gezi (Yolculuk)." }
+        ]
+    };
+    
+    const RANKS =[
+        { l: 0, t: "ÇIRAK" },
+        { l: 5, t: "MERAKLI" },
+        { l: 10, t: "ARAŞTIRMACI" },
+        { l: 20, t: "İNGİLİZCE UZMANI" },
+        { l: 35, t: "LİNGUİST" },
+        { l: 50, t: "ELİT" },
+        { l: 100, t: "EFSANE" }
+    ];
+
+    let gameState = { level: 1, gold: 100, lastLogin: null, isMuted: false, blindMode: false };
+    let targetWord = "", targetHint = "", wordLen = 3, currentGuess =[], remaining = 6, gameActive = true;
+    let levelStartTime = 0;
+    const HINT_COST = 50, BOMB_COST = 75, WIN_REWARD = 50, TIME_BONUS_LIMIT = 30000;
+
+    const AudioEngine = {
+        ctx: new (window.AudioContext || window.webkitAudioContext)(),
+        play(type) {
+            if (gameState.isMuted) return;
+            try {
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain(); const t = this.ctx.currentTime;
+                
+                if (type === 'click') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(800, t);
+                    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
+                    osc.start(); osc.stop(t + 0.05);
+                } else if (type === 'error') {
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(150, t);
+                    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+                    osc.start(); osc.stop(t + 0.2);
+                } else if (type === 'flip') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(400, t);
+                    gain.gain.setValueAtTime(0.05, t); gain.gain.linearRampToValueAtTime(0, t + 0.05);
+                    osc.start(); osc.stop(t + 0.05);
+                } else if (type === 'pop') { 
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(900, t);
+                    gain.gain.setValueAtTime(0.03, t); gain.gain.linearRampToValueAtTime(0, t + 0.1);
+                    osc.start(); osc.stop(t + 0.1);
+                } else if (type === 'bomb') {
+                    osc.type = 'square'; osc.frequency.setValueAtTime(100, t);
+                    osc.frequency.exponentialRampToValueAtTime(30, t + 0.4);
+                    gain.gain.setValueAtTime(0.1, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+                    osc.start(); osc.stop(t + 0.4);
+                } else if (type === 'win') {[440, 554, 659, 880].forEach((f, i) => {
+                        setTimeout(() => {
+                            if(gameState.isMuted) return;
+                            const o = this.ctx.createOscillator(); const g = this.ctx.createGain();
+                            o.type = 'sine'; o.frequency.value = f; g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
+                            o.connect(g); g.connect(this.ctx.destination); o.start(); o.stop(this.ctx.currentTime + 0.4);
+                        }, i * 120);
+                    }); return;
+                }
+                osc.connect(gain); gain.connect(this.ctx.destination);
+            } catch(e) { }
+        }
+    };
+
+    function init() { loadGame(); checkDailyBonus(); setupLevel(); updateMuteIcon(); updateBlindIcon(); }
+
+    function loadGame() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(saved) gameState = { ...gameState, ...JSON.parse(saved) };
+        updateUI();
+    }
+    function saveGame() { localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState)); }
+
+    function updateUI() {
+        document.getElementById("level-display").textContent = gameState.level;
+        document.getElementById("gold-display").textContent = gameState.gold;
+        const currentRank = RANKS.slice().reverse().find(r => gameState.level >= r.l) || RANKS[0];
+        document.getElementById("rank-display").textContent = currentRank.t;
+    }
+
+    function toggleMute() { gameState.isMuted = !gameState.isMuted; updateMuteIcon(); saveGame(); }
+    function updateMuteIcon() {
+        const btn = document.getElementById("mute-btn");
+        if(gameState.isMuted) btn.classList.add("muted"); else btn.classList.remove("muted");
+    }
+
+    function toggleBlindMode() {
+        gameState.blindMode = !gameState.blindMode;
+        updateBlindIcon(); applyBlindMode(); saveGame();
+        showToast(gameState.blindMode ? "Kör Mod Aktif" : "Kör Mod Kapalı");
+    }
+    function updateBlindIcon() {
+        const btn = document.getElementById("blind-btn");
+        if(gameState.blindMode) btn.classList.add("blind-active"); else btn.classList.remove("blind-active");
+    }
+    function applyBlindMode() {
+        const hintText = document.getElementById("hint-text");
+        if (gameState.blindMode) hintText.innerHTML = "<span style='color:#ff3b30; font-style:italic;'>İpucu Gizlendi (Kör Mod)</span>";
+        else hintText.innerHTML = targetHint;
+    }
+
+    function checkDailyBonus() {
+        const today = new Date().toDateString();
+        if(gameState.lastLogin !== today) setTimeout(() => openModal("daily-modal"), 600);
+    }
+    function claimDaily() {
+        gameState.gold += 50; gameState.lastLogin = new Date().toDateString();
+        saveGame(); updateUI(); closeModal("daily-modal"); AudioEngine.play('win');
+    }
+
+    function setupLevel() {
+        wordLen = ((gameState.level - 1) % 5) + 3;
+        document.documentElement.style.setProperty('--word-len', wordLen); // CSS Değişkenini Güncelle
+        document.getElementById("word-len-display").textContent = `${wordLen} HARFLİ KELİME`;
+
+        const list = DB[wordLen] || DB[7];
+        const selection = list[Math.floor(Math.random() * list.length)];
+        
+        targetWord = selection.w.toUpperCase();
+        targetHint = selection.h;
+        
+        applyBlindMode();
+        closeModal("result-modal");
+        
+        currentGuess = Array(wordLen).fill("");
+        currentGuess[0] = targetWord[0];
+
+        remaining = 6; gameActive = true;
+        
+        createKeyboard(); 
+        createBoard(wordLen);
+        
+        updateActiveRow(0, targetWord[0]);
+        document.getElementById("board").children[0].children[0].classList.add("locked-hint");
+
+        startTimerAnimation();
+    }
+
+    function startTimerAnimation() {
+        levelStartTime = Date.now();
+        const bar = document.getElementById("time-bar");
+        bar.style.transition = 'none'; bar.style.width = '100%';
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                bar.style.transition = `width ${TIME_BONUS_LIMIT}ms linear`; bar.style.width = '0%';
+            });
+        });
+    }
+
+    function createBoard(len) {
+        const board = document.getElementById("board"); board.innerHTML = "";
+        for(let i=0; i<6; i++) {
+            const row = document.createElement("div"); row.className = "row";
+            for(let j=0; j<len; j++) {
+                const tile = document.createElement("div"); tile.className = "tile";
+                row.appendChild(tile);
+            }
+            board.appendChild(row);
+        }
+    }
+
+    function createKeyboard() {
+        const rows =["Q W E R T Y U I O P", "A S D F G H J K L", "Enter Z X C V B N M ⌫"];
+        const kb = document.getElementById("keyboard-container"); kb.innerHTML = "";
+        rows.forEach(r => {
+            const div = document.createElement("div"); div.className = "kb-row";
+            r.split(" ").forEach(char => {
+                const btn = document.createElement("button"); btn.className = "key"; btn.textContent = char;
+                let val = char;
+                if(char === "Enter" || char === "⌫") {
+                    btn.classList.add("key-wide");
+                    if(char === "⌫") { val = "Del"; btn.textContent = "⌫"; }
+                    if(char === "Enter") { btn.textContent = "ENTER"; }
+                }
+                btn.onclick = () => handleInput(val.toUpperCase());
+                div.appendChild(btn);
+            });
+            kb.appendChild(div);
+        });
+    }
+
+    function handleInput(val) {
+        if(!gameActive) return;
+        if(val === "ENTER") { submitGuess(); } 
+        else if(val === "DEL" || val === "⌫") {
+            let lastFilled = -1;
+            for(let i = wordLen - 1; i > 0; i--) { if(currentGuess[i] !== "") { lastFilled = i; break; } }
+            if (lastFilled !== -1) { currentGuess[lastFilled] = ""; updateActiveRow(lastFilled, ""); AudioEngine.play('click'); }
+        } else {
+            let firstEmpty = currentGuess.indexOf("");
+            if(firstEmpty !== -1) { currentGuess[firstEmpty] = val; updateActiveRow(firstEmpty, val); AudioEngine.play('click'); }
+        }
+    }
+
+    function updateActiveRow(index, val) {
+        const row = document.getElementById("board").children[6 - remaining];
+        if(!row) return;
+        const tile = row.children[index]; tile.textContent = val; tile.removeAttribute("data-state");
+        if(val !== "") tile.setAttribute("data-state", "active");
+        else { tile.style.boxShadow = ""; tile.style.borderColor = ""; tile.style.transform = ""; tile.style.animation = ""; }
+    }
+
+    function updateActiveRowForAutofill(index, val) {
+        const row = document.getElementById("board").children[6 - remaining];
+        if(!row) return;
+        const tile = row.children[index]; tile.textContent = val; tile.setAttribute("data-state", "autofilled");
+    }
+
+    function shakeRow() {
+        const row = document.getElementById("board").children[6 - remaining];
+        row.classList.remove("shake"); void row.offsetWidth; row.classList.add("shake");
+    }
+
+    function submitGuess() {
+        if(currentGuess.includes("")) { showToast("Eksik Harf!", "error"); AudioEngine.play('error'); shakeRow(); return; }
+        
+        const guessStr = currentGuess.join("");
+        const row = document.getElementById("board").children[6 - remaining];
+        let tArr = targetWord.split(""), gArr = [...currentGuess], results = Array(wordLen).fill("absent");
+
+        gArr.forEach((c, i) => { if(c === tArr[i]) { results[i] = "correct"; tArr[i] = null; gArr[i] = null; }});
+        gArr.forEach((c, i) => { if(c !== null && tArr.includes(c)) { results[i] = "present"; tArr[tArr.indexOf(c)] = null; }});
+
+        results.forEach((res, i) => {
+            const tile = row.children[i];
+            setTimeout(() => { tile.classList.add("flip"); AudioEngine.play('flip'); }, i * 150);
+            
+            setTimeout(() => {
+                tile.classList.add(res); tile.removeAttribute("data-state"); tile.classList.remove("locked-hint");
+                tile.classList.remove("flip");
+                
+                const keyBtn = Array.from(document.querySelectorAll(".key")).find(k => k.textContent === currentGuess[i]);
+                if(keyBtn) {
+                    if(res === "correct") keyBtn.className = "key correct";
+                    else if(res === "present" && !keyBtn.classList.contains("correct")) keyBtn.className = "key present";
+                    else if(res === "absent" && !keyBtn.classList.contains("correct") && !keyBtn.classList.contains("present")) keyBtn.className = "key absent";
+                }
+            }, (i * 150) + 250); 
+        });
+
+        setTimeout(() => {
+            if(guessStr === targetWord) gameWin();
+            else {
+                remaining--; 
+                let nextGuess = Array(wordLen).fill("");
+                for(let i = 0; i < wordLen; i++) if(results[i] === "correct") nextGuess[i] = currentGuess[i];
+                if(nextGuess[0] === "") nextGuess[0] = targetWord[0];
+                currentGuess = nextGuess; 
+
+                if(remaining === 0) gameLose();
+                else {
+                    for(let i=0; i<wordLen; i++) {
+                        if(currentGuess[i] !== "") {
+                            if(i === 0 && results[0] !== "correct") { updateActiveRow(i, currentGuess[i]); document.getElementById("board").children[6 - remaining].children[0].classList.add("locked-hint"); } 
+                            else updateActiveRowForAutofill(i, currentGuess[i]);
+                        }
+                    }
+                    setTimeout(() => AudioEngine.play('pop'), 100);
+                }
+            }
+        }, wordLen * 150 + 500);
+    }
+
+    function useHint() {
+        if(!gameActive) return;
+        if(gameState.gold < HINT_COST) { showToast("Enerjin Yetersiz!", "error"); AudioEngine.play('error'); return; }
+        let emptyIndices =[];
+        for(let i=0; i<wordLen; i++) if(currentGuess[i] !== targetWord[i]) emptyIndices.push(i);
+        if(emptyIndices.length > 0) {
+            gameState.gold -= HINT_COST; saveGame(); updateUI(); AudioEngine.play('click');
+            let idx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            currentGuess[idx] = targetWord[idx]; updateActiveRow(idx, targetWord[idx]);
+            const tile = document.getElementById("board").children[6 - remaining].children[idx];
+            tile.style.borderColor = "var(--correct)"; tile.style.boxShadow = "0 0 20px rgba(0,230,118,0.5)";
+        }
+    }
+
+    function eliminateKeys() {
+        if(!gameActive) return;
+        if(gameState.gold < BOMB_COST) { showToast("Enerjin Yetersiz!", "error"); AudioEngine.play('error'); return; }
+
+        const allKeys = Array.from(document.querySelectorAll(".key")).filter(k => k.textContent.length === 1 && "ABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(k.textContent));
+        const candidates = allKeys.filter(k => !targetWord.includes(k.textContent) && !k.classList.contains("absent") && !k.classList.contains("present") && !k.classList.contains("correct"));
+
+        if(candidates.length === 0) { showToast("Elenecek harf yok!", "error"); return; }
+
+        gameState.gold -= BOMB_COST; saveGame(); updateUI(); AudioEngine.play('bomb');
+        
+        let count = Math.min(3, candidates.length);
+        for(let i=0; i<count; i++) {
+            const randomIdx = Math.floor(Math.random() * candidates.length);
+            candidates[randomIdx].classList.add("absent");
+            candidates.splice(randomIdx, 1);
+        }
+        showToast("3 Yanlış Harf Elendi");
+    }
+
+    function surrender() { if(gameActive && confirm("Pes edip kelimeyi görmek istiyor musun?")) gameLose(); }
+
+    function gameWin() {
+        gameActive = false; AudioEngine.play('win');
+        const bonus = (Date.now() - levelStartTime) < TIME_BONUS_LIMIT ? 25 : 0;
+        gameState.level++; gameState.gold += (WIN_REWARD + bonus); saveGame(); updateUI();
+
+        document.getElementById("modal-title").textContent = "HARİKA!";
+        document.getElementById("modal-title").style.color = "var(--correct)";
+        document.getElementById("modal-reward").textContent = `+${WIN_REWARD} Enerji`;
+        
+        const tbDiv = document.getElementById("time-bonus");
+        if(bonus > 0) { tbDiv.style.display = "block"; tbDiv.textContent = `⚡ Hız: +${bonus}`; } else tbDiv.style.display = "none";
+
+        let starCount = remaining >= 4 ? 3 : (remaining >= 2 ? 2 : 1);
+        let starsHTML = '';
+        for(let i=0; i<3; i++) starsHTML += `<div class="star-icon ${i < starCount ? 'active' : ''}" style="animation-delay:${i * 0.2}s">★</div>`;
+        
+        document.getElementById("stars-display").innerHTML = starsHTML;
+        document.getElementById("word-reveal").textContent = targetWord;
+        document.querySelector(".btn-primary").innerHTML = "SONRAKİ SEVİYE ➔";
+        openModal("result-modal");
+    }
+
+    function gameLose() {
+        gameActive = false; AudioEngine.play('error');
+        document.getElementById("modal-title").textContent = "OYUN BİTTİ";
+        document.getElementById("modal-title").style.color = "#ff3b30";
+        document.getElementById("modal-reward").textContent = "";
+        document.getElementById("time-bonus").style.display = "none";
+        document.getElementById("stars-display").innerHTML = "<div style='font-size:min(12vw, 3.5rem)'>💔</div>";
+        document.getElementById("word-reveal").textContent = targetWord;
+        document.querySelector(".btn-primary").innerHTML = "YENİDEN DENE ↻";
+        openModal("result-modal");
+    }
+
+    function openDictionary() {
+        const url = `https://dictionary.cambridge.org/dictionary/english-turkish/${targetWord.toLowerCase()}`;
+        window.open(url, '_blank');
+    }
+
+    function nextLevel() { setupLevel(); }
+
+    function showToast(msg, type="") {
+        const t = document.createElement("div"); t.className = "toast " + type; t.textContent = msg;
+        document.getElementById("toast-container").appendChild(t);
+        setTimeout(() => t.remove(), 2500);
+    }
+
+    function openModal(id) { document.getElementById(id).style.display = "flex"; }
+    function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
+    document.addEventListener("keydown", (e) => {
+        if (e.ctrlKey || e.altKey || e.metaKey || !gameActive) return;
+        if (e.key === "Enter") { e.preventDefault(); handleInput("ENTER"); }
+        else if (e.key === "Backspace") { e.preventDefault(); handleInput("DEL"); }
+        else if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) { e.preventDefault(); handleInput(e.key.toUpperCase()); }
+    });
+
+    init();
+</script>
+</body>
+</html>
