@@ -28,7 +28,7 @@
             --tile-border: rgba(255, 255, 255, 0.1);
             --tile-active-glow: rgba(0, 243, 255, 0.5);
             
-            --tile-size: 60px;
+            --tile-size: 60px; /* JS tarafından güncellenecek, ancak min/max ile sınırlayacağız */
         }
 
         body[data-theme="orman"]   { --neon-blue: #4ade80; --neon-pink: #166534; --neon-purple: #a3e635; }
@@ -74,45 +74,54 @@
 
         /* --- HEADER --- */
         header {
-            flex: 0 0 70px; display: flex; justify-content: space-between; align-items: center;
-            padding: 0 15px; background: rgba(5, 5, 16, 0.8); backdrop-filter: blur(15px);
+            flex: 0 0 auto;
+            min-height: clamp(55px, 8vh, 70px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 5px clamp(8px, 2vw, 15px);
+            background: rgba(5, 5, 16, 0.8); backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 10;
             position: relative; box-shadow: 0 5px 30px rgba(0,0,0,0.5);
         }
 
-        .level-info { display: flex; flex-direction: column; align-items: center; }
-        .rank-badge { font-size: 0.7rem; color: var(--neon-pink); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; text-shadow: 0 0 10px var(--neon-pink); }
-        .level-badge { font-size: 1.2rem; color: #fff; font-weight: 900; }
+        .level-info { display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; }
+        .rank-badge { font-size: clamp(0.6rem, 2vw, 0.7rem); color: var(--neon-pink); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; text-shadow: 0 0 10px var(--neon-pink); }
+        .level-badge { font-size: clamp(0.95rem, 3.5vw, 1.2rem); color: #fff; font-weight: 900; white-space: nowrap; }
         .level-num { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
-        .word-len-badge { font-size: 0.65rem; color: #aaa; letter-spacing: 1px; margin-top: 2px; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+        .word-len-badge { font-size: clamp(0.55rem, 1.5vw, 0.65rem); color: #aaa; letter-spacing: 1px; margin-top: 2px; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
 
-        .header-right { display: flex; gap: 8px; align-items: center; }
+        .header-right { display: flex; gap: clamp(4px, 1vw, 8px); align-items: center; }
 
         .gold-display {
             background: linear-gradient(45deg, rgba(255, 238, 0, 0.1), rgba(255, 238, 0, 0.05)); 
             border: 1px solid rgba(255, 238, 0, 0.3); color: var(--neon-yellow);
-            padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.95rem;
-            display: flex; align-items: center; gap: 6px; box-shadow: 0 0 15px rgba(255, 238, 0, 0.1);
+            padding: clamp(4px, 1vh, 6px) clamp(8px, 2vw, 14px); 
+            border-radius: 20px; font-weight: 700; font-size: clamp(0.8rem, 3vw, 0.95rem);
+            display: flex; align-items: center; gap: 4px; box-shadow: 0 0 15px rgba(255, 238, 0, 0.1);
+            white-space: nowrap;
         }
 
         .icon-btn {
             background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            color: #fff; width: 42px; height: 42px; border-radius: 12px;
+            color: #fff; 
+            width: clamp(32px, 8vw, 42px); 
+            height: clamp(32px, 8vw, 42px); 
+            border-radius: clamp(8px, 2vw, 12px);
             display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem; cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            position: relative; overflow: hidden;
+            font-size: clamp(1rem, 4vw, 1.2rem); 
+            cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            position: relative; overflow: hidden; flex-shrink: 0;
         }
         .icon-btn:active { transform: scale(0.9); }
         .icon-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); }
         
         .btn-bomb:hover { border-color: var(--neon-red); color: var(--neon-red); box-shadow: 0 0 15px rgba(255, 42, 42, 0.3); }
         
-        .muted-line { position: absolute; width: 2px; height: 20px; background: var(--neon-red); transform: rotate(45deg); display: none; }
+        .muted-line { position: absolute; width: 2px; height: 60%; background: var(--neon-red); transform: rotate(45deg); display: none; }
         .muted .muted-line { display: block; }
 
         /* KÖR MOD STİLİ */
         .blind-active { border-color: var(--neon-red); color: var(--neon-red); box-shadow: 0 0 15px rgba(255,42,42,0.2); }
-        .blind-line { position: absolute; width: 2px; height: 24px; background: var(--neon-red); transform: rotate(-45deg); display: none; }
+        .blind-line { position: absolute; width: 2px; height: 60%; background: var(--neon-red); transform: rotate(-45deg); display: none; }
         .blind-active .blind-line { display: block; }
 
         /* Timer Bar */
@@ -120,21 +129,36 @@
         .time-bar { height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); width: 100%; box-shadow: 0 0 15px var(--neon-blue); }
 
         /* --- OYUN ALANI --- */
-        #game-area { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2px; z-index: 5; overflow-y: auto; }
+        #game-area { 
+            flex: 1 1 auto; /* Daralmaya ve uzamaya izin ver */
+            min-height: 0; /* Taşan öğelerin kapsayıcıyı zorlamasını engeller */
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 10px 5px; 
+            z-index: 5; 
+            overflow-y: auto; 
+            width: 100%;
+        }
+        
+        /* OYUN ALANI SCROLLBAR GİZLEME (Şık Görünüm İçin) */
+        #game-area::-webkit-scrollbar { width: 0; display: none; }
         
         /* İPUCU ALANI */
         #hint-container {
-            width: 100%; max-width: 400px;
-            margin-bottom: 10px;
+            width: 95%; max-width: 400px;
+            margin-bottom: clamp(5px, 2vh, 15px);
             background: rgba(0, 243, 255, 0.1);
             border: 1px solid var(--neon-blue);
-            padding: 8px 15px;
+            padding: clamp(6px, 1.5vh, 10px) clamp(10px, 3vw, 15px);
             border-radius: 12px;
             text-align: center;
             box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
             animation: fadeIn 0.5s ease-out;
             position: relative;
             transition: all 0.3s;
+            flex-shrink: 0;
         }
         
         /* Kör Mod Aktifse İpucu Kutusu Stili */
@@ -145,25 +169,40 @@
         }
         
         #hint-label {
-            font-size: 0.7rem; color: var(--neon-blue); 
+            font-size: clamp(0.6rem, 2vw, 0.7rem); color: var(--neon-blue); 
             text-transform: uppercase; letter-spacing: 2px; 
-            font-weight: 700; display: block; margin-bottom: 4px;
+            font-weight: 700; display: block; margin-bottom: 2px;
         }
         
         #hint-text {
-            color: #fff; font-size: 1.05rem; font-weight: 500; line-height: 1.3;
+            color: #fff; font-size: clamp(0.85rem, 3.5vw, 1.05rem); font-weight: 500; line-height: 1.2;
         }
 
-        #board { display: grid; gap: 8px; }
-        .row { display: grid; gap: 8px; }
+        #board { 
+            display: grid; 
+            gap: clamp(4px, 1.5vw, 8px); 
+            padding: 5px;
+        }
+        .row { 
+            display: grid; 
+            gap: clamp(4px, 1.5vw, 8px); 
+            justify-content: center;
+        }
 
         .tile {
-            width: var(--tile-size); height: var(--tile-size);
+            /* AKIŞKAN KUTU BOYUTU: Hem JS değerini korur, hem de ekrana göre daralır */
+            width: min(var(--tile-size), 13vw, 7.5vh); 
+            height: min(var(--tile-size), 13vw, 7.5vh);
+            
             background: var(--tile-glass); 
             border: 2px solid var(--tile-border);
             backdrop-filter: blur(4px);
-            border-radius: 12px; display: flex; justify-content: center; align-items: center;
-            font-size: 2.2rem; font-weight: 800; color: #fff;
+            border-radius: clamp(8px, 2vw, 12px); 
+            display: flex; justify-content: center; align-items: center;
+            
+            font-size: min(calc(var(--tile-size) * 0.55), 6.5vw, 4vh); 
+            font-weight: 800; color: #fff;
+            
             box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
             transition: transform 0.15s, border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
             will-change: transform, background-color; 
@@ -214,18 +253,37 @@
         @keyframes shake { 10%, 90% { transform: translateX(-3px); } 20%, 80% { transform: translateX(3px); } 30%, 50%, 70% { transform: translateX(-5px); } 40%, 60% { transform: translateX(5px); } }
 
         /* --- KLAVYE --- */
-        #keyboard-container { width: 100%; max-width: 600px; margin: 0 auto; padding: 5px 8px 30px 8px; z-index: 10; }
-        .kb-row { display: flex; width: 100%; justify-content: center; gap: 6px; margin-bottom: 8px; }
+        #keyboard-container { 
+            width: 100%; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: clamp(5px, 1vh, 10px) clamp(5px, 1.5vw, 8px) clamp(10px, 3vh, 30px) clamp(5px, 1.5vw, 8px); 
+            z-index: 10; 
+            flex-shrink: 0;
+        }
+        .kb-row { 
+            display: flex; 
+            width: 100%; 
+            justify-content: center; 
+            gap: clamp(4px, 1.2vw, 6px); 
+            margin-bottom: clamp(5px, 1.2vh, 8px); 
+        }
         .key {
-            flex: 1; height: 60px; border-radius: 10px; border: none;
+            flex: 1; 
+            height: clamp(45px, 7.5vh, 60px); 
+            border-radius: clamp(6px, 1.5vw, 10px); 
+            border: none;
             background: rgba(40, 40, 60, 0.8); 
-            border-bottom: 4px solid rgba(0,0,0,0.4);
-            color: #fff; font-weight: 700; font-size: 1.25rem;
+            border-bottom: clamp(2px, 0.5vh, 4px) solid rgba(0,0,0,0.4);
+            color: #fff; 
+            font-weight: 700; 
+            font-size: clamp(1rem, 4vw, 1.25rem);
             cursor: pointer; transition: all 0.1s;
             touch-action: manipulation; position: relative; overflow: hidden;
+            padding: 0;
         }
         .key:active { transform: translateY(3px); border-bottom-width: 1px; background: rgba(255,255,255,0.1); }
-        .key-wide { flex: 1.5; font-size: 0.9rem; background: rgba(60, 60, 80, 0.8); }
+        .key-wide { flex: 1.5; font-size: clamp(0.85rem, 3.5vw, 1rem); background: rgba(60, 60, 80, 0.8); }
         
         /* Klavye Ripple Efekti */
         .key .ripple {
@@ -248,17 +306,25 @@
         .modal-content {
             background: #121220; border: 1px solid rgba(255,255,255,0.1);
             box-shadow: 0 0 50px rgba(0,0,0,0.6), 0 0 20px rgba(0, 243, 255, 0.1);
-            padding: 35px; border-radius: 24px; text-align: center;
-            min-width: 340px; max-width: 90%; animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: clamp(20px, 4vh, 35px); 
+            border-radius: 24px; text-align: center;
+            width: 90%; max-width: 400px; 
+            max-height: 90dvh; overflow-y: auto;
+            animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
         }
+        
+        /* Modal Scrollbar Tasarımı */
+        .modal-content::-webkit-scrollbar { width: 6px; }
+        .modal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        
         .close-btn { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
         .close-btn:hover { opacity: 1; }
         
         /* YILDIZ ALANI */
-        .star-box { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+        .star-box { display: flex; justify-content: center; gap: 10px; margin: clamp(10px, 2vh, 20px) 0; }
         .star-icon {
-            font-size: 3.5rem; color: #333; transition: all 0.3s;
+            font-size: clamp(2.5rem, 8vw, 3.5rem); color: #333; transition: all 0.3s;
             text-shadow: 0 0 0 transparent;
         }
         .star-icon.active {
@@ -272,24 +338,26 @@
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
         
-        .stat-row { display: flex; justify-content: space-around; margin: 25px 0; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-row { display: flex; justify-content: space-around; margin: 15px 0; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
         .stat-item { display: flex; flex-direction: column; }
-        .stat-val { font-size: 1.8rem; font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 243, 255, 0.3); }
-        .stat-label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 5px; }
+        .stat-val { font-size: clamp(1.4rem, 5vw, 1.8rem); font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 243, 255, 0.3); }
+        .stat-label { font-size: clamp(0.6rem, 2vw, 0.7rem); color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 5px; }
 
         .btn-group { display: flex; gap: 10px; margin-top: 20px; }
         
         .btn-primary {
             background: var(--neon-blue); color: #000; border: none;
-            padding: 16px 20px; border-radius: 16px; font-size: 1.1rem; font-weight: 800; letter-spacing: 1px;
+            padding: clamp(12px, 3vh, 16px) 20px; border-radius: 16px; 
+            font-size: clamp(1rem, 3.5vw, 1.1rem); font-weight: 800; letter-spacing: 1px;
             cursor: pointer; box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-            transition: transform 0.2s; flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px;
+            transition: transform 0.2s; flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;
         }
         .btn-primary:hover { transform: scale(1.03); box-shadow: 0 0 30px rgba(0, 243, 255, 0.5); }
         
         .btn-tdk {
             background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red);
-            padding: 10px; border-radius: 50px; font-size: 0.9rem; font-weight: 600;
+            padding: clamp(8px, 2vh, 10px); border-radius: 50px; 
+            font-size: clamp(0.8rem, 3vw, 0.9rem); font-weight: 600;
             margin-top: 15px; cursor: pointer; width: 100%; transition: all 0.2s;
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
@@ -299,64 +367,16 @@
         .toast {
             background: rgba(255,255,255,0.95); color: #000; padding: 14px 28px; border-radius: 40px;
             font-weight: 800; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-            animation: slideUp 0.3s forwards; margin-bottom: 8px; white-space: nowrap; font-size: 1rem;
+            animation: slideUp 0.3s forwards; margin-bottom: 8px; white-space: nowrap; font-size: clamp(0.9rem, 3.5vw, 1rem);
         }
         .toast.error { background: var(--neon-red); color: #fff; box-shadow: 0 5px 30px rgba(255, 42, 42, 0.4); }
         
         #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 90; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* ========================================= */
-        /* === RESPONSIVE / MOBİL DÜZELTMELERİ === */
-        /* ========================================= */
-        @media screen and (max-height: 850px) {
-            /* Header Küçültme */
-            header { flex: 0 0 55px; padding: 0 10px; }
-            .icon-btn { width: 32px; height: 32px; font-size: 1rem; border-radius: 8px; }
-            .gold-display { padding: 4px 10px; font-size: 0.8rem; }
-            .rank-badge { font-size: 0.55rem; margin-bottom: 0; }
-            .level-badge { font-size: 0.95rem; }
-            .word-len-badge { font-size: 0.55rem; padding: 1px 4px; }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-            /* İpucu Küçültme */
-            #hint-container { margin-bottom: 5px; padding: 4px 6px; max-width: 98%; }
-            #hint-text { font-size: 0.85rem; line-height: 1.1; }
-            #hint-label { font-size: 0.6rem; margin-bottom: 1px; }
-
-            /* Oyun Tahtası Ayarları - MAKSİMUM BÜYÜKLÜK */
-            #game-area { padding: 0; justify-content: center; }
-            
-            /* Mobilde kutu boyutu en üst seviyeye çıkarıldı */
-            :root { --tile-size: 52px !important; } 
-            
-            /* Boşlukları (gap) kıstık ki sığsın */
-            #board { gap: 4px; }
-            .row { gap: 4px; }
-            
-            .tile { font-size: 1.8rem; border-radius: 8px; border-width: 2px; }
-
-            /* Klavye Ayarları */
-            #keyboard-container { padding: 2px 5px 10px 5px; max-width: 100%; }
-            .kb-row { margin-bottom: 4px; gap: 3px; }
-            .key { height: 45px; font-size: 1rem; border-radius: 6px; border-bottom-width: 2px; }
-        }
-
-        /* Çok Küçük Ekranlar (iPhone SE vb.) */
-        @media screen and (max-height: 650px) {
-            header { flex: 0 0 50px; }
-            .icon-btn { width: 28px; height: 28px; }
-            
-            /* Kutu boyutunu 42px'e sabitledik */
-            :root { --tile-size: 42px !important; }
-            #board { gap: 3px; }
-            .row { gap: 3px; }
-
-            .tile { font-size: 1.4rem; }
-            .key { height: 38px; font-size: 0.85rem; }
-            #hint-container { margin-bottom: 2px; padding: 2px; }
-            #hint-text { font-size: 0.75rem; }
-        }
     </style>
 </head>
 <body>
@@ -410,7 +430,7 @@
     <!-- SONUÇ MODALI -->
     <div id="result-modal" class="modal-overlay">
         <div class="modal-content">
-            <h2 id="modal-title" style="margin:0 0 5px 0; font-size: 2.2rem; letter-spacing:1px; text-shadow: 0 0 20px currentColor;"></h2>
+            <h2 id="modal-title" style="margin:0 0 5px 0; font-size: clamp(1.8rem, 6vw, 2.2rem); letter-spacing:1px; text-shadow: 0 0 20px currentColor;"></h2>
             
             <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:15px;">
                 <div id="modal-reward" style="font-size:1.1rem; color:var(--neon-yellow); font-weight:700;"></div>
@@ -422,7 +442,7 @@
             
             <div style="background:rgba(255,255,255,0.03); padding:20px; border-radius:16px; margin:20px 0; border:1px solid rgba(255,255,255,0.05);">
                 <div style="color:#888; font-size:0.75rem; letter-spacing:2px; margin-bottom:8px; font-weight:600;">DOĞRU KELİME</div>
-                <div id="word-reveal" style="color:#fff; font-size: 2rem; font-weight:900; letter-spacing:4px; text-shadow: 0 0 15px rgba(255,255,255,0.5);"></div>
+                <div id="word-reveal" style="color:#fff; font-size: clamp(1.8rem, 6vw, 2.2rem); font-weight:900; letter-spacing:4px; text-shadow: 0 0 15px rgba(255,255,255,0.5);"></div>
                 
                 <!-- TDK BUTTON -->
                 <button class="btn-tdk" onclick="openTDK()">
@@ -440,7 +460,7 @@
     <div id="stats-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('stats-modal')">✕</button>
-            <h2 style="color:#fff; margin-bottom:5px;">İSTATİSTİKLER</h2>
+            <h2 style="color:#fff; margin-bottom:5px; font-size: clamp(1.5rem, 5vw, 1.8rem);">İSTATİSTİKLER</h2>
             <div id="stat-rank-title" style="color:var(--neon-pink); font-size:0.9rem; margin-bottom:10px; letter-spacing:2px; font-weight:700;">GÖZCÜ</div>
             
             <div class="stat-row">
@@ -459,28 +479,28 @@
     <div id="help-modal" class="modal-overlay">
         <div class="modal-content" style="text-align: left;">
             <button class="close-btn" onclick="closeModal('help-modal')">✕</button>
-            <h2 style="text-align:center; color:var(--neon-blue);">NASIL OYNANIR?</h2>
-            <p style="color:#ccc; text-align:center; margin-bottom:20px;">Yukarıda kelime hakkında ipucu verilir!</p>
+            <h2 style="text-align:center; color:var(--neon-blue); font-size: clamp(1.5rem, 5vw, 1.8rem);">NASIL OYNANIR?</h2>
+            <p style="color:#ccc; text-align:center; margin-bottom:20px; font-size: clamp(0.85rem, 3.5vw, 1rem);">Yukarıda kelime hakkında ipucu verilir!</p>
             
-            <div style="margin:10px 0; padding:12px; border-left:4px solid var(--neon-blue); background:rgba(255,255,255,0.03); border-radius:0 8px 8px 0;">
+            <div style="margin:10px 0; padding:12px; border-left:4px solid var(--neon-blue); background:rgba(255,255,255,0.03); border-radius:0 8px 8px 0; font-size: clamp(0.85rem, 3.5vw, 1rem);">
                 <span style="color:var(--neon-blue); font-weight:bold;">MAVİ</span> harf baştan verilen kilitli ipucudur.
             </div>
-            <div style="margin:10px 0; padding:12px; border-left:4px solid var(--neon-green); background:rgba(255,255,255,0.03); border-radius:0 8px 8px 0;">
+            <div style="margin:10px 0; padding:12px; border-left:4px solid var(--neon-green); background:rgba(255,255,255,0.03); border-radius:0 8px 8px 0; font-size: clamp(0.85rem, 3.5vw, 1rem);">
                 <span style="color:var(--neon-green); font-weight:bold;">YEŞİL</span> harf doğru yerde.
             </div>
-            <div style="margin:10px 0; padding:12px; border-left:4px solid var(--neon-yellow); background:rgba(255,255,255,0.03); border-radius:0 8px 8px 0;">
+            <div style="margin:10px 0; padding:12px; border-left:4px solid var(--neon-yellow); background:rgba(255,255,255,0.03); border-radius:0 8px 8px 0; font-size: clamp(0.85rem, 3.5vw, 1rem);">
                 <span style="color:var(--neon-yellow); font-weight:bold;">SARI</span> harf kelimede var ama yeri yanlış.
             </div>
-            <p style="font-size:0.85rem; color:var(--neon-blue); text-align:center; margin-top:20px;">💣 Bomba ile yanlış harfleri eleyebilirsin!</p>
+            <p style="font-size:clamp(0.75rem, 3vw, 0.85rem); color:var(--neon-blue); text-align:center; margin-top:20px;">💣 Bomba ile yanlış harfleri eleyebilirsin!</p>
         </div>
     </div>
 
     <!-- GÜNLÜK ÖDÜL MODALI -->
     <div id="daily-modal" class="modal-overlay">
         <div class="modal-content">
-            <h2 style="color:var(--neon-yellow);">GÜNLÜK ÖDÜL</h2>
-            <div style="font-size:4rem; margin:20px 0;">🎁</div>
-            <div style="font-size:1.3rem; color:#fff; font-weight:bold;">+50 ENERJİ KAZANDIN</div>
+            <h2 style="color:var(--neon-yellow); font-size: clamp(1.5rem, 5vw, 1.8rem);">GÜNLÜK ÖDÜL</h2>
+            <div style="font-size:clamp(3rem, 10vw, 4rem); margin:20px 0;">🎁</div>
+            <div style="font-size:clamp(1rem, 4vw, 1.3rem); color:#fff; font-weight:bold; margin-bottom: 20px;">+50 ENERJİ KAZANDIN</div>
             <button class="btn-primary" onclick="claimDaily()">TEŞEKKÜRLER</button>
         </div>
     </div>
@@ -490,7 +510,7 @@
     const STORAGE_KEY = 'kelime_neon_v10_stars';
     
     const DB = {
-        3: [
+        3:[
             { w: "AŞK", h: "Şiddetli ve yakıcı sevgi duygusu." },
             { w: "TOP", h: "Yuvarlak, genellikle oyun için kullanılan nesne." },
             { w: "NAR", h: "İçinde yüzlerce küçük kırmızı tanesi olan meyve." },
@@ -542,7 +562,7 @@
             { w: "YÜZ", h: "Çehre, surat." },
             { w: "ZAR", h: "Şans oyunlarında kullanılan küp." }
         ],
-        4: [
+        4:[
             { w: "ELMA", h: "Kırmızı, sarı veya yeşil kabuklu meyve." },
             { w: "KAPI", h: "Binalara girip çıkmaya yarayan yer." },
             { w: "MAVİ", h: "Gökyüzünün ve denizin rengi." },
@@ -618,7 +638,7 @@
             { w: "KİLO", h: "Ağırlık birimi." },
             { w: "KİRA", h: "Kullanım bedeli." },
             { w: "KONU", h: "Mevzu, bahis." },
-            { w: "KOŞU", "h": "Hızlı yürüme eylemi, yarış." },
+            { w: "KOŞU", h: "Hızlı yürüme eylemi, yarış." },
             { w: "KOYU", h: "Açık rengin zıttı." },
             { w: "KRAL", h: "Hükümdar." },
             { w: "KURT", h: "Köpekgillerden vahşi hayvan." },
@@ -679,7 +699,7 @@
             { w: "YENİ", h: "Eski olmayan." },
             { w: "ZEKA", h: "Akıl, anlama yeteneği." }
         ],
-        5: [
+        5:[
             { w: "RADYO", h: "Ses dalgalarını ileten cihaz." },
             { w: "SEHPA", h: "Küçük masa." },
             { w: "KİTAP", h: "Okumak için yazılmış eser." },
@@ -977,7 +997,7 @@
             { w: "ZİRVE", h: "Doruk, en tepe." },
             { w: "ZORLU", h: "Güç, çetin." }
         ],
-        6: [
+        6:[
             { w: "KAPTAN", h: "Gemi veya uçak yöneticisi." },
             { w: "GÖZLÜK", h: "Görme bozukluğunu düzelten araç." },
             { w: "BARDAK", h: "Su içme kabı." },
@@ -1219,7 +1239,7 @@
             { w: "ZEYTİN", h: "Kahvaltılık siyah/yeşil meyve." },
             { w: "ZİNCİR", h: "Halkalar dizisi." }
         ],
-        7: [
+        7:[
             { w: "MERHABA", h: "Selamlaşma sözü." },
             { w: "PENCERE", h: "Duvarlardaki camlı açıklık." },
             { w: "TÜRKİYE", h: "Vatanımız." },
@@ -1393,7 +1413,7 @@
         ]
     };
     const THEMES = ["uzay", "orman", "okyanus", "volkan"];
-    const RANKS = [
+    const RANKS =[
         { l: 0, t: "GÖZCÜ" },
         { l: 5, t: "KAŞİF" },
         { l: 10, t: "OPERATÖR" },
@@ -1412,7 +1432,7 @@
         blindMode: false // YENİ: Kör Mod Durumu
     };
     
-    let targetWord = "", targetHint = "", wordLen = 3, currentGuess = [], remaining = 6, gameActive = true;
+    let targetWord = "", targetHint = "", wordLen = 3, currentGuess =[], remaining = 6, gameActive = true;
     let levelStartTime = 0;
     const HINT_COST = 50, BOMB_COST = 75, WIN_REWARD = 50, TIME_BONUS_LIMIT = 30000;
 
@@ -1452,8 +1472,7 @@
                     gain.gain.setValueAtTime(0.1, t);
                     gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
                     osc.start(); osc.stop(t + 0.3);
-                } else if (type === 'win') {
-                    [440, 554, 659, 880].forEach((f, i) => {
+                } else if (type === 'win') {[440, 554, 659, 880].forEach((f, i) => {
                         setTimeout(() => {
                             if(gameState.isMuted) return;
                             const o = this.ctx.createOscillator(); const g = this.ctx.createGain();
@@ -1629,6 +1648,7 @@
         if(len === 6) size = 50; 
         if(len === 7) size = 44;
         
+        // Bu boyut değişkenini hala atıyoruz, ancak CSS kısmında ekran daralınca ezilecektir (fluid).
         document.documentElement.style.setProperty('--tile-size', size + 'px');
         
         for(let i=0; i<6; i++) {
@@ -1643,7 +1663,7 @@
     }
 
     function createKeyboard() {
-        const rows = ["E R T Y U I O P Ğ Ü", "A S D F G H J K L Ş İ", "Enter Z C V B N M Ö Ç ⌫"];
+        const rows =["E R T Y U I O P Ğ Ü", "A S D F G H J K L Ş İ", "Enter Z C V B N M Ö Ç ⌫"];
         const kb = document.getElementById("keyboard-container"); kb.innerHTML = "";
         rows.forEach(r => {
             const div = document.createElement("div"); div.className = "kb-row";
@@ -1653,7 +1673,7 @@
                 if(char === "Enter" || char === "⌫") {
                     btn.classList.add("key-wide");
                     if(char === "⌫") { val = "Del"; btn.textContent = "⌫"; }
-                    if(char === "Enter") { btn.textContent = "GİRİŞ"; btn.style.fontSize="0.8rem"; }
+                    if(char === "Enter") { btn.textContent = "GİRİŞ"; }
                 }
                 btn.onclick = (e) => {
                     createRipple(e, btn);
@@ -1704,7 +1724,6 @@
     }
 
     function updateActiveRow(index, val) {
-        // querySelectorAll yerine children kullanarak performans arttırıldı
         const row = document.getElementById("board").children[6 - remaining];
         if(!row) return;
         const tile = row.children[index];
@@ -1821,7 +1840,7 @@
         if(!gameActive) return;
         if(gameState.gold < HINT_COST) { showToast("Enerji Yetersiz!"); AudioEngine.play('error'); return; }
         
-        let emptyIndices = [];
+        let emptyIndices =[];
         for(let i=0; i<wordLen; i++) if(currentGuess[i] !== targetWord[i]) emptyIndices.push(i);
 
         if(emptyIndices.length > 0) {
@@ -1961,11 +1980,11 @@
         const canvas = document.getElementById('confetti-canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particles = [];
+        let particles =[];
         for(let i=0; i<150; i++) particles.push({
             x: window.innerWidth/2, y: window.innerHeight/2,
             vx: (Math.random()-0.5)*40, vy: (Math.random()-1)*40-10,
-            c: ['#00f3ff', '#ff00ff', '#0aff68', '#ffee00'][Math.floor(Math.random()*4)],
+            c:['#00f3ff', '#ff00ff', '#0aff68', '#ffee00'][Math.floor(Math.random()*4)],
             size: Math.random()*8+3
         });
         function loop() {
@@ -1981,33 +2000,18 @@
         loop();
     }
 
-    // --- OPTİMİZE EDİLMİŞ KLAVYE OLAY DİNLEYİCİSİ (FIX) ---
     document.addEventListener("keydown", (e) => {
-        // Kontrol, Alt, Shift tuşlarına basılıysa işlemi durdur (kısayolları bozma)
         if (e.ctrlKey || e.altKey || e.metaKey) return;
-        
         if(!gameActive) return;
 
         let key = e.key;
+        if (key === "Enter") { e.preventDefault(); handleInput("Enter"); return; }
+        if (key === "Backspace") { e.preventDefault(); handleInput("Del"); return; }
 
-        // Enter ve Backspace için özel işlem
-        if (key === "Enter") {
-            e.preventDefault();
-            handleInput("Enter");
-            return;
-        }
-        if (key === "Backspace") {
-            e.preventDefault();
-            handleInput("Del");
-            return;
-        }
-
-        // Performans optimizasyonu: Sadece tek harfli ve geçerli karakterler için çeviri yap
-        // Bu sayede Shift'e basınca veya gereksiz tuşlarda donma olmaz
         if (key.length === 1 && /[a-zA-ZğüşıöçĞÜŞİÖÇ]/.test(key)) {
             const upperKey = key.toLocaleUpperCase('tr-TR');
             if ("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ".includes(upperKey)) {
-                e.preventDefault(); // Sayfa kaymasını önle
+                e.preventDefault(); 
                 handleInput(upperKey);
             }
         }
