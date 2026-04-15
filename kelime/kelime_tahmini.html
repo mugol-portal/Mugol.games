@@ -3,39 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kelime Ustası: Neon (Kör Mod)</title>
+    <title>Kelime Ustası: Neon</title>
     
+    <!-- kelimeler.js dosyası aynı klasörde olmalı -->
+    <script src="kelimeler.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --neon-blue: #00f3ff;
-            --neon-pink: #ff00ff;
-            --neon-purple: #bc13fe;
-            --neon-green: #0aff68;
-            --neon-yellow: #ffee00;
-            --neon-red: #ff2a2a;
-            --bg-deep: #050510;
+            --neon-blue:   #00e5ff;
+            --neon-pink:   #ff00ea;
+            --neon-purple: #b026ff;
+            --neon-green:  #00ff73;
+            --neon-yellow: #ffea00;
+            --neon-red:    #ff1e1e;
+            --bg-deep:     #05050a;
             
-            --correct: #0aff68;
-            --present: #ffee00;
-            --absent-bg: #1f1f35; 
-            --absent-text: #6b6b7e;
+            --correct:     #00ff73;
+            --present:     #ffea00;
+            --absent-bg:   #1a1a24;
+            --absent-text: #4a4a5c;
             
-            --tile-glass: rgba(255, 255, 255, 0.03);
-            --tile-border: rgba(255, 255, 255, 0.1);
-            --tile-active-glow: rgba(0, 243, 255, 0.5);
-            
-            --tile-size: 60px; /* JS tarafından güncellenecek, ancak min/max ile sınırlayacağız */
+            --tile-bg:          rgba(20, 20, 35, 0.7);
+            --tile-border:      rgba(255, 255, 255, 0.08);
+            --tile-active-glow: rgba(0, 229, 255, 0.4);
+            --tile-size: 60px;
         }
 
-        body[data-theme="orman"]   { --neon-blue: #4ade80; --neon-pink: #166534; --neon-purple: #a3e635; }
-        body[data-theme="okyanus"] { --neon-blue: #38bdf8; --neon-pink: #0284c7; --neon-purple: #0ea5e9; }
-        body[data-theme="volkan"]  { --neon-blue: #fbbf24; --neon-pink: #f43f5e; --neon-purple: #9f1239; }
+        body[data-theme="orman"]   { --neon-blue:#34d399; --neon-pink:#059669; --neon-purple:#6ee7b7; }
+        body[data-theme="okyanus"] { --neon-blue:#38bdf8; --neon-pink:#0284c7; --neon-purple:#0ea5e9; }
+        body[data-theme="volkan"]  { --neon-blue:#fbbf24; --neon-pink:#f43f5e; --neon-purple:#9f1239; }
 
-        * { box-sizing: border-box; touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent; }
+        *, *::before, *::after {
+            box-sizing: border-box;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
             margin: 0;
@@ -49,333 +56,433 @@
             position: relative;
         }
 
-        /* --- ARKA PLAN EFEKTLERİ --- */
-        .universe { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
-        
+        /* ══════════════════════════════════════════
+           ARKA PLAN
+        ══════════════════════════════════════════ */
+        .universe {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0; pointer-events: none; overflow: hidden;
+        }
         .grid-overlay {
-            position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            position: absolute; width: 200%; height: 200%;
+            top: -50%; left: -50%;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
             background-size: 50px 50px;
-            transform: perspective(500px) rotateX(60deg);
+            transform: perspective(600px) rotateX(60deg);
+            will-change: transform;
             animation: gridMove 30s linear infinite;
         }
-        @keyframes gridMove { 0% { transform: perspective(500px) rotateX(60deg) translateY(0); } 100% { transform: perspective(500px) rotateX(60deg) translateY(50px); } }
-
-        .nebula {
-            position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.3;
-            mix-blend-mode: screen; animation: float 40s infinite ease-in-out alternate;
+        @keyframes gridMove {
+            0% { transform: perspective(600px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(600px) rotateX(60deg) translateY(50px); }
         }
-        .nebula-1 { width: 600px; height: 600px; background: var(--neon-purple); top: -20%; left: -20%; }
-        .nebula-2 { width: 500px; height: 500px; background: var(--neon-blue); bottom: -10%; right: -10%; animation-delay: -5s; }
-        
-        @keyframes float { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(40px, 60px) scale(1.1); } }
+        .nebula {
+            position: absolute; border-radius: 50%;
+            filter: blur(100px); opacity: 0.15;
+            mix-blend-mode: screen;
+            will-change: transform;
+            animation: nebulaFloat 40s infinite ease-in-out alternate;
+        }
+        .nebula-1 { width: 500px; height: 500px; background: var(--neon-purple); top: -20%; left: -10%; }
+        .nebula-2 { width: 450px; height: 450px; background: var(--neon-blue);   bottom: -10%; right: -10%; animation-delay: -10s; }
 
-        /* --- HEADER --- */
+        @keyframes nebulaFloat {
+            0%   { transform: translate(0,0) scale(1); }
+            100% { transform: translate(30px,40px) scale(1.05); }
+        }
+
+        /* ══════════════════════════════════════════
+           HEADER
+        ══════════════════════════════════════════ */
         header {
             flex: 0 0 auto;
-            min-height: clamp(55px, 8vh, 70px);
+            min-height: clamp(60px, 9vh, 76px);
             display: flex; justify-content: space-between; align-items: center;
-            padding: 5px clamp(8px, 2vw, 15px);
-            background: rgba(5, 5, 16, 0.8); backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 10;
-            position: relative; box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+            padding: 8px clamp(12px, 3vw, 24px);
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            z-index: 10; position: relative;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.6);
         }
 
-        .level-info { display: flex; flex-direction: column; align-items: center; flex: 1; text-align: center; }
-        .rank-badge { font-size: clamp(0.6rem, 2vw, 0.7rem); color: var(--neon-pink); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; text-shadow: 0 0 10px var(--neon-pink); }
-        .level-badge { font-size: clamp(0.95rem, 3.5vw, 1.2rem); color: #fff; font-weight: 900; white-space: nowrap; }
-        .level-num { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
-        .word-len-badge { font-size: clamp(0.55rem, 1.5vw, 0.65rem); color: #aaa; letter-spacing: 1px; margin-top: 2px; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+        header::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue), var(--neon-green));
+            opacity: 0.8;
+        }
 
-        .header-right { display: flex; gap: clamp(4px, 1vw, 8px); align-items: center; }
+        .level-info { display:flex; flex-direction:column; align-items:center; flex:1; text-align:center; }
+        .rank-badge {
+            font-size: clamp(0.6rem, 2vw, 0.7rem);
+            color: var(--neon-pink); font-weight:800;
+            text-transform:uppercase; letter-spacing:2px;
+            margin-bottom:2px; text-shadow:0 0 10px rgba(255, 0, 234, 0.5);
+        }
+        .level-badge { font-size:clamp(1rem,3.5vw,1.3rem); color:#fff; font-weight:900; letter-spacing: 0.5px; }
+        .level-num   { color:var(--neon-blue); text-shadow:0 0 15px rgba(0, 229, 255, 0.6); }
+        .word-len-badge {
+            font-size:clamp(0.55rem,1.5vw,0.65rem); color:#b3b3b3; letter-spacing:1px;
+            margin-top:3px; background:rgba(255,255,255,0.05);
+            padding:3px 10px; border-radius:12px; white-space:nowrap;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .header-right { display:flex; gap:clamp(6px,1.5vw,10px); align-items:center; }
 
         .gold-display {
-            background: linear-gradient(45deg, rgba(255, 238, 0, 0.1), rgba(255, 238, 0, 0.05)); 
-            border: 1px solid rgba(255, 238, 0, 0.3); color: var(--neon-yellow);
-            padding: clamp(4px, 1vh, 6px) clamp(8px, 2vw, 14px); 
-            border-radius: 20px; font-weight: 700; font-size: clamp(0.8rem, 3vw, 0.95rem);
-            display: flex; align-items: center; gap: 4px; box-shadow: 0 0 15px rgba(255, 238, 0, 0.1);
-            white-space: nowrap;
+            background: rgba(255, 234, 0, 0.08);
+            border: 1px solid rgba(255, 234, 0, 0.2);
+            color: var(--neon-yellow);
+            padding: clamp(6px, 1vh, 8px) clamp(10px, 2vw, 16px);
+            border-radius: 12px; font-weight:800; font-size:clamp(0.85rem,3vw,1rem);
+            display:flex; align-items:center; gap:6px;
+            box-shadow: 0 0 15px rgba(255,238,0,0.1);
         }
 
         .icon-btn {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            color: #fff; 
-            width: clamp(32px, 8vw, 42px); 
-            height: clamp(32px, 8vw, 42px); 
-            border-radius: clamp(8px, 2vw, 12px);
-            display: flex; justify-content: center; align-items: center;
-            font-size: clamp(1rem, 4vw, 1.2rem); 
-            cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            position: relative; overflow: hidden; flex-shrink: 0;
-        }
-        .icon-btn:active { transform: scale(0.9); }
-        .icon-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(0, 243, 255, 0.2); }
-        
-        .btn-bomb:hover { border-color: var(--neon-red); color: var(--neon-red); box-shadow: 0 0 15px rgba(255, 42, 42, 0.3); }
-        
-        .muted-line { position: absolute; width: 2px; height: 60%; background: var(--neon-red); transform: rotate(45deg); display: none; }
-        .muted .muted-line { display: block; }
-
-        /* KÖR MOD STİLİ */
-        .blind-active { border-color: var(--neon-red); color: var(--neon-red); box-shadow: 0 0 15px rgba(255,42,42,0.2); }
-        .blind-line { position: absolute; width: 2px; height: 60%; background: var(--neon-red); transform: rotate(-45deg); display: none; }
-        .blind-active .blind-line { display: block; }
-
-        /* Timer Bar */
-        .time-bar-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.05); }
-        .time-bar { height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); width: 100%; box-shadow: 0 0 15px var(--neon-blue); }
-
-        /* --- OYUN ALANI --- */
-        #game-area { 
-            flex: 1 1 auto; /* Daralmaya ve uzamaya izin ver */
-            min-height: 0; /* Taşan öğelerin kapsayıcıyı zorlamasını engeller */
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 10px 5px; 
-            z-index: 5; 
-            overflow-y: auto; 
-            width: 100%;
-        }
-        
-        /* OYUN ALANI SCROLLBAR GİZLEME (Şık Görünüm İçin) */
-        #game-area::-webkit-scrollbar { width: 0; display: none; }
-        
-        /* İPUCU ALANI */
-        #hint-container {
-            width: 95%; max-width: 400px;
-            margin-bottom: clamp(5px, 2vh, 15px);
-            background: rgba(0, 243, 255, 0.1);
-            border: 1px solid var(--neon-blue);
-            padding: clamp(6px, 1.5vh, 10px) clamp(10px, 3vw, 15px);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #fff;
+            width:  clamp(36px, 9vw, 44px);
+            height: clamp(36px, 9vw, 44px);
             border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
-            animation: fadeIn 0.5s ease-out;
-            position: relative;
-            transition: all 0.3s;
+            display:flex; justify-content:center; align-items:center;
+            font-size:clamp(1.1rem, 4.5vw, 1.3rem);
+            cursor:pointer; transition:all 0.2s ease;
+            position:relative; flex-shrink:0;
+        }
+        .icon-btn:active  { transform:scale(0.9); }
+        .icon-btn:hover   { background:rgba(255,255,255,0.1); border-color:var(--neon-blue); box-shadow:0 0 15px rgba(0,229,255,0.3); color:var(--neon-blue); }
+        .btn-bomb:hover   { border-color:var(--neon-red); color:var(--neon-red); box-shadow:0 0 15px rgba(255,30,30,0.3); }
+        .btn-hint:hover   { border-color:var(--neon-yellow); color:var(--neon-yellow); box-shadow:0 0 15px rgba(255,234,0,0.3); }
+
+        .muted-line { position:absolute; width:2px; height:65%; background:var(--neon-red); transform:rotate(45deg); display:none; border-radius:2px; }
+        .muted .muted-line { display:block; }
+        .blind-active { border-color:var(--neon-red)!important; color:var(--neon-red)!important; box-shadow:0 0 15px rgba(255,30,30,0.3)!important; }
+        .blind-line   { position:absolute; width:2px; height:65%; background:var(--neon-red); transform:rotate(-45deg); display:none; border-radius:2px; }
+        .blind-active .blind-line { display:block; }
+        .btn-stats:hover { border-color:var(--neon-purple); color:var(--neon-purple); box-shadow:0 0 15px rgba(176,38,255,0.3); }
+
+        .time-bar-container { position:absolute; bottom:0; left:0; width:100%; height:3px; background:rgba(255,255,255,0.05); }
+        .time-bar { height:100%; background:linear-gradient(90deg,var(--neon-blue),var(--neon-purple)); width:100%; box-shadow:0 0 15px var(--neon-blue); }
+
+        /* ══════════════════════════════════════════
+           OYUN ALANI (AŞAĞI KAYDIRMA EKLENDİ)
+        ══════════════════════════════════════════ */
+        #game-area {
+            flex: 1 1 auto; 
+            min-height: 0;
+            display: flex; 
+            flex-direction: column;
+            padding: 5px; 
+            z-index: 5;
+            width: 100%; 
+            overflow-y: auto; /* Aşağı kaydırma açıldı */
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* Mobil için akıcı kaydırma */
+        }
+
+        /* Neon Temalı Kaydırma Çubuğu */
+        #game-area::-webkit-scrollbar { width: 5px; }
+        #game-area::-webkit-scrollbar-track { background: transparent; }
+        #game-area::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.3); border-radius: 10px; }
+
+        /* İçeriği büyük ekranda ortalar, küçük ekranda kaydırmaya olanak tanır */
+        .game-content-wrapper {
+            margin: auto; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 15px 0;
+        }
+
+        /* ─── İPUCU KUTUSU ─── */
+        #hint-container {
+            width:92%; max-width:400px;
+            margin-bottom:clamp(15px, 3vh, 25px);
+            background: linear-gradient(180deg, rgba(0,229,255,0.08) 0%, rgba(0,229,255,0.02) 100%);
+            border:1px solid rgba(0,229,255,0.3);
+            border-top: 2px solid rgba(0,229,255,0.6);
+            padding:clamp(12px,2vh,16px) clamp(14px,3vw,20px);
+            border-radius:16px; text-align:center;
+            box-shadow:0 8px 25px rgba(0,0,0,0.4), 0 0 20px rgba(0,229,255,0.1);
+            animation:fadeIn 0.5s ease-out;
+            position:relative; transition:all 0.3s;
             flex-shrink: 0;
         }
-        
-        /* Kör Mod Aktifse İpucu Kutusu Stili */
         #hint-container.blind-mode-box {
-            background: rgba(255, 42, 42, 0.05);
-            border-color: var(--neon-red);
-            box-shadow: 0 0 10px rgba(255, 42, 42, 0.1);
+            background: linear-gradient(180deg, rgba(255,30,30,0.08) 0%, rgba(255,30,30,0.02) 100%);
+            border-color:rgba(255,30,30,0.3); border-top-color: rgba(255,30,30,0.6);
+            box-shadow:0 8px 25px rgba(0,0,0,0.4), 0 0 20px rgba(255,30,30,0.1);
         }
-        
         #hint-label {
-            font-size: clamp(0.6rem, 2vw, 0.7rem); color: var(--neon-blue); 
-            text-transform: uppercase; letter-spacing: 2px; 
-            font-weight: 700; display: block; margin-bottom: 2px;
+            font-size:clamp(0.6rem, 2vw, 0.7rem);
+            color:var(--neon-blue); text-transform:uppercase;
+            letter-spacing:3px; font-weight:800;
+            display:block; margin-bottom:6px; opacity: 0.9;
         }
+        #hint-container.blind-mode-box #hint-label { color: var(--neon-red); }
         
         #hint-text {
-            color: #fff; font-size: clamp(0.85rem, 3.5vw, 1.05rem); font-weight: 500; line-height: 1.2;
+            color:#fff; font-size:clamp(0.95rem, 3.5vw, 1.15rem);
+            font-weight:500; line-height:1.4; letter-spacing: 0.3px;
         }
 
-        #board { 
-            display: grid; 
-            gap: clamp(4px, 1.5vw, 8px); 
-            padding: 5px;
+        /* ─── BOARD ─── */
+        #board {
+            display:grid;
+            gap:clamp(6px, 2vw, 10px);
+            padding:5px;
+            flex-shrink: 0;
         }
-        .row { 
-            display: grid; 
-            gap: clamp(4px, 1.5vw, 8px); 
-            justify-content: center;
+        .row {
+            display:grid;
+            gap:clamp(6px, 2vw, 10px);
+            justify-content:center;
         }
-
         .tile {
-            /* AKIŞKAN KUTU BOYUTU: Hem JS değerini korur, hem de ekrana göre daralır */
-            width: min(var(--tile-size), 13vw, 7.5vh); 
-            height: min(var(--tile-size), 13vw, 7.5vh);
-            
-            background: var(--tile-glass); 
+            width:  min(var(--tile-size), 14vw, 8vh);
+            height: min(var(--tile-size), 14vw, 8vh);
+            background: var(--tile-bg); 
             border: 2px solid var(--tile-border);
-            backdrop-filter: blur(4px);
-            border-radius: clamp(8px, 2vw, 12px); 
-            display: flex; justify-content: center; align-items: center;
-            
-            font-size: min(calc(var(--tile-size) * 0.55), 6.5vw, 4vh); 
-            font-weight: 800; color: #fff;
-            
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
-            transition: transform 0.15s, border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
-            will-change: transform, background-color; 
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            border-radius: clamp(10px, 2.5vw, 16px);
+            display:flex; justify-content:center; align-items:center;
+            font-size:min(calc(var(--tile-size)*0.55), 7.5vw, 4.5vh);
+            font-weight:800; color:#fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            transition: transform 0.15s ease, border-color 0.2s ease, background-color 0.2s ease;
+            will-change: transform;
+            text-transform: uppercase;
         }
-
-        .tile[data-state="active"] {
+        
+        .tile.active-pulse {
             border-color: var(--neon-blue);
-            background: rgba(0, 243, 255, 0.08);
             box-shadow: 0 0 20px var(--tile-active-glow);
-            transform: scale(1.05);
-            animation: tilePulse 0.3s ease-out;
+            animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        @keyframes popIn {
+            0%   { transform: scale(0.8); }
+            40%  { transform: scale(1.1); border-color: #fff; }
+            100% { transform: scale(1); }
         }
 
         .tile.locked-hint {
-            background: linear-gradient(135deg, rgba(0, 243, 255, 0.1), rgba(0,0,0,0));
-            border-color: var(--neon-blue);
+            background: rgba(0, 229, 255, 0.1);
+            border-color: rgba(0, 229, 255, 0.5);
             color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.15) inset;
             text-shadow: 0 0 10px var(--neon-blue);
         }
-
-        @keyframes tilePulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.12); border-color: #fff; }
-            100% { transform: scale(1.05); }
-        }
         
-        .tile[data-state="autofilled"] {
-            animation: pulseGreen 0.6s ease-out;
-            border-color: rgba(10, 255, 104, 0.6);
+        .tile.autofilled-pulse {
+            border-color: rgba(0, 255, 115, 0.7);
             color: var(--neon-green);
+            animation: glowGreen 0.6s ease-out forwards;
         }
-
-        @keyframes pulseGreen {
-            0% { transform: scale(1); box-shadow: 0 0 0 rgba(10, 255, 104, 0); }
-            50% { transform: scale(1.15); box-shadow: 0 0 25px rgba(10, 255, 104, 0.5); }
-            100% { transform: scale(1); box-shadow: 0 0 0 rgba(10, 255, 104, 0); }
-        }
-
-        .tile.flip { transform: rotateX(90deg); transition: transform 0.3s ease-in; }
         
-        .tile.correct { background: var(--correct) !important; border-color: var(--correct) !important; color: #000 !important; box-shadow: 0 0 25px var(--correct); }
-        .tile.present { background: var(--present) !important; border-color: var(--present) !important; color: #000 !important; box-shadow: 0 0 25px var(--present); }
-        .tile.absent { background: var(--absent-bg) !important; border-color: transparent !important; color: var(--absent-text) !important; opacity: 1 !important; box-shadow: none !important; }
-
-        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake { 10%, 90% { transform: translateX(-3px); } 20%, 80% { transform: translateX(3px); } 30%, 50%, 70% { transform: translateX(-5px); } 40%, 60% { transform: translateX(5px); } }
-
-        /* --- KLAVYE --- */
-        #keyboard-container { 
-            width: 100%; 
-            max-width: 600px; 
-            margin: 0 auto; 
-            padding: clamp(5px, 1vh, 10px) clamp(5px, 1.5vw, 8px) clamp(10px, 3vh, 30px) clamp(5px, 1.5vw, 8px); 
-            z-index: 10; 
-            flex-shrink: 0;
+        @keyframes glowGreen {
+            0%   { box-shadow: 0 0 0 transparent; }
+            50%  { box-shadow: 0 0 20px rgba(0, 255, 115, 0.4); transform: scale(1.05); }
+            100% { box-shadow: 0 0 0 transparent; transform: scale(1); }
         }
-        .kb-row { 
-            display: flex; 
-            width: 100%; 
-            justify-content: center; 
-            gap: clamp(4px, 1.2vw, 6px); 
-            margin-bottom: clamp(5px, 1.2vh, 8px); 
+
+        .tile.flip    { transform:rotateX(90deg); transition:transform 0.3s ease-in; }
+        .tile.correct { background:var(--correct)!important; border-color:var(--correct)!important; color:#05050a!important; box-shadow:0 0 25px rgba(0,255,115,0.4)!important; text-shadow: none; }
+        .tile.present { background:var(--present)!important; border-color:var(--present)!important; color:#05050a!important; box-shadow:0 0 25px rgba(255,234,0,0.4)!important; text-shadow: none; }
+        .tile.absent  { background:var(--absent-bg)!important; border-color:rgba(255,255,255,0.02)!important; color:var(--absent-text)!important; box-shadow:none!important; text-shadow: none; }
+
+        .shake { animation:shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%,90% { transform:translateX(-2px); }
+            20%,80% { transform:translateX(3px); }
+            30%,50%,70% { transform:translateX(-5px); }
+            40%,60% { transform:translateX(5px); }
+        }
+
+        /* ══════════════════════════════════════════
+           KLAVYE
+        ══════════════════════════════════════════ */
+        #keyboard-container {
+            width:100%; max-width:600px;
+            margin:0 auto;
+            padding:clamp(6px, 1.5vh, 10px) clamp(6px, 2vw, 12px) clamp(15px, 4vh, 30px);
+            z-index:10; flex-shrink:0;
+            background: rgba(5,5,10,0.5); /* Okunabilirliği artırmak için hafif gölge eklendi */
+            backdrop-filter: blur(5px);
+        }
+        .kb-row {
+            display:flex; width:100%;
+            justify-content:center;
+            gap:clamp(4px, 1.2vw, 6px);
+            margin-bottom:clamp(5px, 1.5vh, 8px);
         }
         .key {
-            flex: 1; 
-            height: clamp(45px, 7.5vh, 60px); 
-            border-radius: clamp(6px, 1.5vw, 10px); 
+            flex:1;
+            height:clamp(48px, 8vh, 62px);
+            border-radius:clamp(8px, 2vw, 12px);
             border: none;
-            background: rgba(40, 40, 60, 0.8); 
-            border-bottom: clamp(2px, 0.5vh, 4px) solid rgba(0,0,0,0.4);
-            color: #fff; 
-            font-weight: 700; 
-            font-size: clamp(1rem, 4vw, 1.25rem);
-            cursor: pointer; transition: all 0.1s;
-            touch-action: manipulation; position: relative; overflow: hidden;
-            padding: 0;
+            background: rgba(40, 40, 55, 0.95);
+            color: #f0f0f0;
+            font-family:'Outfit',sans-serif;
+            font-weight:700;
+            font-size:clamp(1rem, 4vw, 1.3rem);
+            cursor:pointer; 
+            transition: background-color 0.1s, transform 0.1s;
+            touch-action:manipulation;
+            position:relative; overflow:hidden;
+            box-shadow: 0 4px 0 rgba(10, 10, 15, 0.9);
         }
-        .key:active { transform: translateY(3px); border-bottom-width: 1px; background: rgba(255,255,255,0.1); }
-        .key-wide { flex: 1.5; font-size: clamp(0.85rem, 3.5vw, 1rem); background: rgba(60, 60, 80, 0.8); }
+        .key:active { 
+            transform:translateY(4px); 
+            box-shadow: 0 0 0 rgba(10, 10, 15, 0.9);
+            background: rgba(60, 60, 80, 0.95); 
+        }
+        .key-wide   { flex: 1.5; font-size:clamp(0.8rem, 3.2vw, 1rem); background: rgba(50, 50, 70, 0.95); letter-spacing:0.5px; }
+
+        .key.correct { background:var(--correct)!important; color:#05050a!important; box-shadow: 0 4px 0 #00b351!important; }
+        .key.present { background:var(--present)!important; color:#05050a!important; box-shadow: 0 4px 0 #b3a400!important; }
+        .key.absent  { background:var(--absent-bg)!important; color:var(--absent-text)!important; box-shadow: 0 4px 0 #0a0a0f!important; opacity:0.8; }
         
-        /* Klavye Ripple Efekti */
-        .key .ripple {
-            position: absolute; border-radius: 50%; transform: scale(0);
-            animation: ripple 0.6s linear; background-color: rgba(255, 255, 255, 0.4);
-            pointer-events: none;
-        }
-        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+        .key.correct:active { transform:translateY(4px); box-shadow: 0 0 0 #00b351!important; }
+        .key.present:active { transform:translateY(4px); box-shadow: 0 0 0 #b3a400!important; }
+        .key.absent:active  { transform:translateY(4px); box-shadow: 0 0 0 #0a0a0f!important; }
 
-        .key.correct { background: var(--correct); color: #000; border:none; box-shadow: 0 0 10px var(--correct); }
-        .key.present { background: var(--present); color: #000; border:none; box-shadow: 0 0 10px var(--present); }
-        .key.absent { background: var(--absent-bg); color: var(--absent-text); border:none; opacity: 0.6; }
-
-        /* --- MODALS --- */
+        /* ══════════════════════════════════════════
+           MODALLER
+        ══════════════════════════════════════════ */
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
-            display: none; justify-content: center; align-items: center; z-index: 100;
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(2, 2, 6, 0.85); backdrop-filter:blur(8px);
+            display:none; justify-content:center; align-items:center; z-index:100;
         }
         .modal-content {
-            background: #121220; border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 0 50px rgba(0,0,0,0.6), 0 0 20px rgba(0, 243, 255, 0.1);
-            padding: clamp(20px, 4vh, 35px); 
-            border-radius: 24px; text-align: center;
-            width: 90%; max-width: 400px; 
-            max-height: 90dvh; overflow-y: auto;
-            animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
+            background: linear-gradient(145deg, #151525, #0d0d18);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(0, 229, 255, 0.1);
+            padding: clamp(24px, 4vh, 40px);
+            border-radius: 24px; text-align:center;
+            width: 90%; max-width: 420px;
+            max-height: 90dvh; overflow-y:auto;
+            animation: popModal 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position:relative;
         }
         
-        /* Modal Scrollbar Tasarımı */
-        .modal-content::-webkit-scrollbar { width: 6px; }
-        .modal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-        
-        .close-btn { position: absolute; top: 15px; right: 20px; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
-        .close-btn:hover { opacity: 1; }
-        
-        /* YILDIZ ALANI */
-        .star-box { display: flex; justify-content: center; gap: 10px; margin: clamp(10px, 2vh, 20px) 0; }
+        @keyframes popModal {
+            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .close-btn {
+            position:absolute; top:16px; right:16px;
+            background:rgba(255,255,255,0.05); border:none;
+            color:#aaa; font-size:1.2rem; cursor:pointer;
+            width:36px; height:36px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            transition:all 0.2s;
+        }
+        .close-btn:hover { background:rgba(255,30,30,0.15); color:var(--neon-red); transform: rotate(90deg); }
+
+        .star-box { display:flex; justify-content:center; gap:16px; margin:clamp(15px, 3vh, 25px) 0; }
         .star-icon {
-            font-size: clamp(2.5rem, 8vw, 3.5rem); color: #333; transition: all 0.3s;
-            text-shadow: 0 0 0 transparent;
+            font-size:clamp(2.8rem, 9vw, 3.8rem); color:#222230;
+            transition:all 0.3s;
         }
         .star-icon.active {
-            color: var(--neon-yellow);
-            text-shadow: 0 0 20px var(--neon-yellow);
-            animation: starPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            opacity: 0;
+            color:var(--neon-yellow);
+            filter: drop-shadow(0 0 15px rgba(255, 234, 0, 0.6));
+            animation:starPop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
         }
         @keyframes starPop {
-            0% { transform: scale(0) rotate(-45deg); opacity: 0; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            0%   { transform:scale(0) rotate(-45deg); opacity:0; }
+            50%  { transform:scale(1.2) rotate(15deg); }
+            100% { transform:scale(1) rotate(0deg); opacity:1; }
         }
-        
-        .stat-row { display: flex; justify-content: space-around; margin: 15px 0; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .stat-item { display: flex; flex-direction: column; }
-        .stat-val { font-size: clamp(1.4rem, 5vw, 1.8rem); font-weight: 900; color: var(--neon-blue); text-shadow: 0 0 10px rgba(0, 243, 255, 0.3); }
-        .stat-label { font-size: clamp(0.6rem, 2vw, 0.7rem); color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 5px; }
 
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-        
+        .stat-row {
+            display:flex; justify-content:space-around; margin:16px 0;
+            background:rgba(0,0,0,0.3); padding:16px;
+            border-radius:16px; border:1px solid rgba(255,255,255,0.05);
+        }
+        .stat-item  { display:flex; flex-direction:column; align-items:center; }
+        .stat-val   { font-size:clamp(1.5rem,5vw,2rem); font-weight:900; color:var(--neon-blue); text-shadow:0 0 15px rgba(0, 229, 255, 0.4); }
+        .stat-label { font-size:clamp(0.6rem,2vw,0.7rem); color:#888; text-transform:uppercase; letter-spacing:1px; margin-top:6px; font-weight: 600;}
+
         .btn-primary {
-            background: var(--neon-blue); color: #000; border: none;
-            padding: clamp(12px, 3vh, 16px) 20px; border-radius: 16px; 
-            font-size: clamp(1rem, 3.5vw, 1.1rem); font-weight: 800; letter-spacing: 1px;
-            cursor: pointer; box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
-            transition: transform 0.2s; flex: 1; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            color: #fff; border: none;
+            padding: clamp(14px, 3vh, 18px) 24px; border-radius: 16px;
+            font-size: clamp(1.05rem, 3.5vw, 1.2rem); font-family: 'Outfit', sans-serif;
+            font-weight: 800; letter-spacing: 1.5px;
+            cursor: pointer; box-shadow: 0 8px 20px rgba(176, 38, 255, 0.3);
+            transition: all 0.2s ease;
+            width: 100%; margin-top: 10px; display: flex; justify-content: center; gap: 10px;
         }
-        .btn-primary:hover { transform: scale(1.03); box-shadow: 0 0 30px rgba(0, 243, 255, 0.5); }
-        
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0, 229, 255, 0.4); }
+        .btn-primary:active { transform: translateY(1px); box-shadow: 0 4px 10px rgba(0, 229, 255, 0.4); }
+
         .btn-tdk {
-            background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red);
-            padding: clamp(8px, 2vh, 10px); border-radius: 50px; 
-            font-size: clamp(0.8rem, 3vw, 0.9rem); font-weight: 600;
-            margin-top: 15px; cursor: pointer; width: 100%; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            background:transparent; border:1px solid rgba(255,255,255,0.2);
+            color:#ccc;
+            padding: 10px; border-radius: 50px;
+            font-size: 0.9rem; font-family:'Outfit',sans-serif; font-weight:600;
+            margin-top:16px; cursor:pointer; width:100%; transition:all 0.2s;
+            display:flex; align-items:center; justify-content:center; gap:8px;
         }
-        .btn-tdk:hover { background: rgba(255, 42, 42, 0.1); box-shadow: 0 0 15px rgba(255, 42, 42, 0.2); }
+        .btn-tdk:hover { background:rgba(255,255,255,0.05); color: #fff; border-color: #fff; }
 
-        #toast-container { position: fixed; top: 120px; left: 50%; transform: translateX(-50%); z-index: 200; pointer-events: none; width: 80%; display: flex; flex-direction: column; align-items: center; }
+        /* Toast */
+        #toast-container {
+            position:fixed; top:120px; left:50%; transform:translateX(-50%);
+            z-index:200; pointer-events:none;
+            width:90%; max-width: 350px; display:flex; flex-direction:column; align-items:center; gap:10px;
+        }
         .toast {
-            background: rgba(255,255,255,0.95); color: #000; padding: 14px 28px; border-radius: 40px;
-            font-weight: 800; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-            animation: slideUp 0.3s forwards; margin-bottom: 8px; white-space: nowrap; font-size: clamp(0.9rem, 3.5vw, 1rem);
+            background: rgba(20, 20, 30, 0.95); color: #fff;
+            padding: 14px 24px; border-radius: 14px;
+            font-family: 'Outfit', sans-serif; font-weight: 700;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: slideDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            font-size: clamp(0.95rem, 3.5vw, 1.05rem); text-align: center;
         }
-        .toast.error { background: var(--neon-red); color: #fff; box-shadow: 0 5px 30px rgba(255, 42, 42, 0.4); }
-        
-        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 90; }
+        .toast.info { border-color: var(--neon-blue); box-shadow: 0 10px 30px rgba(0, 229, 255, 0.15); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        #confetti-canvas { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:90; }
+
+        @keyframes slideDown { from { opacity:0; transform:translateY(-20px) scale(0.9); } to { opacity:1; transform:translateY(0) scale(1); } }
+
+        .help-item {
+            display:flex; align-items:center; gap:16px;
+            margin:12px 0; padding:14px;
+            background:rgba(0,0,0,0.2);
+            border-radius:14px; border:1px solid rgba(255,255,255,0.05);
+            font-size:clamp(0.9rem,3.5vw,1rem); text-align:left; color: #ddd;
+        }
+        .help-dot {
+            width:28px; height:28px; border-radius:8px; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.85rem; font-weight:900;
+        }
+
+        .daily-coins { display:flex; justify-content:center; gap:8px; margin:24px 0; }
+        .coin {
+            width:48px; height:48px; border-radius:50%;
+            background:linear-gradient(135deg,#ffe600,#ff9900);
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.4rem; color: #000;
+            box-shadow:0 0 20px rgba(255,215,0,0.4);
+            animation:coinPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both;
+        }
+        @keyframes coinPop {
+            from { transform:scale(0) translateY(20px); opacity:0; }
+            to   { transform:scale(1) translateY(0); opacity:1; }
+        }
 
     </style>
 </head>
@@ -391,7 +498,7 @@
     <!-- HEADER -->
     <header>
         <button class="icon-btn btn-surrender" onclick="surrender()" title="Pes Et">🏳️</button>
-        
+
         <div class="level-info">
             <div id="rank-display" class="rank-badge">GÖZCÜ</div>
             <div class="level-badge">SEVİYE <span id="level-display" class="level-num">1</span></div>
@@ -399,1229 +506,328 @@
         </div>
 
         <div class="header-right">
-            <div class="gold-display"><span>⚡</span> <span id="gold-display">0</span></div>
-            <button class="icon-btn btn-bomb" onclick="eliminateKeys()" title="3 Yanlış Harfi Elet (-75)">💣</button>
-            <button class="icon-btn" onclick="useHint()" title="Harf Aç (-50)">💡</button>
-            <!-- KÖR MOD BUTONU -->
-            <button class="icon-btn" id="blind-btn" onclick="toggleBlindMode()" title="Kör Mod (İpucunu Gizle)">
-                👁️<div class="blind-line"></div>
-            </button>
-            <button class="icon-btn" id="mute-btn" onclick="toggleMute()">
-                🔊<div class="muted-line"></div>
-            </button>
+            <div class="gold-display">⚡ <span id="gold-display">0</span></div>
+            <button class="icon-btn btn-bomb"  onclick="eliminateKeys()" title="3 Yanlış Harfi Elet (-75⚡)">💣</button>
+            <button class="icon-btn btn-hint"  onclick="useHint()"       title="Harf Aç (-50⚡)">💡</button>
+            <button class="icon-btn"           id="blind-btn" onclick="toggleBlindMode()" title="Kör Mod">👁️<div class="blind-line"></div></button>
+            <button class="icon-btn btn-stats" onclick="openModal('stats-modal')" title="İstatistikler">📊</button>
+            <button class="icon-btn"           onclick="openModal('help-modal')"  title="Nasıl Oynanır?">❓</button>
+            <button class="icon-btn"           id="mute-btn" onclick="toggleMute()">🔊<div class="muted-line"></div></button>
         </div>
+
         <div class="time-bar-container"><div id="time-bar" class="time-bar"></div></div>
     </header>
 
     <canvas id="confetti-canvas"></canvas>
     <div id="toast-container"></div>
 
-    <!-- OYUN ALANI -->
+    <!-- OYUN ALANI (Sarmalayıcı Eklendi) -->
     <div id="game-area">
-        <!-- İPUCU ALANI -->
-        <div id="hint-container">
-            <span id="hint-label">BİLGİ</span>
-            <div id="hint-text">Kelimenin anlamı burada görünecek...</div>
+        <div class="game-content-wrapper">
+            <div id="hint-container">
+                <span id="hint-label">İPUCU</span>
+                <div id="hint-text">Kelimenin anlamı burada görünecek…</div>
+            </div>
+            <div id="board"></div>
         </div>
-        <div id="board"></div>
     </div>
+
     <div id="keyboard-container"></div>
 
-    <!-- SONUÇ MODALI -->
+    <!-- ══ SONUÇ MODALI ══ -->
     <div id="result-modal" class="modal-overlay">
         <div class="modal-content">
-            <h2 id="modal-title" style="margin:0 0 5px 0; font-size: clamp(1.8rem, 6vw, 2.2rem); letter-spacing:1px; text-shadow: 0 0 20px currentColor;"></h2>
-            
-            <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:15px;">
-                <div id="modal-reward" style="font-size:1.1rem; color:var(--neon-yellow); font-weight:700;"></div>
-                <div id="time-bonus" style="font-size:0.9rem; background:rgba(0, 243, 255, 0.1); color:var(--neon-blue); padding:4px 10px; border-radius:10px; border:1px solid var(--neon-blue); display:none;"></div>
-            </div>
-            
-            <!-- YILDIZ ALANI -->
-            <div id="stars-display" class="star-box"></div>
-            
-            <div style="background:rgba(255,255,255,0.03); padding:20px; border-radius:16px; margin:20px 0; border:1px solid rgba(255,255,255,0.05);">
-                <div style="color:#888; font-size:0.75rem; letter-spacing:2px; margin-bottom:8px; font-weight:600;">DOĞRU KELİME</div>
-                <div id="word-reveal" style="color:#fff; font-size: clamp(1.8rem, 6vw, 2.2rem); font-weight:900; letter-spacing:4px; text-shadow: 0 0 15px rgba(255,255,255,0.5);"></div>
-                
-                <!-- TDK BUTTON -->
-                <button class="btn-tdk" onclick="openTDK()">
-                    📖 TDK Detayı
-                </button>
+            <h2 id="modal-title" style="margin:0 0 10px 0; font-size:clamp(1.8rem,6vw,2.2rem); letter-spacing:1px; text-shadow:0 0 20px currentColor;"></h2>
+
+            <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
+                <div id="modal-reward" style="font-size:1.2rem;color:var(--neon-yellow);font-weight:800;"></div>
+                <div id="time-bonus"  style="font-size:0.9rem;background:rgba(0,229,255,0.1);color:var(--neon-blue);padding:6px 12px;border-radius:12px;border:1px solid rgba(0,229,255,0.3);display:none; font-weight:600;"></div>
             </div>
 
-            <button class="btn-primary" onclick="nextLevel()">
-                DEVAM ET <span style="font-size:1.2rem">➜</span>
-            </button>
+            <div id="stars-display" class="star-box"></div>
+
+            <div style="background:rgba(0,0,0,0.3);padding:20px;border-radius:20px;margin:20px 0;border:1px solid rgba(255,255,255,0.05);">
+                <div style="color:#888;font-size:0.75rem;letter-spacing:3px;margin-bottom:10px;font-weight:700;text-transform:uppercase;">Doğru Kelime</div>
+                <div id="word-reveal" style="color:#fff;font-size:clamp(2rem,7vw,2.5rem);font-weight:900;letter-spacing:6px;text-shadow:0 0 20px rgba(255,255,255,0.3);"></div>
+                <button class="btn-tdk" onclick="openTDK()">📖 TDK Sözlüğünde İncele</button>
+            </div>
+
+            <button class="btn-primary" onclick="nextLevel()">DEVAM ET <span>➜</span></button>
         </div>
     </div>
 
-    <!-- İSTATİSTİK MODALI -->
+    <!-- ══ İSTATİSTİK MODALI ══ -->
     <div id="stats-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('stats-modal')">✕</button>
-            <h2 style="color:#fff; margin-bottom:5px; font-size: clamp(1.5rem, 5vw, 1.8rem);">İSTATİSTİKLER</h2>
-            <div id="stat-rank-title" style="color:var(--neon-pink); font-size:0.9rem; margin-bottom:10px; letter-spacing:2px; font-weight:700;">GÖZCÜ</div>
-            
+            <h2 style="color:#fff;margin-bottom:5px;font-size:clamp(1.5rem,5vw,1.8rem);letter-spacing:1.5px;">İSTATİSTİKLER</h2>
+            <div id="stat-rank-title" style="color:var(--neon-pink);font-size:0.95rem;margin-bottom:15px;letter-spacing:3px;font-weight:800; text-shadow: 0 0 10px rgba(255,0,234,0.4);">GÖZCÜ</div>
+
             <div class="stat-row">
                 <div class="stat-item"><span class="stat-val" id="stat-played">0</span><span class="stat-label">Oyun</span></div>
                 <div class="stat-item"><span class="stat-val" id="stat-win">0</span><span class="stat-label">Zafer</span></div>
                 <div class="stat-item"><span class="stat-val" id="stat-rate">0%</span><span class="stat-label">Başarı</span></div>
             </div>
-            <div class="stat-row" style="margin-top:10px;">
+            <div class="stat-row">
                 <div class="stat-item"><span class="stat-val" id="stat-streak">0</span><span class="stat-label">Seri</span></div>
                 <div class="stat-item"><span class="stat-val" id="stat-max">0</span><span class="stat-label">Rekor</span></div>
             </div>
         </div>
     </div>
 
-    <!-- YARDIM MODALI -->
+    <!-- ══ YARDIM MODALI ══ -->
     <div id="help-modal" class="modal-overlay">
-        <div class="modal-content" style="text-align: left;">
+        <div class="modal-content">
             <button class="close-btn" onclick="closeModal('help-modal')">✕</button>
-            <h2 style="text-align:center; color:var(--neon-blue); font-size: clamp(1.5rem, 5vw, 1.8rem);">NASIL OYNANIR?</h2>
-            <p style="color:#ccc; text-align:center; margin-bottom:20px; font-size: clamp(0.85rem, 3.5vw, 1rem);">Yukarıda kelime hakkında ipucu verilir!</p>
-            
-            <div style="margin:10px 0; padding:12px; border-left:4px solid var(--neon-blue); background:rgba(255,255,255,0.03); border-radius:0 8px 8px 0; font-size: clamp(0.85rem, 3.5vw, 1rem);">
-                <span style="color:var(--neon-blue); font-weight:bold;">MAVİ</span> harf baştan verilen kilitli ipucudur.
+            <h2 style="text-align:center;color:var(--neon-blue);font-size:clamp(1.5rem,5vw,1.8rem);margin-bottom:10px; text-shadow: 0 0 15px rgba(0,229,255,0.3);">NASIL OYNANIR?</h2>
+            <p style="color:#aaa;text-align:center;margin-bottom:20px;font-size:clamp(0.9rem,3vw,1rem);">İpucunu okuyarak gizli kelimeyi 6 tahminde bul!</p>
+
+            <div class="help-item">
+                <div class="help-dot" style="background:rgba(0,229,255,0.2);color:var(--neon-blue); border: 1px solid var(--neon-blue);">🔒</div>
+                <span><strong style="color:var(--neon-blue);">Mavi</strong> harf ipucudur. Her zaman ilk harftir.</span>
             </div>
-            <div style="margin:10px 0; padding:12px; border-left:4px solid var(--neon-green); background:rgba(255,255,255,0.03); border-radius:0 8px 8px 0; font-size: clamp(0.85rem, 3.5vw, 1rem);">
-                <span style="color:var(--neon-green); font-weight:bold;">YEŞİL</span> harf doğru yerde.
+            <div class="help-item">
+                <div class="help-dot" style="background:var(--correct);color:#000;">✓</div>
+                <span><strong style="color:var(--correct);">Yeşil</strong> harf doğru yerde.</span>
             </div>
-            <div style="margin:10px 0; padding:12px; border-left:4px solid var(--neon-yellow); background:rgba(255,255,255,0.03); border-radius:0 8px 8px 0; font-size: clamp(0.85rem, 3.5vw, 1rem);">
-                <span style="color:var(--neon-yellow); font-weight:bold;">SARI</span> harf kelimede var ama yeri yanlış.
+            <div class="help-item">
+                <div class="help-dot" style="background:var(--present);color:#000;">?</div>
+                <span><strong style="color:var(--present);">Sarı</strong> harf kelimede var, yeri yanlış.</span>
             </div>
-            <p style="font-size:clamp(0.75rem, 3vw, 0.85rem); color:var(--neon-blue); text-align:center; margin-top:20px;">💣 Bomba ile yanlış harfleri eleyebilirsin!</p>
+            <div class="help-item">
+                <div class="help-dot" style="background:var(--absent-bg);color:var(--absent-text); border: 1px solid #333;">✗</div>
+                <span><strong style="color:#888;">Gri</strong> harf kelimede yok.</span>
+            </div>
+
+            <div style="margin-top:20px;padding:16px;background:rgba(255,234,0,0.05);border:1px solid rgba(255,234,0,0.2);border-radius:16px;font-size:0.9rem;color:#ccc;line-height:1.6; text-align: left;">
+                💡 <strong style="color:var(--neon-yellow);">-50⚡</strong> ile gizli bir harfi aç.<br>
+                💣 <strong style="color:var(--neon-red);">-75⚡</strong> ile klavyeden 3 yanlış harfi ele.<br>
+                ⚡ Her gün giriş yaparak hediye enerji kazan!
+            </div>
         </div>
     </div>
 
-    <!-- GÜNLÜK ÖDÜL MODALI -->
+    <!-- ══ GÜNLÜK ÖDÜL MODALI ══ -->
     <div id="daily-modal" class="modal-overlay">
         <div class="modal-content">
-            <h2 style="color:var(--neon-yellow); font-size: clamp(1.5rem, 5vw, 1.8rem);">GÜNLÜK ÖDÜL</h2>
-            <div style="font-size:clamp(3rem, 10vw, 4rem); margin:20px 0;">🎁</div>
-            <div style="font-size:clamp(1rem, 4vw, 1.3rem); color:#fff; font-weight:bold; margin-bottom: 20px;">+50 ENERJİ KAZANDIN</div>
-            <button class="btn-primary" onclick="claimDaily()">TEŞEKKÜRLER</button>
+            <h2 style="color:var(--neon-yellow);font-size:clamp(1.6rem,5vw,2rem);margin-bottom:8px; text-shadow: 0 0 20px rgba(255,234,0,0.4);">GÜNLÜK ÖDÜL</h2>
+            <p style="color:#aaa;font-size:0.95rem;margin:0 0 10px;">Oyuna tekrar hoş geldin!</p>
+            <div style="font-size:clamp(3.5rem,10vw,4.5rem);margin:20px 0;">🎁</div>
+            <div class="daily-coins">
+                <div class="coin" style="animation-delay:0s">⚡</div>
+                <div class="coin" style="animation-delay:0.1s">⚡</div>
+                <div class="coin" style="animation-delay:0.2s">⚡</div>
+            </div>
+            <div style="font-size:clamp(1.1rem,4vw,1.3rem);color:#fff;font-weight:900;margin-bottom:24px; letter-spacing: 1px;">+50 ENERJİ KAZANDIN!</div>
+            <button class="btn-primary" onclick="claimDaily()">HARİKA, TEŞEKKÜRLER!</button>
         </div>
     </div>
 
 <script>
-    // --- VERİTABANI & AYARLAR ---
-    const STORAGE_KEY = 'kelime_neon_v10_stars';
-    
-    const DB = {
-        3:[
-            { w: "AŞK", h: "Şiddetli ve yakıcı sevgi duygusu." },
-            { w: "TOP", h: "Yuvarlak, genellikle oyun için kullanılan nesne." },
-            { w: "NAR", h: "İçinde yüzlerce küçük kırmızı tanesi olan meyve." },
-            { w: "MUZ", h: "Sarı kabuklu, uzunca tropikal meyve." },
-            { w: "GÖZ", h: "Görme organımız." },
-            { w: "YAZ", h: "En sıcak mevsim." },
-            { w: "KIŞ", h: "En soğuk mevsim." },
-            { w: "ÇAY", h: "Genellikle kahvaltıda içilen sıcak içecek." },
-            { w: "KOL", h: "Omuzdan parmaklara kadar uzanan uzuv." },
-            { w: "TUZ", h: "Yemeklere tat veren beyaz mineral." },
-            { w: "BAĞ", h: "Üzüm kütüklerinin dikili bulunduğu toprak parçası." },
-            { w: "GÜÇ", h: "Kuvvet, takat." },
-            { w: "SÜT", h: "Memelilerin yavrularını besledikleri beyaz sıvı." },
-            { w: "KAN", h: "Damarlarda dolaşan hayati kırmızı sıvı." },
-            { w: "CEM", h: "Toplama, bir araya getirme." },
-            { w: "YOL", h: "Karada gidiş geliş için açılmış şerit." },
-            { w: "HIZ", h: "Sürat." },
-            { w: "PİL", h: "Elektrik enerjisi depolayan cihaz." },
-            { w: "ADA", h: "Dört tarafı sularla çevrili kara parçası." },
-            { w: "ATA", h: "Baba, dede, ecdat." },
-            { w: "ARA", h: "Mesafe veya boşluk." },
-            { w: "KEP", h: "Siperli başlık." },
-            { w: "BEL", h: "Vücudun orta kısmı." },
-            { w: "BİR", h: "İlk sayı." },
-            { w: "BUZ", h: "Donmuş su." },
-            { w: "CAM", h: "Pencereye takılan saydam madde." },
-            { w: "DAĞ", h: "Çevresine göre çok yüksek yeryüzü şekli." },
-            { w: "DİŞ", h: "Çiğneme organı." },
-            { w: "FİL", h: "Hortumlu büyük memeli hayvan." },
-            { w: "GÜL", h: "Dikenli ve güzel kokulu bir çiçek." },
-            { w: "ISI", h: "Sıcaklık enerjisi." },
-            { w: "İYİ", h: "Kötü karşıtı." },
-            { w: "KAŞ", h: "Gözün üzerindeki kıllar." },
-            { w: "KIZ", h: "Dişi çocuk." },
-            { w: "KUŞ", h: "Kanatlı, yumurtlayan hayvan." },
-            { w: "NAL", h: "Atın ayağına çakılan demir." },
-            { w: "ODA", h: "Evin bölümlerinden her biri." },
-            { w: "RUH", h: "Can, tin." },
-            { w: "SAÇ", h: "Baştaki kıllar." },
-            { w: "SAF", h: "Katıksız, arı." },
-            { w: "SES", h: "Kulağın duyabildiği titreşim." },
-            { w: "SİS", h: "Görüşü azaltan dumanlı hava olayı." },
-            { w: "SON", h: "Bitiş, nihayet." },
-            { w: "TAŞ", h: "Sert, katı yeryüzü maddesi." },
-            { w: "TAT", h: "Lezzet." },
-            { w: "TEK", h: "Eşi olmayan, bir tane." },
-            { w: "TOZ", h: "Çok ince toprak zerreleri." },
-            { w: "YIL", h: "Sene, 365 gün." },
-            { w: "YÜZ", h: "Çehre, surat." },
-            { w: "ZAR", h: "Şans oyunlarında kullanılan küp." }
-        ],
-        4:[
-            { w: "ELMA", h: "Kırmızı, sarı veya yeşil kabuklu meyve." },
-            { w: "KAPI", h: "Binalara girip çıkmaya yarayan yer." },
-            { w: "MAVİ", h: "Gökyüzünün ve denizin rengi." },
-            { w: "FARE", h: "Küçük kemirgen bir hayvan." },
-            { w: "OKUL", h: "Eğitim öğretim görülen yer." },
-            { w: "KEDİ", h: "Evcil, miyavlayan hayvan." },
-            { w: "YURT", h: "Vatan veya öğrencilerin kaldığı yer." },
-            { w: "SERT", h: "Yumuşak karşıtı." },
-            { w: "KALE", h: "Düşman saldırılarına karşı yapılan korunak." },
-            { w: "ÜZÜM", h: "Salkım şeklinde yetişen meyve." },
-            { w: "UZAY", h: "Bütün gök cisimlerinin içinde bulunduğu sonsuz boşluk." },
-            { w: "VERİ", h: "Bilgi, data." },
-            { w: "DERT", h: "Sorun, sıkıntı, tasa." },
-            { w: "MART", h: "Yılın üçüncü ayı." },
-            { w: "TANI", h: "Teşhis." },
-            { w: "AKIM", h: "Ceryan." },
-            { w: "PLAN", h: "Tasarı, proje." },
-            { w: "AÇIK", h: "Kapalı olmayan." },
-            { w: "ADIM", h: "Yürürken ayakların her atılışı." },
-            { w: "AĞAÇ", h: "Odunsu gövdesi olan uzun bitki." },
-            { w: "SORU", h: "Cevap bekleyen söz." },
-            { w: "AİLE", h: "Anne, baba ve çocuklardan oluşan birlik." },
-            { w: "AKIL", h: "Düşünme yeteneği, us." },
-            { w: "ALAN", h: "Saha, meydan." },
-            { w: "AMAÇ", h: "Gaye, hedef." },
-            { w: "ANIT", h: "Abide." },
-            { w: "ARZU", h: "İstek, heves." },
-            { w: "ASIR", h: "Yüzyıl." },
-            { w: "AŞÇI", h: "Yemek pişirmeyi meslek edinen kimse." },
-            { w: "ATEŞ", h: "Yanıcı maddelerin tutuşmasıyla beliren ısı ve ışık." },
-            { w: "ATOM", h: "Maddenin en küçük yapı taşı." },
-            { w: "AYNA", h: "Görüntüyü yansıtan cilalı cam." },
-            { w: "BABA", h: "Erkek ebeveyn." },
-            { w: "BATI", h: "Güneşin battığı yön." },
-            { w: "BEBE", h: "Bebek." },
-            { w: "BİNA", h: "Yapı." },
-            { w: "BORÇ", h: "Geri verilmek üzere alınan şey." },
-            { w: "BOYA", h: "Renklendirme maddesi." },
-            { w: "CUMA", h: "Perşembe ile Cumartesi arasındaki gün." },
-            { w: "ÇATI", h: "Binaların üstünü örten kısım." },
-            { w: "DANS", h: "Müzik eşliğinde yapılan ritmik hareketler." },
-            { w: "DERS", h: "Öğrenilen konu." },
-            { w: "DERİ", h: "Vücudun dış örtüsü, ten." },
-            { w: "DOĞA", h: "Tabiat." },
-            { w: "DOST", h: "Arkadaş, yakın kimse." },
-            { w: "EKİM", h: "Sonbahar mevsiminin bir ayı." },
-            { w: "EMEK", h: "Çaba, zahmet." },
-            { w: "ERİK", h: "Farklı türleri olan bir yaz meyvesi." },
-            { w: "EŞYA", h: "Türlü amaçlarla kullanılan nesneler." },
-            { w: "ETKİ", h: "Tesir." },
-            { w: "FİLM", h: "Sinema eseri." },
-            { w: "FOTO", h: "Fotoğrafın kısası." },
-            { w: "GEMİ", h: "Su üzerinde yüzen büyük taşıt." },
-            { w: "GERİ", h: "İleri karşıtı." },
-            { w: "GEZİ", h: "Seyahat." },
-            { w: "GIDA", h: "Besin." },
-            { w: "HALK", h: "Bir ülkede yaşayan insanlar bütünü." },
-            { w: "HATA", h: "Yanlışlık, kusur." },
-            { w: "HAVA", h: "Dünyayı saran gaz tabakası." },
-            { w: "HOBİ", h: "Uğraş." },
-            { w: "İADE", h: "Geri verme." },
-            { w: "İLAÇ", h: "Hastalıkları iyileştiren madde." },
-            { w: "İLKE", h: "Prensip." },
-            { w: "İMZA", h: "Kişinin kendine has işareti." },
-            { w: "İSİM", h: "Ad." },
-            { w: "KAFE", h: "Kahve içilen yer." },
-            { w: "KAMP", h: "Çadır kurarak konaklama." },
-            { w: "KATI", h: "Sıvı olmayan." },
-            { w: "KAYA", h: "Büyük taş kütlesi." },
-            { w: "KEÇİ", h: "İnatçılığıyla bilinen hayvan." },
-            { w: "KENT", h: "Şehir." },
-            { w: "KISA", h: "Uzun olmayan." },
-            { w: "KİLO", h: "Ağırlık birimi." },
-            { w: "KİRA", h: "Kullanım bedeli." },
-            { w: "KONU", h: "Mevzu, bahis." },
-            { w: "KOŞU", h: "Hızlı yürüme eylemi, yarış." },
-            { w: "KOYU", h: "Açık rengin zıttı." },
-            { w: "KRAL", h: "Hükümdar." },
-            { w: "KURT", h: "Köpekgillerden vahşi hayvan." },
-            { w: "KURU", h: "Yaş veya ıslak olmayan." },
-            { w: "KUTU", h: "İçine eşya konulan kap." },
-            { w: "KUYU", h: "Su çıkarmak için kazılan çukur." },
-            { w: "LİRA", h: "Para birimi." },
-            { w: "MAAŞ", h: "Aylık ücret." },
-            { w: "MANA", h: "Anlam." },
-            { w: "MARŞ", h: "Ritmik yürüyüş müziği." },
-            { w: "MASA", h: "Ayaklı mobilya." },
-            { w: "MAYA", h: "Hamuru kabartan madde." },
-            { w: "MENÜ", h: "Yemek listesi." },
-            { w: "MÜZE", h: "Tarihi eserlerin sergilendiği yer." },
-            { w: "OCAK", h: "Yılın ilk ayı." },
-            { w: "ODAK", h: "Odak noktası, focus." },
-            { w: "OLAY", h: "Hadise, vaka." },
-            { w: "ONAY", h: "Tasdik, kabul." },
-            { w: "ORAN", h: "Nispet." },
-            { w: "ORUÇ", h: "Belli süre yiyip içmeme ibadeti." },
-            { w: "OTEL", h: "Konaklama tesisi." },
-            { w: "OYUN", h: "Eğlence etkinliği." },
-            { w: "ÖDEV", h: "Vazife." },
-            { w: "ÖLÇÜ", h: "Miktar belirleme aracı." },
-            { w: "ÖYKÜ", h: "Hikaye." },
-            { w: "ÖZEL", h: "Hususi." },
-            { w: "ÖZET", h: "Kısaltılmış anlatım." },
-            { w: "PARA", h: "Ödeme aracı." },
-            { w: "PARK", h: "Yeşil alan." },
-            { w: "PAŞA", h: "Yüksek rütbeli asker." },
-            { w: "RÜYA", h: "Uykuda görülen düş." },
-            { w: "SAAT", h: "Zaman ölçme aracı." },
-            { w: "SADE", h: "Süssüz, yalın." },
-            { w: "SAHA", h: "Alan, meydan." },
-            { w: "SARI", h: "Limonun rengi." },
-            { w: "SAYI", h: "Rakam, adet." },
-            { w: "SIRA", h: "Dizi, düzen." },
-            { w: "SPOR", h: "Bedensel aktivite." },
-            { w: "ŞAKA", h: "Güldürmek için yapılan hareket." },
-            { w: "ŞANS", h: "Talih, uğur." },
-            { w: "ŞART", h: "Koşul." },
-            { w: "ŞİİR", h: "Duygulu, ahenkli yazı türü." },
-            { w: "ŞUBE", h: "Bir kurumun alt birimi." },
-            { w: "TAHT", h: "Hükümdar koltuğu." },
-            { w: "TANK", h: "Zırhlı savaş aracı." },
-            { w: "TAPU", h: "Mülkiyet belgesi." },
-            { w: "TAZE", h: "Bayat olmayan." },
-            { w: "TEMA", h: "Ana konu." },
-            { w: "TREN", h: "Raylar üzerinde giden taşıt." },
-            { w: "UMUT", h: "Ümit." },
-            { w: "ÜRÜN", h: "Mahsul." },
-            { w: "ÜNLÜ", h: "Meşhur, tanınmış." },
-            { w: "VALİ", h: "İli yöneten en yetkili kişi." },
-            { w: "VİDA", h: "Döndürülerek sokulan çivi." },
-            { w: "YAPI", h: "Bina, inşaat." },
-            { w: "YARA", h: "Doku hasarı." },
-            { w: "YARI", h: "Bir bütünün iki parçasından biri." },
-            { w: "YENİ", h: "Eski olmayan." },
-            { w: "ZEKA", h: "Akıl, anlama yeteneği." }
-        ],
-        5:[
-            { w: "RADYO", h: "Ses dalgalarını ileten cihaz." },
-            { w: "SEHPA", h: "Küçük masa." },
-            { w: "KİTAP", h: "Okumak için yazılmış eser." },
-            { w: "ÇİÇEK", h: "Bitkilerin renkli ve kokulu kısmı." },
-            { w: "DÜNYA", h: "Yaşadığımız gezegen." },
-            { w: "MÜZİK", h: "Ses sanatı." },
-            { w: "KAHVE", h: "Kafeinli sıcak içecek." },
-            { w: "BULUT", h: "Gökyüzündeki su buharı kütlesi." },
-            { w: "GÜNEŞ", h: "Dünyamızı ısıtan yıldız." },
-            { w: "ROBOT", h: "Otomatik iş yapan makine." },
-            { w: "LAZER", h: "Yoğunlaştırılmış ışık demeti." },
-            { w: "EKRAN", h: "Görüntü paneli." },
-            { w: "MOBİL", h: "Taşınabilir, cep telefonu." },
-            { w: "KABLO", h: "Elektrik ileten tel." },
-            { w: "MOTOR", h: "Güç üreten makine." },
-            { w: "HELVA", h: "Tatlı bir yiyecek." },
-            { w: "MODEM", h: "İnternet bağlantı cihazı." },
-            { w: "SİBER", h: "Bilişim ve ağlarla ilgili." },
-            { w: "PANEL", h: "Levha veya açık oturum." },
-            { w: "VİDEO", h: "Görüntü kaydı." },
-            { w: "AJANS", h: "Haber veya reklam kurumu." },
-            { w: "ACELE", h: "Çabukluk, telaş." },
-            { w: "ADRES", h: "Bulunulan yerin tarifi." },
-            { w: "AKŞAM", h: "Günün batış zamanı." },
-            { w: "ALARM", h: "Uyarı sesi." },
-            { w: "ALBÜM", h: "Müzik veya resim koleksiyonu." },
-            { w: "ALKIŞ", h: "El çırpma." },
-            { w: "ANLAM", h: "Mana." },
-            { w: "ANKET", h: "Soruşturma, kamuoyu yoklaması." },
-            { w: "ANTEN", h: "Sinyal alıcı." },
-            { w: "ARABA", h: "Tekerlekli taşıt." },
-            { w: "ARIZA", h: "Bozukluk." },
-            { w: "BAHÇE", h: "Çiçek veya ağaç dikili yer." },
-            { w: "BALIK", h: "Suda yaşayan hayvan." },
-            { w: "BANKA", h: "Para işleri yapan kurum." },
-            { w: "BANYO", h: "Yıkanma yeri." },
-            { w: "BARIŞ", h: "Savaşın olmama durumu." },
-            { w: "BASIN", h: "Gazete ve dergilerin tümü." },
-            { w: "BAŞAK", h: "Tahılların taneli baş kısmı." },
-            { w: "BEBE", h: "Küçük çocuk." },
-            { w: "BEDEL", h: "Karşılık, fiyat." },
-            { w: "BELGE", h: "Döküman, vesika." },
-            { w: "BEYAZ", h: "Ak, kara karşıtı renk." },
-            { w: "BİBER", h: "Acı veya tatlı sebze." },
-            { w: "BİLET", h: "Giriş veya yolculuk kartı." },
-            { w: "BİLGİ", h: "Öğrenilen şey, malumat." },
-            { w: "BİLİM", h: "İlim." },
-            { w: "BÖLGE", h: "Sınırları belli alan." },
-            { w: "BÖLÜM", h: "Kısım, parça." },
-            { w: "BÜTÇE", h: "Gelir gider dengesi." },
-            { w: "BÜYÜK", h: "Küçük olmayan, iri." },
-            { w: "CAMİA", h: "Topluluk." },
-            { w: "CANLI", h: "Yaşayan." },
-            { w: "CEVAP", h: "Yanıt." },
-            { w: "CEVİZ", h: "Sert kabuklu bir kuruyemiş." },
-            { w: "CİHAZ", h: "Aygıt, alet." },
-            { w: "ÇADIR", h: "Bezden yapılan barınak." },
-            { w: "ÇANTA", h: "Eşya taşıma kabı." },
-            { w: "ÇEKİÇ", h: "Çivi çakma aleti." },
-            { w: "ÇELİK", h: "Sertleştirilmiş demir." },
-            { w: "ÇEŞİT", h: "Tür, cins." },
-            { w: "ÇİZGİ", h: "Hat." },
-            { w: "ÇORAP", h: "Ayağa giyilen giysi." },
-            { w: "DAİRE", h: "Yuvarlak şekil veya konut." },
-            { w: "DAMAR", h: "Kan taşıyan borucuk." },
-            { w: "DAMLA", h: "Küçük su tanesi." },
-            { w: "DAVET", h: "Çağrı." },
-            { w: "DENİZ", h: "Büyük su kütlesi." },
-            { w: "DETAY", h: "Ayrıntı." },
-            { w: "DEVİR", h: "Dönem, çağ." },
-            { w: "DİREK", h: "Sütun." },
-            { w: "DOĞRU", h: "Yanlış karşıtı." },
-            { w: "DOLAP", h: "Eşya konulan mobilya." },
-            { w: "DOSYA", h: "Evrak kabı." },
-            { w: "DÖVİZ", h: "Yabancı para." },
-            { w: "DURAK", h: "Taşıt bekleme yeri." },
-            { w: "DURUM", h: "Vaziyet, hal." },
-            { w: "DUVAR", h: "Yapıların dik bölmesi." },
-            { w: "DÜĞÜN", h: "Evlenme töreni." },
-            { w: "EKMEK", h: "Unla yapılan temel besin." },
-            { w: "ELMAS", h: "Çok değerli sert taş." },
-            { w: "EMLAK", h: "Gayrimenkul." },
-            { w: "ENGEL", h: "Mani." },
-            { w: "ESNAF", h: "Küçük ticaret erbabı." },
-            { w: "ETİKET", h: "Fiyat veya marka kağıdı." },
-            { w: "EYLEM", h: "Fiil, iş, hareket." },
-            { w: "FAKİR", h: "Yoksul." },
-            { w: "FAYDA", h: "Yarar." },
-            { w: "FİDAN", h: "Yeni yetişen ağaç." },
-            { w: "FİKİR", h: "Düşünce." },
-            { w: "FİRMA", h: "Şirket." },
-            { w: "FİZİK", h: "Madde ve enerjiyi inceleyen bilim." },
-            { w: "FORMA", h: "Takım giysisi." },
-            { w: "GENEL", h: "Umumi, herkesle ilgili." },
-            { w: "GİRİŞ", h: "Kapı, içeri girme yeri." },
-            { w: "GİTAR", h: "Telli bir çalgı." },
-            { w: "GİYİM", h: "Kılık kıyafet." },
-            { w: "GÖLGE", h: "Işığın giremediği karanlık yer." },
-            { w: "GÖREV", h: "Vazife." },
-            { w: "GÜZEL", h: "Hoşa giden, çirkin karşıtı." },
-            { w: "HABER", h: "Bilgi, havadis." },
-            { w: "HAFTA", h: "Yedi günlük süre." },
-            { w: "HAKLI", h: "Doğru olan." },
-            { w: "HALKA", h: "Daire biçimindeki cisim." },
-            { w: "HAMLE", h: "Atılım, saldırış." },
-            { w: "HANGİ", h: "Bir soru sıfatı." },
-            { w: "HARİTA", h: "Yeryüzü çizimi." },
-            { w: "HASAR", h: "Zarar, ziyan." },
-            { w: "HAYAL", h: "Düş, imge." },
-            { w: "HAYAT", h: "Yaşam." },
-            { w: "HEDEF", h: "Amaç, nişan." },
-            { w: "HEKİM", h: "Doktor." },
-            { w: "HESAP", h: "Sayma, işlem." },
-            { w: "HEYET", h: "Kurul." },
-            { w: "HIZLI", h: "Süratli." },
-            { w: "HUKUK", h: "Yasalar bütünü." },
-            { w: "HÜCRE", h: "Canlının en küçük yapı taşı." },
-            { w: "HUZUR", h: "Gönül rahatlığı." },
-            { w: "İBARE", h: "Söz, deyiş." },
-            { w: "İÇERİ", h: "Dışarı karşıtı." },
-            { w: "İDEAL", h: "Ülkü, en iyi." },
-            { w: "İFADE", h: "Anlatım." },
-            { w: "İKLİM", h: "Hava koşullarının ortalaması." },
-            { w: "İMKAN", h: "Olanak." },
-            { w: "İNSAN", h: "Beşer, ademoğlu." },
-            { w: "İPTAL", h: "Geçersiz kılma." },
-            { w: "İSLAM", h: "Müslümanlık dini." },
-            { w: "İŞLEM", h: "Ameliye, muamele." },
-            { w: "KAĞIT", h: "Yazı yazmaya yarayan yaprak." },
-            { w: "KALEM", h: "Yazı yazma aracı." },
-            { w: "KANAL", h: "Su veya yayın yolu." },
-            { w: "KANIT", h: "Delil." },
-            { w: "KARGO", h: "Yük taşıma." },
-            { w: "KAŞIK", h: "Yemek yeme aracı." },
-            { w: "KAYIP", h: "Yitik." },
-            { w: "KAYIT", h: "Yazma, tescil." },
-            { w: "KAZAN", h: "Büyük yemek pişirme kabı." },
-            { w: "KEBAP", h: "Ateşte pişen et yemeği." },
-            { w: "KENAR", h: "Kıyı, köşe." },
-            { w: "KESİN", h: "Şüphesiz, kati." },
-            { w: "KIVAM", h: "Uygun koyuluk." },
-            { w: "KİMYA", h: "Maddeleri inceleyen bilim." },
-            { w: "KİRAZ", h: "Kırmızı yaz meyvesi." },
-            { w: "KLİMA", h: "İklimlendirme cihazı." },
-            { w: "KOLAY", h: "Zor olmayan." },
-            { w: "KONUK", h: "Misafir." },
-            { w: "KONUM", h: "Yer, pozisyon." },
-            { w: "KOPYA", h: "Taklit, suret." },
-            { w: "KORKU", h: "Tehlike anında duyulan his." },
-            { w: "KREDİ", h: "Borç para." },
-            { w: "KURAL", h: "Kaide." },
-            { w: "KURUL", h: "Heyet." },
-            { w: "KURUM", h: "Müessese." },
-            { w: "KUZEY", h: "Bir yön." },
-            { w: "LİDER", h: "Önder." },
-            { w: "LİMAN", h: "Gemilerin yanaştığı yer." },
-            { w: "LİSTE", h: "Dizelge." },
-            { w: "MAHAL", h: "Yer, yöre." },
-            { w: "MAKAM", h: "Mevki." },
-            { w: "MAKAS", h: "Kesme aleti." },
-            { w: "MANTI", h: "Hamurlu bir yemek." },
-            { w: "MARKA", h: "Ticari isim." },
-            { w: "MASAL", h: "Olağanüstü hikaye." },
-            { w: "MEDYA", h: "İletişim araçları." },
-            { w: "MEKAN", h: "Yer." },
-            { w: "MESAJ", h: "İleti." },
-            { w: "METAL", h: "Demir, bakır gibi madenler." },
-            { w: "METİN", h: "Yazı." },
-            { w: "METRO", h: "Yeraltı treni." },
-            { w: "MİMAR", h: "Bina tasarlayan kişi." },
-            { w: "MİRAS", h: "Ölen kimseden kalan mal." },
-            { w: "MODEL", h: "Örnek, kalıp." },
-            { w: "NİYET", h: "Amaç, maksat." },
-            { w: "NOKTA", h: "Cümlenin sonuna konur." },
-            { w: "NÖBET", h: "Sırayla yapılan iş." },
-            { w: "NUMARA", h: "Sayı, rakam." },
-            { w: "ORTAM", h: "Çevre, atmosfer." },
-            { w: "ÖRDEK", h: "Suda yüzen perde ayaklı kuş." },
-            { w: "ÖRNEK", h: "Misal." },
-            { w: "ÖZLEM", h: "Hasret." },
-            { w: "PAKET", h: "Sarılıp bağlanmış nesne." },
-            { w: "PAMUK", h: "Yumuşak bitki lifi." },
-            { w: "PANİK", h: "Ani korku." },
-            { w: "PARÇA", h: "Bütünün bir kısmı." },
-            { w: "PAZAR", h: "Haftanın son günü veya alışveriş yeri." },
-            { w: "PEMBE", h: "Kırmızı ile beyazın karışımı renk." },
-            { w: "PERDE", h: "Pencere örtüsü." },
-            { w: "PİLOT", h: "Uçak kullanan kişi." },
-            { w: "PİYON", h: "Satrançta en küçük taş." },
-            { w: "PLAZA", h: "İş merkezi." },
-            { w: "POLİS", h: "Emniyet görevlisi." },
-            { w: "PROJE", h: "Tasarı." },
-            { w: "RAKİP", h: "Yarışılan kimse." },
-            { w: "RAPOR", h: "Durum bildiren yazı." },
-            { w: "RESİM", h: "Çizim veya boyama sanatı." },
-            { w: "ROMAN", h: "Uzun edebi eser." },
-            { w: "ROKET", h: "Füze." },
-            { w: "SABAH", h: "Günün ilk saatleri." },
-            { w: "SAHİL", h: "Kıyı, kumsal." },
-            { w: "SAHNE", h: "Oyun oynanan platform." },
-            { w: "SAKİN", h: "Gürültüsüz, durgun." },
-            { w: "SALON", h: "Evin büyük odası." },
-            { w: "SANAL", h: "Gerçek olmayan." },
-            { w: "SANAT", h: "Yaratıcılık ürünü eserler." },
-            { w: "SANKİ", h: "Güya." },
-            { w: "SARAY", h: "Hükümdar evi." },
-            { w: "SATIŞ", h: "Satma işi." },
-            { w: "SEBEP", h: "Neden." },
-            { w: "SEBZE", h: "Yenen bitkiler." },
-            { w: "SEÇİM", h: "Tercih veya oy verme." },
-            { w: "SEKİZ", h: "Yediden sonra gelen sayı." },
-            { w: "SELAM", h: "Esenleme sözü." },
-            { w: "SENET", h: "Borç belgesi." },
-            { w: "SERGİ", h: "Eserlerin gösterildiği yer." },
-            { w: "SERVİ", h: "Uzun, ince bir ağaç." },
-            { w: "SESLİ", h: "Sessiz olmayan." },
-            { w: "SEZON", h: "Mevsim, dönem." },
-            { w: "SICAK", h: "Soğuk karşıtı." },
-            { w: "SINAV", h: "İmtihan." },
-            { w: "SINIF", h: "Derslik." },
-            { w: "SINIR", h: "Hudut." },
-            { w: "SİLAH", h: "Savaş aleti." },
-            { w: "SİMYA", h: "Eski kimya." },
-            { w: "SİNEK", h: "Uçan küçük böcek." },
-            { w: "SİREN", h: "Uyarı düdüğü." },
-            { w: "SİTEM", h: "Kırgınlık belirtme." },
-            { w: "SİVİL", h: "Asker olmayan." },
-            { w: "SİYAH", h: "Kara renk." },
-            { w: "SOKAK", h: "Cadde, yol." },
-            { w: "SONUÇ", h: "Netice." },
-            { w: "SORUN", h: "Problem, mesele." },
-            { w: "SÖZLÜ", h: "Yazılı olmayan." },
-            { w: "SUBAY", h: "Rütbeli asker." },
-            { w: "SÜREÇ", h: "Proses." },
-            { w: "SÜRÜM", h: "Versiyon." },
-            { w: "ŞAHİT", h: "Tanık." },
-            { w: "ŞARKI", h: "Müzik parçası." },
-            { w: "ŞEHİR", h: "Kent." },
-            { w: "ŞEKER", h: "Tatlı madde." },
-            { w: "ŞEKİL", h: "Biçim." },
-            { w: "TABAK", h: "Yemek kabı." },
-            { w: "TABAN", h: "Alt kısım." },
-            { w: "TABLO", h: "Duvara asılan resim." },
-            { w: "TAKIM", h: "Ekip." },
-            { w: "TAKİP", h: "İzleme." },
-            { w: "TALEB", h: "İstek." },
-            { w: "TALİH", h: "Şans." },
-            { w: "TAMİR", h: "Onarım." },
-            { w: "TARAF", h: "Yan, yön." },
-            { w: "TARIM", h: "Ziraat." },
-            { w: "TARİH", h: "Geçmiş zaman." },
-            { w: "TARLA", h: "Ekip biçilen yer." },
-            { w: "TAVUK", h: "Yumurtlayan kümes hayvanı." },
-            { w: "TEKNE", h: "Küçük deniz taşıtı." },
-            { w: "TEMEL", h: "Esas, taban." },
-            { w: "TEMİZ", h: "Kirli olmayan." },
-            { w: "TEPSİ", h: "Servis aracı." },
-            { w: "TERZİ", h: "Elbise dikeni kişi." },
-            { w: "TÖREN", h: "Merasim." },
-            { w: "TUTAR", h: "Toplam miktar." },
-            { w: "TÜNEL", h: "Yeraltı geçidi." },
-            { w: "UZMAN", h: "Mütehassıs, bilen kişi." },
-            { w: "ÜCRET", h: "Hizmet karşılığı para." },
-            { w: "ÜÇGEN", h: "Üç kenarlı şekil." },
-            { w: "ÜNİTE", h: "Birim." },
-            { w: "ÜNVAN", h: "Sıfat, lakap." },
-            { w: "ÜSTÜN", h: "Daha iyi olan." },
-            { w: "VAKIF", h: "Hayır kurumu." },
-            { w: "VAKİT", h: "Zaman." },
-            { w: "VARİL", h: "Büyük sıvı kabı." },
-            { w: "VARLIK", h: "Mevcudiyet." },
-            { w: "VATAN", h: "Yurt." },
-            { w: "VERGİ", h: "Devlete ödenen para." },
-            { w: "VİRÜS", h: "Hastalık yapan mikrop." },
-            { w: "VAGON", h: "Trenin bölmesi." },
-            { w: "YAKIN", h: "Uzak olmayan." },
-            { w: "YALAN", h: "Gerçek dışı söz." },
-            { w: "YANIT", h: "Cevap." },
-            { w: "YANKI", h: "Sesin geri dönmesi." },
-            { w: "YARAR", h: "Fayda." },
-            { w: "YASAL", h: "Kanuni." },
-            { w: "YAŞAM", h: "Hayat." },
-            { w: "YATAK", h: "Uyuma yeri." },
-            { w: "YAYIN", h: "Basım veya neşriyat." },
-            { w: "YAZAR", h: "Kitap yazan kişi." },
-            { w: "YEMEK", h: "Yenen şeyler." },
-            { w: "YEREL", h: "Lokal, mahalli." },
-            { w: "YEŞİL", h: "Doğanın rengi." },
-            { w: "YİĞİT", h: "Cesur, kahraman." },
-            { w: "YOKSA", h: "Aksi takdirde." },
-            { w: "YORUM", h: "Düşünce açıklama." },
-            { w: "YÜZDE", h: "Yüz parçada bir." },
-            { w: "ZAMAN", h: "Vakit." },
-            { w: "ZEMİN", h: "Yer, taban." },
-            { w: "ZİRVE", h: "Doruk, en tepe." },
-            { w: "ZORLU", h: "Güç, çetin." }
-        ],
-        6:[
-            { w: "KAPTAN", h: "Gemi veya uçak yöneticisi." },
-            { w: "GÖZLÜK", h: "Görme bozukluğunu düzelten araç." },
-            { w: "BARDAK", h: "Su içme kabı." },
-            { w: "KOLTUK", h: "Oturma eşyası." },
-            { w: "YASTIK", h: "Baş altına konulan eşya." },
-            { w: "ZÜRAFA", h: "Uzun boyunlu hayvan." },
-            { w: "BALKON", h: "Evin dışarı çıkıntısı." },
-            { w: "KARPUZ", h: "İçi kırmızı yaz meyvesi." },
-            { w: "SİSTEM", h: "Düzen, dizge." },
-            { w: "SUNUCU", h: "Programı sunan kişi veya server." },
-            { w: "SİNYAL", h: "İşaret." },
-            { w: "BOŞLUK", h: "Dolu olmayan yer." },
-            { w: "ENERJİ", h: "İş yapabilme yeteneği." },
-            { w: "PUSULA", h: "Yön bulma aracı." },
-            { w: "SEKTÖR", h: "İş kolu, dal." },
-            { w: "ADALET", h: "Hukuk ve doğruluk." },
-            { w: "AKARSU", h: "Nehir, ırmak." },
-            { w: "AKRABA", h: "Kan bağı olanlar." },
-            { w: "AMAZON", h: "Büyük bir orman veya nehir." },
-            { w: "ANONİM", h: "İsimsiz, kimliği belirsiz." },
-            { w: "ANTİKA", h: "Eski ve değerli eşya." },
-            { w: "ARALIK", h: "Yılın son ayı veya mesafe." },
-            { w: "ARITMA", h: "Temizleme işlemi." },
-            { w: "ASKERİ", h: "Orduyla ilgili." },
-            { w: "ATÖLYE", h: "İşlik." },
-            { w: "AVUKAT", h: "Hukukçu, savunman." },
-            { w: "AYARLA", h: "Düzenle." },
-            { w: "BADANA", h: "Duvar boyama işi." },
-            { w: "BAKKAL", h: "Küçük market." },
-            { w: "BALİNA", h: "Dev deniz memelisi." },
-            { w: "BALYOZ", h: "Ağır çekiç." },
-            { w: "BANKER", h: "Banka sahibi veya para babası." },
-            { w: "BARAJ", h: "Su biriktirme yapısı." },
-            { w: "BAYRAK", h: "Ülke sembolü kumaş." },
-            { w: "BAYRAM", h: "Milli veya dini kutlama günü." },
-            { w: "BEĞENİ", h: "Takdir etme, hoşlanma." },
-            { w: "BENZİN", h: "Yakıt türü." },
-            { w: "BERBER", h: "Saç kesen kişi." },
-            { w: "BAŞKAN", h: "Yönetici, reis." },
-            { w: "BİLDİR", h: "Haber ver." },
-            { w: "BONCUK", h: "Süs tanesi." },
-            { w: "BULVAR", h: "Geniş cadde." },
-            { w: "BÜLBÜL", h: "Güzel öten kuş." },
-            { w: "CETVEL", h: "Çizim veya ölçüm aracı." },
-            { w: "CEYLAN", h: "Hızlı koşan zarif hayvan." },
-            { w: "CÖMERT", h: "Eli açık." },
-            { w: "ÇARŞAF", h: "Yatak örtüsü." },
-            { w: "ÇEYREK", h: "Dörtte bir." },
-            { w: "ÇIPLAK", h: "Giyinmemiş." },
-            { w: "ÇÖMLEK", h: "Toprak kap." },
-            { w: "DAKİKA", h: "Zaman birimi, 60 saniye." },
-            { w: "DANTEL", h: "Örgü işi süs." },
-            { w: "DEFTER", h: "Yazı yazılan kağıt tomarı." },
-            { w: "DEPREM", h: "Yer sarsıntısı." },
-            { w: "DERMAN", h: "Çare, ilaç." },
-            { w: "DERNEK", h: "Cemiyet." },
-            { w: "DESTEK", h: "Yardım." },
-            { w: "DEVLET", h: "Siyasi örgütlenmiş toplum." },
-            { w: "DEVRİM", h: "İnkılap." },
-            { w: "DIŞARI", h: "İçeri karşıtı." },
-            { w: "DİKKAT", h: "Uyanıklık, özen." },
-            { w: "DİREKT", h: "Doğrudan." },
-            { w: "DOKTOR", h: "Hekim." },
-            { w: "DOMİNO", h: "Taşlarla oynanan oyun." },
-            { w: "DÜRBÜN", h: "Uzağı görme aleti." },
-            { w: "DÜRÜST", h: "Doğru sözlü." },
-            { w: "ECZANE", h: "İlaç satılan yer." },
-            { w: "EFENDİ", h: "Saygılı kişi, bey." },
-            { w: "EĞİTİM", h: "Öğretim, yetiştirme." },
-            { w: "ELBİSE", h: "Giysi." },
-            { w: "EMEKLİ", h: "İş hayatını tamamlamış kişi." },
-            { w: "ENDEKS", h: "Gösterge, dizin." },
-            { w: "ERİŞİM", h: "Ulaşım." },
-            { w: "ETKİLİ", h: "Tesirli." },
-            { w: "FAKTÖR", h: "Etmen." },
-            { w: "FISTIK", h: "Bir kuruyemiş." },
-            { w: "FİNANS", h: "Maliye, para işleri." },
-            { w: "FIRSAT", h: "Uygun an." },
-            { w: "FORMÜL", h: "Matematiksel kural." },
-            { w: "FUKARA", h: "Yoksul." },
-            { w: "FUTBOL", h: "Ayakla oynanan top oyunu." },
-            { w: "GARSON", h: "Servis elemanı." },
-            { w: "GAZETE", h: "Haber kağıdı." },
-            { w: "GEÇMİŞ", h: "Mazi." },
-            { w: "GERÇEK", h: "Hakiki." },
-            { w: "GÖMLEK", h: "Üst giysisi." },
-            { w: "GÜNCEL", h: "Aktüel, bugünkü." },
-            { w: "GÜNDEM", h: "Görüşülecek konular." },
-            { w: "HARİKA", h: "Mükemmel." },
-            { w: "HASRET", h: "Özlem." },
-            { w: "HASSAS", h: "Duyarlı." },
-            { w: "HATIRA", h: "Anı." },
-            { w: "HAYVAN", h: "Canlı yaratık." },
-            { w: "HAZİNE", h: "Değerli eşyaların saklandığı yer." },
-            { w: "HEYKEL", h: "Yontu." },
-            { w: "HİZMET", h: "İş görme, servis." },
-            { w: "İÇECEK", h: "Meşrubat." },
-            { w: "İLGİNÇ", h: "Enteresan." },
-            { w: "İŞARET", h: "İz, belirti." },
-            { w: "KAFİYE", h: "Uyak." },
-            { w: "KALİTE", h: "Nitelik." },
-            { w: "KAMERA", h: "Görüntü kaydedici." },
-            { w: "KANSER", h: "Tehlikeli bir hastalık." },
-            { w: "KAPLAN", h: "Büyük yırtıcı kedi." },
-            { w: "KARDEŞ", h: "Aynı anne babadan olanlar." },
-            { w: "KARTAL", h: "Yırtıcı kuş." },
-            { w: "KARTON", h: "Kalın kağıt." },
-            { w: "KASABA", h: "Küçük şehir." },
-            { w: "KAYNAK", h: "Pınar veya köken." },
-            { w: "KELİME", h: "Sözcük." },
-            { w: "KESKİN", h: "İyi kesen." },
-            { w: "KLASİK", h: "Eskimeyen, geleneksel." },
-            { w: "KLAVYE", h: "Tuş takımı." },
-            { w: "KOMEDİ", h: "Güldürü." },
-            { w: "KOMPLE", h: "Tamamıyla, bütün." },
-            { w: "KONFOR", h: "Rahatlık." },
-            { w: "KONGRE", h: "Kurultay." },
-            { w: "KONSER", h: "Müzik dinletisi." },
-            { w: "KONTAK", h: "Temas." },
-            { w: "KORKAK", h: "Cesur olmayan." },
-            { w: "KORSAN", h: "Deniz haydutu." },
-            { w: "KRİTER", h: "Ölçüt." },
-            { w: "KRONİK", h: "Süreğen." },
-            { w: "KULÜBE", h: "Küçük barınak." },
-            { w: "KUVVET", h: "Güç." },
-            { w: "KÜLTÜR", h: "Ekin." },
-            { w: "LASTİK", h: "Esnek madde veya tekerlek." },
-            { w: "LEOPAR", h: "Benekli yırtıcı kedi." },
-            { w: "MADENİ", h: "Metalik." },
-            { w: "MAĞAZA", h: "Büyük dükkan." },
-            { w: "MAKALE", h: "Gazete yazısı." },
-            { w: "MAKİNE", h: "Aygıt." },
-            { w: "MANTAR", h: "Sporla çoğalan bitki veya tıpa." },
-            { w: "MANTIK", h: "Doğru düşünme yolu." },
-            { w: "MARKET", h: "Alışveriş yeri." },
-            { w: "MASRAF", h: "Gider, harcama." },
-            { w: "MATKAP", h: "Delik açma aleti." },
-            { w: "MECBUR", h: "Zorunlu." },
-            { w: "MERCEK", h: "Lens." },
-            { w: "MERKEZ", h: "Orta nokta." },
-            { w: "MESLEK", h: "İş, uğraş." },
-            { w: "MEVCUT", h: "Var olan." },
-            { w: "MEYDAN", h: "Geniş alan." },
-            { w: "MİKTAR", h: "Nicelik, tutar." },
-            { w: "MİLLET", h: "Ulus." },
-            { w: "MİLYON", h: "Altı sıfırlı sayı." },
-            { w: "MODERN", h: "Çağdaş." },
-            { w: "MUHTAR", h: "Mahalle yöneticisi." },
-            { w: "MUTFAK", h: "Yemek pişirilen yer." },
-            { w: "NEREDE", h: "Yer sorusu." },
-            { w: "NESNEL", h: "Objektif." },
-            { w: "NORMAL", h: "Anormal olmayan." },
-            { w: "NUMUNE", h: "Örnek." },
-            { w: "ONARIM", h: "Tamirat." },
-            { w: "PANJUR", h: "Pencere örtüsü." },
-            { w: "PARFÜM", h: "Güzel koku." },
-            { w: "PARLAK", h: "Işıldayan." },
-            { w: "PARMAK", h: "El ve ayak uçları." },
-            { w: "PATRON", h: "İşveren." },
-            { w: "PAYLAŞ", h: "Bölüş." },
-            { w: "PEÇETE", h: "Temizlik kağıdı." },
-            { w: "PENDİK", h: "İstanbul'un bir ilçesi." },
-            { w: "PETROL", h: "Siyah altın, yakıt." },
-            { w: "PEYNİR", h: "Sütten yapılan katı yiyecek." },
-            { w: "PİYASA", h: "Pazar." },
-            { w: "PLANLI", h: "Programlı." },
-            { w: "PORTAL", h: "Ana giriş kapısı veya web sitesi." },
-            { w: "POSTAL", h: "Asker botu." },
-            { w: "PROFİL", h: "Yan görünüş." },
-            { w: "REÇETE", h: "İlaç listesi." },
-            { w: "REHBER", h: "Kılavuz." },
-            { w: "REKLAM", h: "Tanıtım." },
-            { w: "RENKLİ", h: "Renkli." },
-            { w: "RESMİ", h: "Devlete ait." },
-            { w: "RÜZGAR", h: "Yel." },
-            { w: "SAĞLIK", h: "Sıhhat." },
-            { w: "SAMİMİ", h: "İçten." },
-            { w: "SANDAL", h: "Küçük kayık." },
-            { w: "SANİYE", h: "Zaman birimi." },
-            { w: "SANSÜR", h: "Denetleme, kısıtlama." },
-            { w: "SARMAL", h: "Helezon." },
-            { w: "SATICI", h: "Satan kişi." },
-            { w: "SAYDAM", h: "Şeffaf." },
-            { w: "SEÇKİN", h: "Elit." },
-            { w: "SEMBOL", h: "Simge." },
-            { w: "SENTEZ", h: "Bireşim." },
-            { w: "SEVİYE", h: "Düzey." },
-            { w: "SİGARA", h: "Tütün ürünü." },
-            { w: "SOHBET", h: "Söyleşi, muhabbet." },
-            { w: "SOSYAL", h: "Toplumsal." },
-            { w: "SÖZLÜK", h: "Kelimeler kitabı, lugat." },
-            { w: "SÜLFÜR", h: "Kükürt." },
-            { w: "SÜNGER", h: "Temizlik malzemesi." },
-            { w: "SÜRÜCÜ", h: "Şoför." },
-            { w: "ŞABLON", h: "Kalıp." },
-            { w: "ŞEFFAF", h: "Saydam." },
-            { w: "ŞİMŞEK", h: "Çakan ışık." },
-            { w: "ŞİRKET", h: "Ticari ortaklık." },
-            { w: "TABLET", h: "Düz bilgisayar." },
-            { w: "TAHMİN", h: "Öngörü." },
-            { w: "TAKVİM", h: "Zaman cetveli." },
-            { w: "TALEBE", h: "Öğrenci." },
-            { w: "TASARI", h: "Proje, plan." },
-            { w: "TATİL", h: "Dinlenme dönemi." },
-            { w: "TEHLİK", h: "Tehlike." },
-            { w: "TEKNİK", h: "Uygulama bilgisi." },
-            { w: "TEKRAR", h: "Yineleme." },
-            { w: "TEMSİL", h: "Simgeleme veya oyun." },
-            { w: "TERCİH", h: "Seçim." },
-            { w: "TERMAL", h: "Isı ile ilgili." },
-            { w: "TESLİM", h: "Verme." },
-            { w: "TOPLAM", h: "Yekün." },
-            { w: "TOPLUM", h: "Cemiyet." },
-            { w: "TOPRAK", h: "Yer, arazi." },
-            { w: "TURİZM", h: "Gezginlik." },
-            { w: "ULUSAL", h: "Milli." },
-            { w: "UZANTI", h: "Ek parça." },
-            { w: "ÜRETİM", h: "İmalat." },
-            { w: "ÜÇGEN", h: "Üç kenarlı." },
-            { w: "VİCDAN", h: "İç ses." },
-            { w: "VİDEO", h: "Görüntü kaydı." },
-            { w: "VİZYON", h: "Görüş, gösterim." },
-            { w: "VOLKAN", h: "Yanardağ." },
-            { w: "YALNIZ", h: "Tek başına." },
-            { w: "YAPRAK", h: "Ağacın yeşil kısmı." },
-            { w: "YARDIM", h: "İmdat, destek." },
-            { w: "YAYGIN", h: "Çok rastlanan." },
-            { w: "YAZICI", h: "Printer." },
-            { w: "YELKEN", h: "Rüzgarla giden gemi bezi." },
-            { w: "YEMEK", h: "Gıda." },
-            { w: "YENGEÇ", h: "Yan yan yürüyen kabuklu." },
-            { w: "YETKİN", h: "Olgun, ehil." },
-            { w: "YILDIZ", h: "Gökyüzünde parlayan cisim." },
-            { w: "YOĞURT", h: "Mayalanmış süt." },
-            { w: "YÖNTEM", h: "Metot." },
-            { w: "YÜKSEK", h: "Alçak karşıtı." },
-            { w: "ZABITA", h: "Belediye polisi." },
-            { w: "ZAMANE", h: "Şimdiki zaman." },
-            { w: "ZEYTİN", h: "Kahvaltılık siyah/yeşil meyve." },
-            { w: "ZİNCİR", h: "Halkalar dizisi." }
-        ],
-        7:[
-            { w: "MERHABA", h: "Selamlaşma sözü." },
-            { w: "PENCERE", h: "Duvarlardaki camlı açıklık." },
-            { w: "TÜRKİYE", h: "Vatanımız." },
-            { w: "TELEFON", h: "İletişim aracı." },
-            { w: "MANZARA", h: "Görünüm." },
-            { w: "JÜPİTER", h: "En büyük gezegen." },
-            { w: "YAZILIM", h: "Bilgisayar programı." },
-            { w: "MONİTÖR", h: "Ekran." },
-            { w: "GEZEGEN", h: "Gök cismi." },
-            { w: "DİJİTAL", h: "Sayısal." },
-            { w: "PROGRAM", h: "İzlence." },
-            { w: "YÖNETİM", h: "İdare." },
-            { w: "AKADEMİ", h: "Yüksek okul." },
-            { w: "AKSİYON", h: "Hareket, eylem." },
-            { w: "AMBALAJ", h: "Paketleme malzemesi." },
-            { w: "ANATOMİ", h: "Vücut yapısı bilimi." },
-            { w: "ANLAŞMA", h: "Uzlaşma, kontrat." },
-            { w: "ANTALYA", h: "Turistik bir ilimiz." },
-            { w: "ARABACI", h: "Araba kullanan." },
-            { w: "ARKADAŞ", h: "Dost." },
-            { w: "AVANTAJ", h: "Üstünlük sağlayan durum." },
-            { w: "AYRINTI", h: "Detay." },
-            { w: "BATARYA", h: "Pil grubu." },
-            { w: "BEKLEME", h: "Durma, intizar." },
-            { w: "BİYOLOG", h: "Canlı bilimci." },
-            { w: "BULMACA", h: "Zeka oyunu." },
-            { w: "ÇALIŞMA", h: "İş, emek." },
-            { w: "ÇAMAŞIR", h: "Yıkanacak giysiler." },
-            { w: "ÇEKİRGE", h: "Sıçrayan böcek." },
-            { w: "ÇEVRECİ", h: "Doğayı koruyan." },
-            { w: "DANIŞMA", h: "Bilgi alma yeri." },
-            { w: "DENKLEM", h: "Eşitlik." },
-            { w: "DERSANE", h: "Özel öğretim kurumu." },
-            { w: "DİNAMİK", h: "Hareketli." },
-            { w: "DİPLOMA", h: "Mezuniyet belgesi." },
-            { w: "DİYALOG", h: "Karşılıklı konuşma." },
-            { w: "DOKUMAN", h: "Belge." },
-            { w: "DÜŞÜNCE", h: "Fikir." },
-            { w: "DÜZENLİ", h: "Tertipli." },
-            { w: "EĞLENCE", h: "Keyifli vakit geçirme." },
-            { w: "EKOLOJİ", h: "Çevre bilimi." },
-            { w: "EKONOMİ", h: "İktisat." },
-            { w: "EMNİYET", h: "Güvenlik." },
-            { w: "ENERJİK", h: "Hareketli, canlı." },
-            { w: "ERZURUM", h: "Doğu Anadolu'da bir il." },
-            { w: "FABRİKA", h: "Üretim tesisi." },
-            { w: "FANTAZİ", h: "Hayal ürünü." },
-            { w: "FASULYE", h: "Bir baklagil." },
-            { w: "FELAKET", h: "Büyük yıkım." },
-            { w: "FELSEFE", h: "Düşünce bilimi." },
-            { w: "FIRTINA", h: "Şiddetli rüzgar." },
-            { w: "FREKANS", h: "Titreşim sıklığı." },
-            { w: "GALAKSİ", h: "Gökada." },
-            { w: "GARANTİ", h: "Güvence." },
-            { w: "GECELİK", h: "Yatarken giyilen giysi." },
-            { w: "GELECEK", h: "Ati, istikbal." },
-            { w: "GELENEK", h: "Adet, töre." },
-            { w: "GENÇLİK", h: "Tazelik çağı." },
-            { w: "GENETİK", h: "Kalıtım bilimi." },
-            { w: "GERİLİM", h: "Tansiyon." },
-            { w: "GÖKYÜZÜ", h: "Sema." },
-            { w: "GÖSTERİ", h: "Şov." },
-            { w: "GÜVENLİ", h: "Emniyetli." },
-            { w: "HABERCİ", h: "Haber getiren." },
-            { w: "HAKİKAT", h: "Gerçek." },
-            { w: "HAREKET", h: "Kımıldama." },
-            { w: "HASTANE", h: "Şifa yurdu." },
-            { w: "HEYECAN", h: "Coşku." },
-            { w: "ISPANAK", h: "Demir deposu sebze." },
-            { w: "İHRACAT", h: "Dış satım." },
-            { w: "İHTİMAL", h: "Olasılık." },
-            { w: "İHTİYAÇ", h: "Gereksinim." },
-            { w: "İNCELİK", h: "Zarafet." },
-            { w: "İSKELET", h: "Kemik çatısı." },
-            { w: "İTFAİYE", h: "Yangın söndürme ekibi." },
-            { w: "JENERİK", h: "Tanıtım yazısı." },
-            { w: "KARINCA", h: "Çalışkan böcek." },
-            { w: "KAVRAMA", h: "Anlama." },
-            { w: "KELEBEK", h: "Renkli kanatlı böcek." },
-            { w: "KERESTE", h: "İşlenmiş odun." },
-            { w: "KILAVUZ", h: "Rehber." },
-            { w: "KIRMIZI", h: "Al renk." },
-            { w: "KİRALIK", h: "Kiraya verilecek olan." },
-            { w: "KOMANDO", h: "Özel asker." },
-            { w: "KOMEDYA", h: "Güldürü." },
-            { w: "KOMUTAN", h: "Askeri yönetici." },
-            { w: "KONTROL", h: "Denetim." },
-            { w: "KORİDOR", h: "Geçit, hol." },
-            { w: "KRİSTAL", h: "Parlak cam." },
-            { w: "MALZEME", h: "Gereç." },
-            { w: "MANZARA", h: "Görünüm." },
-            { w: "MARATON", h: "Uzun koşu." },
-            { w: "MEDİKAL", h: "Tıbbi." },
-            { w: "MEKANİK", h: "Makine ile ilgili." },
-            { w: "MENEKŞE", h: "Bir çiçek." },
-            { w: "MERKEZİ", h: "Ortada olan." },
-            { w: "MOBİLYA", h: "Ev eşyası." },
-            { w: "MUHABİR", h: "Haberci." },
-            { w: "MÜZİKAL", h: "Müzikli oyun." },
-            { w: "NAKLİYE", h: "Taşıma işi." },
-            { w: "NEGATİF", h: "Olumsuz." },
-            { w: "NİLÜFER", h: "Su çiçeği." },
-            { w: "OKYANUS", h: "Büyük deniz." },
-            { w: "ORGANİK", h: "Doğal." },
-            { w: "OYUNCUK", h: "Küçük oyun." },
-            { w: "PALMİYE", h: "Sıcak iklim ağacı." },
-            { w: "PAPAĞAN", h: "Konuşan kuş." },
-            { w: "PAPATYA", h: "Beyaz yapraklı çiçek." },
-            { w: "PARALEL", h: "Kesişmeyen doğrular." },
-            { w: "PATATES", h: "Nişastalı sebze." },
-            { w: "PIRLANTA", h: "Değerli taş." },
-            { w: "PİRAMİT", h: "Mısır'daki anıt mezarlar." },
-            { w: "PİYANGO", h: "Şans oyunu." },
-            { w: "POZİTİF", h: "Olumlu." },
-            { w: "PRENSİP", h: "İlke." },
-            { w: "PROBLEM", h: "Sorun." },
-            { w: "RANDEVU", h: "Buluşma." },
-            { w: "REKABET", h: "Yarışma." },
-            { w: "SAATLER", h: "Zaman dilimleri." },
-            { w: "SABIRLI", h: "Acele etmeyen." },
-            { w: "SANATÇI", h: "Sanat yapan." },
-            { w: "SANTRAL", h: "Merkez istasyonu." },
-            { w: "SATILIK", h: "Satışa çıkarılmış." },
-            { w: "SATRANÇ", h: "Zeka oyunu." },
-            { w: "SAYISAL", h: "Rakamlarla ilgili." },
-            { w: "SEÇENEK", h: "Alternatif." },
-            { w: "SEMİNER", h: "Bilgi şöleni." },
-            { w: "SENARYO", h: "Film metni." },
-            { w: "SENDİKA", h: "İşçi örgütü." },
-            { w: "SERAMİK", h: "Pişmiş toprak sanatı." },
-            { w: "SERBEST", h: "Özgür." },
-            { w: "SİGORTA", h: "Güvence sistemi." },
-            { w: "SİMETRİ", h: "Bakışım." },
-            { w: "SİYASET", h: "Politika." },
-            { w: "STADYUM", h: "Spor alanı." },
-            { w: "SÜRPRİZ", h: "Beklenmedik olay." },
-            { w: "ŞEMSİYE", h: "Yağmur koruyucusu." },
-            { w: "ŞÖVALYE", h: "Savaşçı soylu." },
-            { w: "TAAHHÜT", h: "Söz verme." },
-            { w: "TASARIM", h: "Dizayn." },
-            { w: "TAVSİYE", h: "Öğüt." },
-            { w: "TEHLİKE", h: "Risk." },
-            { w: "TENCERE", h: "Yemek pişirme kabı." },
-            { w: "TERBİYE", h: "Eğitim, görgü." },
-            { w: "TESTERE", h: "Kesme aleti." },
-            { w: "TİYATRO", h: "Sahne sanatı." },
-            { w: "TOPLANT", h: "Bir araya gelme." },
-            { w: "TRAKTÖR", h: "Tarım aracı." },
-            { w: "TRABZON", h: "Karadeniz ili." },
-            { w: "TÜKETİM", h: "Kullanım." },
-            { w: "UÇURTMA", h: "Rüzgarla uçurulan oyuncak." },
-            { w: "UYGULAM", h: "Pratik." },
-            { w: "ÜRETİCİ", h: "İmal eden." },
-            { w: "ÜRÜNLER", h: "Mahsuller." },
-            { w: "VİTAMİN", h: "Besin öğesi." },
-            { w: "YABANCI", h: "Tanıdık olmayan." },
-            { w: "YARIŞMA", h: "Müsabaka." },
-            { w: "YAŞAMAK", h: "Hayatta olmak." },
-            { w: "YATIRIM", h: "Kazanç için harcama." },
-            { w: "YAZILIM", h: "Software." },
-            { w: "YELPAZE", h: "Serinletme aracı." },
-            { w: "YETENEK", h: "Kabiliyet." },
-            { w: "YÖNETİM", h: "İdare." },
-            { w: "YÖNETME", h: "İdare etme." },
-            { w: "YUMURTA", h: "Tavuğun ürünü." },
-            { w: "YUVARLA", h: "Tekerlemek." },
-            { w: "ZİYARET", h: "Görüşmeye gitme." },
-            { w: "ANLATIM", h: "İfade ediş." },
-            { w: "BAŞARI", h: "Muvaffakiyet." },
-            { w: "BAĞLAMA", h: "Telli saz." }
-        ]
-    };
-    const THEMES = ["uzay", "orman", "okyanus", "volkan"];
-    const RANKS =[
-        { l: 0, t: "GÖZCÜ" },
-        { l: 5, t: "KAŞİF" },
-        { l: 10, t: "OPERATÖR" },
-        { l: 20, t: "TEKNİSYEN" },
-        { l: 35, t: "SİBER UZMAN" },
-        { l: 50, t: "ELİT ÜYE" },
-        { l: 100, t: "EFSANE" }
+    // ═══════════════════════════════════════════════════════
+    //  AYARLAR
+    // ═══════════════════════════════════════════════════════
+    const STORAGE_KEY     = 'kelime_neon_v13'; 
+    const HINT_COST       = 50;
+    const BOMB_COST       = 75;
+    const WIN_REWARD      = 50;
+    const TIME_BONUS_LIMIT= 30000;
+
+    const THEMES = ["uzay","orman","okyanus","volkan"];
+    const RANKS  = [
+        { l:0,   t:"GÖZCÜ"      },
+        { l:5,   t:"KAŞİF"      },
+        { l:10,  t:"OPERATÖR"   },
+        { l:20,  t:"TEKNİSYEN"  },
+        { l:35,  t:"SİBER UZMAN"},
+        { l:50,  t:"ELİT ÜYE"   },
+        { l:100, t:"EFSANE"     }
     ];
 
+    if (typeof DB === 'undefined') {
+        console.error('HATA: kelimeler.js yüklenemedi! index.html ile aynı klasörde olduğundan emin olun.');
+    }
+
+    // ═══════════════════════════════════════════════════════
+    //  DURUM
+    // ═══════════════════════════════════════════════════════
     let gameState = {
         level: 1,
         gold: 100,
-        stats: { played: 0, wins: 0, streak: 0, maxStreak: 0 },
+        stats: { played:0, wins:0, streak:0, maxStreak:0 },
         lastLogin: null,
         isMuted: false,
-        blindMode: false // YENİ: Kör Mod Durumu
+        blindMode: false
     };
-    
-    let targetWord = "", targetHint = "", wordLen = 3, currentGuess =[], remaining = 6, gameActive = true;
-    let levelStartTime = 0;
-    const HINT_COST = 50, BOMB_COST = 75, WIN_REWARD = 50, TIME_BONUS_LIMIT = 30000;
 
-    // --- SES EFEKTLERİ ---
+    let targetWord = "", targetHint = "", wordLen = 3;
+    let currentGuess = [], remaining = 6, gameActive = true;
+    let levelStartTime = 0;
+
+    // ═══════════════════════════════════════════════════════
+    //  SES MOTORu
+    // ═══════════════════════════════════════════════════════
     const AudioEngine = {
         ctx: new (window.AudioContext || window.webkitAudioContext)(),
         play(type) {
             if (gameState.isMuted) return;
             try {
                 if (this.ctx.state === 'suspended') this.ctx.resume();
-                
                 const osc = this.ctx.createOscillator();
                 const gain = this.ctx.createGain();
                 const t = this.ctx.currentTime;
-                
-                if (type === 'click') {
-                    osc.type = 'sine'; osc.frequency.setValueAtTime(800, t);
-                    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
-                    osc.start(); osc.stop(t + 0.05);
-                } else if (type === 'error') {
-                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(120, t);
-                    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
-                    osc.start(); osc.stop(t + 0.15);
-                } else if (type === 'flip') {
-                    osc.type = 'triangle'; osc.frequency.setValueAtTime(400, t);
-                    gain.gain.setValueAtTime(0.05, t);
-                    gain.gain.linearRampToValueAtTime(0, t + 0.05);
-                    osc.start(); osc.stop(t + 0.05);
-                } else if (type === 'pop') { 
-                    osc.type = 'sine'; osc.frequency.setValueAtTime(600, t);
-                    gain.gain.setValueAtTime(0.02, t);
-                    gain.gain.linearRampToValueAtTime(0, t + 0.1);
-                    osc.start(); osc.stop(t + 0.1);
-                } else if (type === 'bomb') {
-                    osc.type = 'square'; osc.frequency.setValueAtTime(150, t);
-                    osc.frequency.exponentialRampToValueAtTime(40, t + 0.3);
-                    gain.gain.setValueAtTime(0.1, t);
-                    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
-                    osc.start(); osc.stop(t + 0.3);
-                } else if (type === 'win') {[440, 554, 659, 880].forEach((f, i) => {
-                        setTimeout(() => {
+                switch(type) {
+                    case 'click':
+                        osc.type='sine'; osc.frequency.setValueAtTime(800,t);
+                        gain.gain.setValueAtTime(0.04,t); gain.gain.exponentialRampToValueAtTime(0.001,t+0.06);
+                        osc.start(); osc.stop(t+0.06); break;
+                    case 'error':
+                        osc.type='sawtooth'; osc.frequency.setValueAtTime(120,t);
+                        gain.gain.setValueAtTime(0.07,t); gain.gain.exponentialRampToValueAtTime(0.001,t+0.18);
+                        osc.start(); osc.stop(t+0.18); break;
+                    case 'flip':
+                        osc.type='triangle'; osc.frequency.setValueAtTime(440,t);
+                        gain.gain.setValueAtTime(0.04,t); gain.gain.linearRampToValueAtTime(0,t+0.06);
+                        osc.start(); osc.stop(t+0.06); break;
+                    case 'pop':
+                        osc.type='sine'; osc.frequency.setValueAtTime(620,t);
+                        gain.gain.setValueAtTime(0.025,t); gain.gain.linearRampToValueAtTime(0,t+0.1);
+                        osc.start(); osc.stop(t+0.1); break;
+                    case 'bomb':
+                        osc.type='square'; osc.frequency.setValueAtTime(150,t); osc.frequency.exponentialRampToValueAtTime(40,t+0.3);
+                        gain.gain.setValueAtTime(0.1,t); gain.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+                        osc.start(); osc.stop(t+0.3); break;
+                    case 'win':
+                        [440,554,659,880].forEach((f,i)=>setTimeout(()=>{
                             if(gameState.isMuted) return;
-                            const o = this.ctx.createOscillator(); const g = this.ctx.createGain();
-                            o.type = 'sine';
-                            o.frequency.value = f; g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                            const o=this.ctx.createOscillator(); const g=this.ctx.createGain();
+                            o.type='sine'; o.frequency.value=f;
+                            g.gain.setValueAtTime(0.07,this.ctx.currentTime);
+                            g.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+0.35);
                             o.connect(g); g.connect(this.ctx.destination);
-                            o.start(); o.stop(this.ctx.currentTime + 0.3);
-                        }, i * 100);
-                    });
-                    return;
+                            o.start(); o.stop(this.ctx.currentTime+0.35);
+                        },i*110)); return;
                 }
                 osc.connect(gain); gain.connect(this.ctx.destination);
-            } catch(e) {
-                // Ses hatası olursa oyunu durdurma
-            }
+            } catch(e) {}
         }
     };
 
-    // --- OYUN FONKSİYONLARI ---
+    // ═══════════════════════════════════════════════════════
+    //  BAŞLATMA
+    // ═══════════════════════════════════════════════════════
     function init() {
         loadGame();
         checkDailyBonus();
         createKeyboard();
         setupLevel();
         updateMuteIcon();
-        updateBlindIcon(); // YENİ
+        updateBlindIcon();
     }
 
     function loadGame() {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if(saved) {
-            const parsed = JSON.parse(saved);
-            gameState = { ...gameState, ...parsed };
-        }
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) gameState = { ...gameState, ...JSON.parse(saved) };
+        } catch(e) {}
         updateUI();
     }
-    function saveGame() { localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState)); }
+    function saveGame() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState)); } catch(e) {}
+    }
 
     function updateUI() {
-        document.getElementById("level-display").textContent = gameState.level;
-        document.getElementById("gold-display").textContent = gameState.gold;
-        
-        document.getElementById("stat-played").textContent = gameState.stats.played;
-        document.getElementById("stat-win").textContent = gameState.stats.wins;
-        document.getElementById("stat-streak").textContent = gameState.stats.streak;
-        document.getElementById("stat-max").textContent = gameState.stats.maxStreak;
-        
-        const rate = gameState.stats.played > 0 ? Math.round((gameState.stats.wins / gameState.stats.played) * 100) : 0;
+        document.getElementById("level-display").textContent  = gameState.level;
+        document.getElementById("gold-display").textContent   = gameState.gold;
+        document.getElementById("stat-played").textContent    = gameState.stats.played;
+        document.getElementById("stat-win").textContent       = gameState.stats.wins;
+        document.getElementById("stat-streak").textContent    = gameState.stats.streak;
+        document.getElementById("stat-max").textContent       = gameState.stats.maxStreak;
+        const rate = gameState.stats.played > 0
+            ? Math.round((gameState.stats.wins / gameState.stats.played) * 100) : 0;
         document.getElementById("stat-rate").textContent = "%" + rate;
 
-        const currentRank = RANKS.slice().reverse().find(r => gameState.level >= r.l) || RANKS[0];
-        document.getElementById("rank-display").textContent = currentRank.t;
-        document.getElementById("stat-rank-title").textContent = currentRank.t;
+        const rank = RANKS.slice().reverse().find(r => gameState.level >= r.l) || RANKS[0];
+        document.getElementById("rank-display").textContent     = rank.t;
+        document.getElementById("stat-rank-title").textContent  = rank.t;
     }
 
+    // ═══════════════════════════════════════════════════════
+    //  MUTE & KÖR MOD
+    // ═══════════════════════════════════════════════════════
     function toggleMute() {
         gameState.isMuted = !gameState.isMuted;
-        updateMuteIcon();
-        saveGame();
+        updateMuteIcon(); saveGame();
     }
-
     function updateMuteIcon() {
-        const btn = document.getElementById("mute-btn");
-        if(gameState.isMuted) btn.classList.add("muted");
-        else btn.classList.remove("muted");
+        document.getElementById("mute-btn").classList.toggle("muted", gameState.isMuted);
     }
-
-    // YENİ: KÖR MOD FONKSİYONLARI
     function toggleBlindMode() {
         gameState.blindMode = !gameState.blindMode;
-        updateBlindIcon();
-        applyBlindMode(); // Anlık olarak uygula
-        saveGame();
-        showToast(gameState.blindMode ? "Kör Mod Açıldı" : "Kör Mod Kapandı");
+        updateBlindIcon(); applyBlindMode(); saveGame();
+        showToast(gameState.blindMode ? "🙈 Kör Mod Açıldı" : "👁️ Kör Mod Kapandı");
     }
-
     function updateBlindIcon() {
-        const btn = document.getElementById("blind-btn");
-        if(gameState.blindMode) btn.classList.add("blind-active");
-        else btn.classList.remove("blind-active");
+        document.getElementById("blind-btn").classList.toggle("blind-active", gameState.blindMode);
     }
-
     function applyBlindMode() {
-        const hintBox = document.getElementById("hint-container");
-        const hintText = document.getElementById("hint-text");
-        
+        const box  = document.getElementById("hint-container");
+        const text = document.getElementById("hint-text");
         if (gameState.blindMode) {
-            hintText.textContent = "KÖR MOD AKTİF (İPUCU GİZLİ)";
-            hintBox.classList.add("blind-mode-box");
+            text.textContent = "KÖR MOD AKTİF — İPUCU GİZLİ";
+            box.classList.add("blind-mode-box");
         } else {
-            hintText.textContent = targetHint;
-            hintBox.classList.remove("blind-mode-box");
+            text.textContent = targetHint;
+            box.classList.remove("blind-mode-box");
         }
     }
 
+    // ═══════════════════════════════════════════════════════
+    //  GÜNLÜK BONUS
+    // ═══════════════════════════════════════════════════════
     function checkDailyBonus() {
         const today = new Date().toDateString();
-        if(gameState.lastLogin !== today) {
-            setTimeout(() => openModal("daily-modal"), 500);
-        }
+        if (gameState.lastLogin !== today) setTimeout(()=>openModal("daily-modal"),600);
     }
-
     function claimDaily() {
-        const today = new Date().toDateString();
         gameState.gold += 50;
-        gameState.lastLogin = today;
-        saveGame();
-        updateUI();
+        gameState.lastLogin = new Date().toDateString();
+        saveGame(); updateUI();
         closeModal("daily-modal");
         AudioEngine.play('win');
         showToast("+50 Enerji Eklendi!");
     }
 
+    // ═══════════════════════════════════════════════════════
+    //  SEVİYE KURULUM
+    // ═══════════════════════════════════════════════════════
     function setupLevel() {
         wordLen = ((gameState.level - 1) % 5) + 3;
-        
         document.getElementById("word-len-display").textContent = `${wordLen} HARFLİ`;
-
-        if (wordLen === 3 && gameState.level > 1) {
-            setTimeout(() => showToast("⚡ HIZLI TUR! ⚡"), 500);
-        }
+        if (wordLen === 3 && gameState.level > 1) setTimeout(()=>showToast("⚡ HIZLI TUR!"),500);
 
         const list = DB[wordLen] || DB[5];
-        const selection = list[Math.floor(Math.random() * list.length)];
-        
-        targetWord = selection.w;
-        targetHint = selection.h;
-        
-        // YENİ: Seviye başlarken kör mod kontrolü
+        const sel  = list[Math.floor(Math.random() * list.length)];
+        targetWord = sel.w;
+        targetHint = sel.h;
+
         applyBlindMode();
 
         const tIdx = (gameState.level - 1) % THEMES.length;
-        if(tIdx > 0) document.body.setAttribute("data-theme", THEMES[tIdx]);
+        if (tIdx > 0) document.body.setAttribute("data-theme", THEMES[tIdx]);
         else document.body.removeAttribute("data-theme");
 
         closeModal("result-modal");
-        
         currentGuess = Array(wordLen).fill("");
         currentGuess[0] = targetWord[0];
-
         remaining = 6; gameActive = true;
-        
+
         document.querySelectorAll(".key").forEach(k => {
             k.className = "key";
-            if(k.textContent === "GİRİŞ" || k.textContent === "⌫") k.classList.add("key-wide");
+            if (k.textContent === "GİRİŞ" || k.textContent === "⌫") k.classList.add("key-wide");
         });
-        
+
         createBoard(wordLen);
-        
         updateActiveRow(0, targetWord[0]);
         const firstTile = document.getElementById("board").children[0].children[0];
         firstTile.classList.add("locked-hint");
@@ -1632,29 +838,26 @@
     function startTimerAnimation() {
         levelStartTime = Date.now();
         const bar = document.getElementById("time-bar");
-        bar.style.transition = 'none';
-        bar.style.width = '100%';
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                bar.style.transition = `width ${TIME_BONUS_LIMIT}ms linear`;
-                bar.style.width = '0%';
-            });
-        });
+        bar.style.transition = 'none'; bar.style.width = '100%';
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{
+            bar.style.transition = `width ${TIME_BONUS_LIMIT}ms linear`;
+            bar.style.width = '0%';
+        }));
     }
 
+    // ═══════════════════════════════════════════════════════
+    //  BOARD
+    // ═══════════════════════════════════════════════════════
     function createBoard(len) {
         const board = document.getElementById("board"); board.innerHTML = "";
-        let size = 60; 
-        if(len === 6) size = 50; 
-        if(len === 7) size = 44;
-        
-        // Bu boyut değişkenini hala atıyoruz, ancak CSS kısmında ekran daralınca ezilecektir (fluid).
+        let size = 60;
+        if (len === 6) size = 52;
+        if (len === 7) size = 46;
         document.documentElement.style.setProperty('--tile-size', size + 'px');
-        
-        for(let i=0; i<6; i++) {
+        for (let i = 0; i < 6; i++) {
             const row = document.createElement("div"); row.className = "row";
             row.style.gridTemplateColumns = `repeat(${len}, 1fr)`;
-            for(let j=0; j<len; j++) {
+            for (let j = 0; j < len; j++) {
                 const tile = document.createElement("div"); tile.className = "tile";
                 row.appendChild(tile);
             }
@@ -1662,62 +865,61 @@
         }
     }
 
+    // ═══════════════════════════════════════════════════════
+    //  KLAVYE
+    // ═══════════════════════════════════════════════════════
     function createKeyboard() {
-        const rows =["E R T Y U I O P Ğ Ü", "A S D F G H J K L Ş İ", "Enter Z C V B N M Ö Ç ⌫"];
+        const rows = [
+            "Q W E R T Y U I O P Ğ Ü",
+            "A S D F G H J K L Ş İ",
+            "Enter Z X C V B N M Ö Ç ⌫"
+        ];
         const kb = document.getElementById("keyboard-container"); kb.innerHTML = "";
         rows.forEach(r => {
             const div = document.createElement("div"); div.className = "kb-row";
             r.split(" ").forEach(char => {
-                const btn = document.createElement("button"); btn.className = "key"; btn.textContent = char;
+                const btn = document.createElement("button"); btn.className = "key";
                 let val = char;
-                if(char === "Enter" || char === "⌫") {
+                if (char === "Enter") {
                     btn.classList.add("key-wide");
-                    if(char === "⌫") { val = "Del"; btn.textContent = "⌫"; }
-                    if(char === "Enter") { btn.textContent = "GİRİŞ"; }
+                    btn.textContent = "GİRİŞ"; val = "Enter";
+                } else if (char === "⌫") {
+                    btn.classList.add("key-wide");
+                    btn.textContent = "⌫"; val = "Del";
+                } else {
+                    btn.textContent = char;
                 }
-                btn.onclick = (e) => {
-                    createRipple(e, btn);
+                btn.addEventListener('pointerdown', e => {
+                    e.preventDefault();
                     handleInput(val);
-                };
+                });
                 div.appendChild(btn);
             });
             kb.appendChild(div);
         });
     }
-    
-    function createRipple(e, btn) {
-        const circle = document.createElement("span");
-        const diameter = Math.max(btn.clientWidth, btn.clientHeight);
-        const radius = diameter / 2;
-        circle.style.width = circle.style.height = `${diameter}px`;
-        circle.style.left = `${e.clientX - btn.getBoundingClientRect().left - radius}px`;
-        circle.style.top = `${e.clientY - btn.getBoundingClientRect().top - radius}px`;
-        circle.classList.add("ripple");
-        const ripple = btn.getElementsByClassName("ripple")[0];
-        if (ripple) ripple.remove();
-        btn.appendChild(circle);
-    }
 
+    // ═══════════════════════════════════════════════════════
+    //  GİRİŞ
+    // ═══════════════════════════════════════════════════════
     function handleInput(val) {
-        if(!gameActive) return;
-        
-        if(val === "Enter") {
+        if (!gameActive) return;
+        if (val === "Enter") {
             submitGuess();
-        } else if(val === "Del") {
-            let lastFilled = -1;
-            for(let i = wordLen - 1; i > 0; i--) {
-                if(currentGuess[i] !== "") { lastFilled = i; break; }
-            }
-            if (lastFilled !== -1) {
-                currentGuess[lastFilled] = "";
-                updateActiveRow(lastFilled, ""); 
-                AudioEngine.play('click');
+        } else if (val === "Del") {
+            for (let i = wordLen - 1; i > 0; i--) {
+                if (currentGuess[i] !== "") {
+                    currentGuess[i] = "";
+                    updateActiveRow(i, "");
+                    AudioEngine.play('click');
+                    break;
+                }
             }
         } else {
-            let firstEmpty = currentGuess.indexOf("");
-            if(firstEmpty !== -1) { 
-                currentGuess[firstEmpty] = val; 
-                updateActiveRow(firstEmpty, val); 
+            const firstEmpty = currentGuess.indexOf("");
+            if (firstEmpty !== -1) {
+                currentGuess[firstEmpty] = val;
+                updateActiveRow(firstEmpty, val);
                 AudioEngine.play('click');
             }
         }
@@ -1725,296 +927,275 @@
 
     function updateActiveRow(index, val) {
         const row = document.getElementById("board").children[6 - remaining];
-        if(!row) return;
+        if (!row) return;
         const tile = row.children[index];
+        
         tile.textContent = val;
-        tile.removeAttribute("data-state");
-
-        if(val !== "") {
-            tile.setAttribute("data-state", "active");
-        } else {
-            tile.style.boxShadow = ""; 
-            tile.style.borderColor = "";
-            tile.style.transform = "";
-            tile.style.animation = "";
+        
+        tile.classList.remove("active-pulse");
+        if (val !== "") {
+            void tile.offsetWidth; 
+            tile.classList.add("active-pulse");
         }
     }
-
+    
     function updateActiveRowForAutofill(index, val) {
         const row = document.getElementById("board").children[6 - remaining];
-        if(!row) return;
+        if (!row) return;
         const tile = row.children[index];
         tile.textContent = val;
-        tile.setAttribute("data-state", "autofilled");
+        tile.classList.remove("autofilled-pulse");
+        void tile.offsetWidth;
+        tile.classList.add("autofilled-pulse");
     }
-
+    
     function shakeRow() {
         const row = document.getElementById("board").children[6 - remaining];
-        row.classList.remove("shake");
-        void row.offsetWidth; 
-        row.classList.add("shake");
+        row.classList.remove("shake"); void row.offsetWidth; row.classList.add("shake");
     }
 
+    // ═══════════════════════════════════════════════════════
+    //  TAHMİN GÖNDER
+    // ═══════════════════════════════════════════════════════
     function submitGuess() {
-        if(currentGuess.includes("")) { 
-            showToast("Harf Eksik"); 
-            AudioEngine.play('error'); 
-            shakeRow();
-            return; 
+        if (currentGuess.includes("")) {
+            showToast("Kelimeyi tamamlayın"); AudioEngine.play('error'); shakeRow(); return;
         }
-        
         const guessStr = currentGuess.join("");
-        const row = document.getElementById("board").children[6 - remaining];
+        const row   = document.getElementById("board").children[6 - remaining];
         const tiles = row.children;
-        let tArr = targetWord.split(""), gArr = [...currentGuess], results = Array(wordLen).fill("absent");
+        let tArr = targetWord.split(""), gArr = [...currentGuess];
+        const results = Array(wordLen).fill("absent");
 
-        gArr.forEach((c, i) => { if(c === tArr[i]) { results[i] = "correct"; tArr[i] = null; gArr[i] = null; }});
-        gArr.forEach((c, i) => { if(c !== null && tArr.includes(c)) { results[i] = "present"; tArr[tArr.indexOf(c)] = null; }});
+        gArr.forEach((c,i)=>{ if(c===tArr[i]){ results[i]="correct"; tArr[i]=null; gArr[i]=null; }});
+        gArr.forEach((c,i)=>{ if(c!==null && tArr.includes(c)){ results[i]="present"; tArr[tArr.indexOf(c)]=null; }});
 
-        results.forEach((res, i) => {
-            const tile = tiles[i];
-            setTimeout(() => { 
-                tile.classList.add("flip"); 
-                AudioEngine.play('flip'); 
-            }, i * 150);
-            
-            setTimeout(() => {
-                tile.classList.add(res); 
-                tile.removeAttribute("data-state");
-                tile.classList.remove("locked-hint");
-                tile.style.boxShadow = "";
-                tile.classList.remove("flip");
-                
-                const keyBtn = Array.from(document.querySelectorAll(".key")).find(k => k.textContent === currentGuess[i] || (currentGuess[i]==="İ" && k.textContent==="İ"));
-                if(keyBtn) {
-                    if(res === "correct") keyBtn.className = "key correct";
-                    else if(res === "present" && !keyBtn.classList.contains("correct")) keyBtn.className = "key present";
-                    else if(res === "absent" && !keyBtn.classList.contains("correct") && !keyBtn.classList.contains("present")) keyBtn.className = "key absent";
+        results.forEach((res,i) => {
+            setTimeout(()=>{ tiles[i].classList.add("flip"); AudioEngine.play('flip'); }, i*150);
+            setTimeout(()=>{
+                tiles[i].classList.remove("active-pulse", "autofilled-pulse");
+                tiles[i].classList.add(res);
+                tiles[i].classList.remove("locked-hint","flip");
+                tiles[i].style.borderColor = "";
+
+                // Klavye renklendirme
+                const keyBtn = Array.from(document.querySelectorAll(".key"))
+                    .find(k => k.textContent === currentGuess[i]);
+                if (keyBtn) {
+                    if      (res==="correct") keyBtn.className="key correct";
+                    else if (res==="present" && !keyBtn.classList.contains("correct"))
+                        keyBtn.className="key present";
+                    else if (res==="absent"  && !keyBtn.classList.contains("correct") && !keyBtn.classList.contains("present"))
+                        keyBtn.className="key absent";
                 }
-            }, (i * 150) + 300);
+            }, i*150+300);
         });
 
-        setTimeout(() => {
-            if(guessStr === targetWord) gameWin();
-            else {
-                remaining--; 
-                
-                let nextGuess = Array(wordLen).fill("");
-                let hasAutofill = false;
+        setTimeout(()=>{
+            if (guessStr === targetWord) {
+                gameWin();
+            } else {
+                remaining--;
+                const nextGuess = Array(wordLen).fill("");
+                for (let i = 0; i < wordLen; i++)
+                    if (results[i]==="correct") nextGuess[i] = currentGuess[i];
+                if (nextGuess[0]==="") nextGuess[0] = targetWord[0];
+                currentGuess = nextGuess;
 
-                for(let i = 0; i < wordLen; i++) {
-                    if(results[i] === "correct") {
-                        nextGuess[i] = currentGuess[i];
-                        hasAutofill = true;
-                    }
-                }
-
-                if(nextGuess[0] === "") {
-                    nextGuess[0] = targetWord[0];
-                    hasAutofill = true;
-                }
-                
-                currentGuess = nextGuess; 
-
-                if(remaining === 0) {
+                if (remaining === 0) {
                     gameLose();
                 } else {
-                    for(let i=0; i<wordLen; i++) {
-                        if(currentGuess[i] !== "") {
-                            if(i === 0 && results[0] !== "correct") {
+                    for (let i = 0; i < wordLen; i++) {
+                        if (currentGuess[i] !== "") {
+                            if (i===0 && results[0]!=="correct") {
                                 updateActiveRow(i, currentGuess[i]);
-                                const newRow = document.getElementById("board").children[6 - remaining];
-                                newRow.children[0].classList.add("locked-hint");
+                                document.getElementById("board").children[6-remaining].children[0].classList.add("locked-hint");
                             } else {
                                 updateActiveRowForAutofill(i, currentGuess[i]);
                             }
                         }
                     }
-                    setTimeout(() => AudioEngine.play('pop'), 100);
+                    setTimeout(()=>AudioEngine.play('pop'),80);
+                    
+                    // Yeni satıra geçerken otomatik hafif aşağı kaydır
+                    const gameArea = document.getElementById("game-area");
+                    gameArea.scrollTo({ top: gameArea.scrollHeight, behavior: 'smooth' });
                 }
             }
-        }, wordLen * 150 + 600);
+        }, wordLen*150+600);
     }
 
+    // ═══════════════════════════════════════════════════════
+    //  İPUCU & BOMBA
+    // ═══════════════════════════════════════════════════════
     function useHint() {
-        if(!gameActive) return;
-        if(gameState.gold < HINT_COST) { showToast("Enerji Yetersiz!"); AudioEngine.play('error'); return; }
-        
-        let emptyIndices =[];
-        for(let i=0; i<wordLen; i++) if(currentGuess[i] !== targetWord[i]) emptyIndices.push(i);
+        if (!gameActive) return;
+        if (gameState.gold < HINT_COST) { showToast("Enerji Yetersiz!"); AudioEngine.play('error'); return; }
 
-        if(emptyIndices.length > 0) {
+        const empties = [];
+        for (let i = 0; i < wordLen; i++)
+            if (currentGuess[i] !== targetWord[i]) empties.push(i);
+
+        if (empties.length > 0) {
             gameState.gold -= HINT_COST; saveGame(); updateUI(); AudioEngine.play('click');
-            
-            let idx = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-
+            const idx = empties[Math.floor(Math.random() * empties.length)];
             currentGuess[idx] = targetWord[idx];
             updateActiveRow(idx, targetWord[idx]);
-            const tile = document.getElementById("board").children[6 - remaining].children[idx];
-            tile.style.boxShadow = "0 0 20px #0aff68"; 
-            tile.style.borderColor = "#0aff68";
+            const tile = document.getElementById("board").children[6-remaining].children[idx];
+            tile.style.borderColor = "var(--neon-green)";
+            tile.style.color = "var(--neon-green)";
         }
     }
 
     function eliminateKeys() {
-        if(!gameActive) return;
-        if(gameState.gold < BOMB_COST) { showToast("Enerji Yetersiz!"); AudioEngine.play('error'); return; }
+        if (!gameActive) return;
+        if (gameState.gold < BOMB_COST) { showToast("Enerji Yetersiz!"); AudioEngine.play('error'); return; }
 
-        const allKeys = Array.from(document.querySelectorAll(".key")).filter(k => k.textContent.length === 1 && !"ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ".includes(k.textContent) === false);
-        
-        const candidates = allKeys.filter(k => {
-            const letter = k.textContent;
-            return !targetWord.includes(letter) && 
-                   !k.classList.contains("absent") && 
-                   !k.classList.contains("present") && 
-                   !k.classList.contains("correct");
-        });
+        const TR_LETTERS = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
+        const allKeys = Array.from(document.querySelectorAll(".key"))
+            .filter(k => k.textContent.length === 1 && TR_LETTERS.includes(k.textContent));
 
-        if(candidates.length === 0) { showToast("Elenecek harf yok!"); return; }
+        const candidates = allKeys.filter(k =>
+            !targetWord.includes(k.textContent) &&
+            !k.classList.contains("absent") &&
+            !k.classList.contains("present") &&
+            !k.classList.contains("correct")
+        );
+
+        if (candidates.length === 0) { showToast("Elenecek harf yok!"); return; }
 
         gameState.gold -= BOMB_COST; saveGame(); updateUI(); AudioEngine.play('bomb');
-        
-        let count = Math.min(3, candidates.length);
-        for(let i=0; i<count; i++) {
-            const randomIdx = Math.floor(Math.random() * candidates.length);
-            const keyToEliminate = candidates[randomIdx];
-            keyToEliminate.classList.add("absent");
-            candidates.splice(randomIdx, 1);
+        const count = Math.min(3, candidates.length);
+        for (let i = 0; i < count; i++) {
+            const rIdx = Math.floor(Math.random() * candidates.length);
+            candidates[rIdx].classList.add("absent");
+            candidates.splice(rIdx, 1);
         }
-        showToast("3 Harf Elendi!");
+        showToast(`💣 ${count} Harf Elendi!`);
     }
 
     function surrender() {
-        if(!gameActive) return;
-        if(confirm("Pes etmek istediğine emin misin? Kelime açıklanacak ve oyunu kaybedeceksin.")) {
+        if (!gameActive) return;
+        if (confirm("Pes etmek istediğine emin misin? Kelime açıklanacak ve oyunu kaybedeceksin."))
             gameLose();
-        }
     }
 
+    // ═══════════════════════════════════════════════════════
+    //  KAZANMA / KAYBETME
+    // ═══════════════════════════════════════════════════════
     function gameWin() {
         gameActive = false; AudioEngine.play('win'); confettiEffect();
-        
-        const timeTaken = Date.now() - levelStartTime;
-        let bonus = 0;
-        if(timeTaken < TIME_BONUS_LIMIT) {
-            bonus = 25; 
-        }
+        const bonus = (Date.now() - levelStartTime) < TIME_BONUS_LIMIT ? 25 : 0;
 
-        gameState.level++; 
-        gameState.gold += (WIN_REWARD + bonus);
+        gameState.level++;
+        gameState.gold += WIN_REWARD + bonus;
         gameState.stats.played++;
         gameState.stats.wins++;
         gameState.stats.streak++;
-        if(gameState.stats.streak > gameState.stats.maxStreak) gameState.stats.maxStreak = gameState.stats.streak;
+        if (gameState.stats.streak > gameState.stats.maxStreak)
+            gameState.stats.maxStreak = gameState.stats.streak;
         saveGame(); updateUI();
 
-        document.getElementById("modal-title").textContent = "SEVİYE TAMAMLANDI";
-        document.getElementById("modal-title").style.color = "var(--neon-green)";
+        document.getElementById("modal-title").textContent  = "SEVİYE TAMAMLANDI";
+        document.getElementById("modal-title").style.color  = "var(--neon-green)";
         document.getElementById("modal-reward").textContent = `+${WIN_REWARD} Enerji`;
-        
-        const tbDiv = document.getElementById("time-bonus");
-        if(bonus > 0) {
-            tbDiv.style.display = "block";
-            tbDiv.textContent = `⚡ Hız Bonusu: +${bonus}`;
-        } else {
-            tbDiv.style.display = "none";
-        }
+        const tb = document.getElementById("time-bonus");
+        tb.style.display = bonus > 0 ? "block" : "none";
+        if (bonus > 0) tb.textContent = `⚡ Hız Bonusu: +${bonus}`;
 
-        // --- YILDIZ HESAPLAMA ---
-        let starCount = 1;
-        if(remaining >= 4) starCount = 3;
-        else if(remaining >= 2) starCount = 2;
+        let starCount = remaining >= 4 ? 3 : remaining >= 2 ? 2 : 1;
+        document.getElementById("stars-display").innerHTML =
+            [0,1,2].map(i=>
+                `<div class="star-icon ${i<starCount?'active':''}" style="animation-delay:${i*0.2}s">★</div>`
+            ).join('');
 
-        let starsHTML = '';
-        for(let i=0; i<3; i++) {
-            const isActive = i < starCount ? 'active' : '';
-            const delay = i * 0.2; 
-            starsHTML += `<div class="star-icon ${isActive}" style="animation-delay:${delay}s">★</div>`;
-        }
-        document.getElementById("stars-display").innerHTML = starsHTML;
-        
         document.getElementById("word-reveal").textContent = targetWord;
-        document.querySelector(".btn-primary").innerHTML = "SONRAKİ SEVİYE <span style='font-size:1.2rem'>➜</span>";
+        document.querySelector("#result-modal .btn-primary").innerHTML = "SONRAKİ SEVİYE <span>➜</span>";
         openModal("result-modal");
     }
 
     function gameLose() {
         gameActive = false; AudioEngine.play('error');
-        
-        gameState.stats.played++;
-        gameState.stats.streak = 0;
+        gameState.stats.played++; gameState.stats.streak = 0;
         saveGame(); updateUI();
 
-        document.getElementById("modal-title").textContent = "OYUN BİTTİ";
-        document.getElementById("modal-title").style.color = "var(--neon-red)";
+        document.getElementById("modal-title").textContent  = "OYUN BİTTİ";
+        document.getElementById("modal-title").style.color  = "var(--neon-red)";
         document.getElementById("modal-reward").textContent = "";
         document.getElementById("time-bonus").style.display = "none";
-        
-        document.getElementById("stars-display").innerHTML = "<div style='font-size:4rem'>💔</div>";
-        
-        document.getElementById("word-reveal").textContent = targetWord;
-        document.querySelector(".btn-primary").innerHTML = "TEKRAR DENE <span style='font-size:1.2rem'>↻</span>";
+        document.getElementById("stars-display").innerHTML  = "<div style='font-size:4.5rem; filter: drop-shadow(0 0 15px rgba(255,30,30,0.5));'>💔</div>";
+        document.getElementById("word-reveal").textContent  = targetWord;
+        document.querySelector("#result-modal .btn-primary").innerHTML    = "TEKRAR DENE <span>↻</span>";
         openModal("result-modal");
     }
 
     function openTDK() {
-        const url = `https://sozluk.gov.tr/?ara=${targetWord.toLocaleLowerCase('tr-TR')}`;
-        window.open(url, '_blank');
+        window.open(`https://sozluk.gov.tr/?ara=${targetWord.toLocaleLowerCase('tr-TR')}`,'_blank');
     }
-
     function nextLevel() { setupLevel(); }
 
+    // ═══════════════════════════════════════════════════════
+    //  UI YARDIMCILARI
+    // ═══════════════════════════════════════════════════════
     function showToast(msg) {
-        const t = document.createElement("div"); 
-        t.className = "toast"; 
-        if(msg.includes("!")) t.classList.add("info");
+        const t = document.createElement("div"); t.className = "toast";
+        if (!msg.includes("!") && !msg.includes("⚡") && !msg.includes("💣") && !msg.includes("🙈") && !msg.includes("👁️")) t.classList.add("info");
         t.textContent = msg;
         document.getElementById("toast-container").appendChild(t);
-        setTimeout(() => t.remove(), 2500);
+        setTimeout(()=>t.remove(), 2500);
     }
-
-    function openModal(id) { document.getElementById(id).style.display = "flex"; }
-    function closeModal(id) { document.getElementById(id).style.display = "none"; }
+    function openModal(id)  { document.getElementById(id).style.display="flex"; }
+    function closeModal(id) { document.getElementById(id).style.display="none"; }
 
     function confettiEffect() {
         const canvas = document.getElementById('confetti-canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particles =[];
-        for(let i=0; i<150; i++) particles.push({
-            x: window.innerWidth/2, y: window.innerHeight/2,
-            vx: (Math.random()-0.5)*40, vy: (Math.random()-1)*40-10,
-            c:['#00f3ff', '#ff00ff', '#0aff68', '#ffee00'][Math.floor(Math.random()*4)],
-            size: Math.random()*8+3
+        const particles = [];
+        const colors = ['#00e5ff','#ff00ea','#00ff73','#ffea00','#b026ff'];
+        for (let i = 0; i < 120; i++) particles.push({
+            x: window.innerWidth/2, y: window.innerHeight/3,
+            vx:(Math.random()-.5)*35, vy:(Math.random()-1)*35-10,
+            c: colors[Math.floor(Math.random()*colors.length)],
+            size:Math.random()*8+4, rot:Math.random()*360
         });
         function loop() {
             ctx.clearRect(0,0,canvas.width,canvas.height);
-            particles.forEach((p, i) => {
-                p.x += p.vx; p.y += p.vy; p.vy += 0.8; p.size *= 0.96;
-                ctx.fillStyle = p.c; ctx.shadowBlur=20; ctx.shadowColor=p.c;
-                ctx.fillRect(p.x, p.y, p.size, p.size);
-                if(p.size<0.5) particles.splice(i, 1);
+            particles.forEach((p,i)=>{
+                p.x+=p.vx; p.y+=p.vy; p.vy+=0.8; p.size*=0.97; p.rot+=5;
+                ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+                ctx.fillStyle=p.c; ctx.shadowBlur=15; ctx.shadowColor=p.c;
+                ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+                ctx.restore();
+                if (p.size < 0.5) particles.splice(i,1);
             });
-            if(particles.length) requestAnimationFrame(loop);
+            if (particles.length) requestAnimationFrame(loop);
+            else ctx.clearRect(0,0,canvas.width,canvas.height);
         }
         loop();
     }
 
-    document.addEventListener("keydown", (e) => {
+    // ═══════════════════════════════════════════════════════
+    //  FİZİKSEL KLAVYE
+    // ═══════════════════════════════════════════════════════
+    document.addEventListener("keydown", e => {
         if (e.ctrlKey || e.altKey || e.metaKey) return;
-        if(!gameActive) return;
-
-        let key = e.key;
-        if (key === "Enter") { e.preventDefault(); handleInput("Enter"); return; }
-        if (key === "Backspace") { e.preventDefault(); handleInput("Del"); return; }
-
-        if (key.length === 1 && /[a-zA-ZğüşıöçĞÜŞİÖÇ]/.test(key)) {
-            const upperKey = key.toLocaleUpperCase('tr-TR');
-            if ("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ".includes(upperKey)) {
-                e.preventDefault(); 
-                handleInput(upperKey);
+        if (!gameActive) return;
+        if (e.key === "Enter")     { e.preventDefault(); handleInput("Enter"); return; }
+        if (e.key === "Backspace") { e.preventDefault(); handleInput("Del");   return; }
+        if (e.key.length === 1 && /[a-zA-ZğüşıöçĞÜŞİÖÇ]/.test(e.key)) {
+            const upper = e.key.toLocaleUpperCase('tr-TR');
+            if ("ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ".includes(upper)) {
+                e.preventDefault(); handleInput(upper);
             }
         }
+    });
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay && overlay.id !== 'result-modal' && overlay.id !== 'daily-modal')
+                overlay.style.display = 'none';
+        });
     });
 
     init();
