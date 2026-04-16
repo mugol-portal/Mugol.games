@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kuantum Kalkanı: Evrim</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f0f1b;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        #gameContainer {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.15);
+            border-radius: 15px;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #1a1a3a 0%, #0f0f1b 100%);
+        }
+        canvas {
+            display: block;
+            cursor: pointer;
+        }
+        
+        /* Geri Tuşu */
+        .back-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: transparent;
+            border: 2px solid #8892b0;
+            color: #8892b0;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-family: 'Orbitron', sans-serif;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.2s ease;
+        }
+        .back-btn:hover {
+            color: #00e5ff;
+            border-color: #00e5ff;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+        .back-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* Skor Arayüzü */
+        .hud {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            display: flex;
+            gap: 25px; /* Skorlar arası boşluk */
+            pointer-events: none;
+            z-index: 10;
+        }
+        .score-box {
+            text-align: center;
+        }
+        .score-label { font-size: 12px; color: #8892b0; letter-spacing: 1px; }
+        .score-value { font-size: 24px; color: #00e5ff; text-shadow: 0 0 10px #00e5ff; font-weight: bold; }
+        .high-score-value { color: #ffd700; text-shadow: 0 0 10px #ffd700; }
+
+        /* Menü Ekranları */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 15, 27, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            backdrop-filter: blur(3px);
+            transition: opacity 0.3s ease;
+        }
+        .overlay h1 {
+            font-size: 32px;
+            margin: 0 0 10px 0;
+            color: #e94560;
+            text-shadow: 0 0 15px #e94560;
+            text-align: center;
+        }
+        .overlay p {
+            color: #a8b2d1;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 30px;
+            max-width: 80%;
+        }
+        .btn {
+            background: linear-gradient(45deg, #e94560, #ff2e63);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="gameContainer">
+        
+        <!-- Geri Tuşu -->
+        <button class="back-btn" onclick="goBack(event)">&#10094; GERİ</button>
+
+        <!-- Skor Arayüzü -->
+        <div class="hud">
+            <div class="score-box">
+                <div class="score-label">SKOR</div>
+                <div class="score-value" id="scoreText">0</div>
+            </div>
+            <div class="score-box">
+                <div class="score-label">EN İYİ</div>
+                <div class="score-value high-score-value" id="highScoreText">0</div>
+            </div>
+        </div>
+
+        <!-- Başlangıç Ekranı -->
+        <div id="startScreen" class="overlay">
+            <h1>KUANTUM<br>KALKANI</h1>
+            <p>Ekrana tıklayarak kalkanı çevir. Renkleri eşleştir. <br><br>Gelen <b>Altın</b> toplar her renkle eşleşir!</p>
+            <button class="btn" onclick="startGame()">OYUNA BAŞLA</button>
+        </div>
+
+        <!-- Oyun Sonu Ekranı -->
+        <div id="gameOverScreen" class="overlay hidden">
+            <h1>SİSTEM ÇÖKTÜ</h1>
+            <p id="finalScoreText" style="font-size: 20px; color: white;">Skorun: 0</p>
+            <button class="btn" onclick="startGame()">TEKRAR DENE</button>
+        </div>
+
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        // UI Elementleri
+        const scoreText = document.getElementById("scoreText");
+        const highScoreText = document.getElementById("highScoreText");
+        const startScreen = document.getElementById("startScreen");
+        const gameOverScreen = document.getElementById("gameOverScreen");
+        const finalScoreText = document.getElementById("finalScoreText");
+
+        // Renk Paleti
+        const COLOR_1 = "#00e5ff"; // Neon Mavi
+        const COLOR_2 = "#e94560"; // Neon Pembe
+        const COLOR_GOLD = "#ffd700"; // Altın (Joker)
+
+        // Oyun Değişkenleri
+        let gameState = "start"; 
+        let isFlipped = false;
+        let score = 0;
+        let highScore = localStorage.getItem("quantumHighScore") || 0;
+        highScoreText.innerText = highScore;
+        
+        let enemies = [];
+        let particles = [];
+        let floatingTexts = [];
+        let stars = [];
+        
+        let baseSpeed = 2.5;
+        let spawnRate = 110;
+        let frameCount = 0;
+        let shakeAmount = 0; 
+
+        // Kalkan
+        const shield = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            radius: 45
+        };
+
+        // Geri Dönüş Fonksiyonu
+        function goBack(e) {
+            e.stopPropagation(); // Tıklamanın oyuna yansımasını (kalkanı çevirmesini) engeller
+            if (window.history.length > 1) {
+                window.history.back(); // Tarayıcıda önceki sayfaya döner
+            } else {
+                alert("Gidilecek önceki sayfa bulunamadı!"); // Geçmiş yoksa uyarı verir
+            }
+        }
+
+        // Arka plan yıldızlarını oluştur
+        for(let i=0; i<50; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2,
+                speed: Math.random() * 1 + 0.2
+            });
+        }
+
+        // Girdi Dinleme (Sadece oyun oynanırken kalkanı çevirir)
+        window.addEventListener("pointerdown", (e) => {
+            if (gameState === "playing") {
+                // Tıklanan yer herhangi bir buton (geri tuşu dahil) değilse kalkanı çevir
+                if(e.target.tagName !== "BUTTON") {
+                    isFlipped = !isFlipped;
+                    createParticles(shield.x, shield.y, "#ffffff", 5, 2);
+                }
+            }
+        });
+        window.addEventListener("keydown", (e) => { 
+            if(e.code === "Space" && gameState === "playing") {
+                isFlipped = !isFlipped;
+                createParticles(shield.x, shield.y, "#ffffff", 5, 2);
+            }
+        });
+
+        function startGame() {
+            startScreen.classList.add("hidden");
+            gameOverScreen.classList.add("hidden");
+            
+            isFlipped = false;
+            score = 0;
+            enemies = [];
+            particles = [];
+            floatingTexts = [];
+            baseSpeed = 2.5;
+            spawnRate = 110;
+            frameCount = 0;
+            shakeAmount = 0;
+            scoreText.innerText = score;
+            
+            gameState = "playing";
+            loop();
+        }
+
+        function triggerShake(intensity) {
+            shakeAmount = intensity;
+        }
+
+        class Enemy {
+            constructor() {
+                this.radius = 12;
+                this.direction = Math.random() < 0.5 ? 0 : 1; 
+                this.x = canvas.width / 2;
+                this.y = this.direction === 0 ? -20 : canvas.height + 20;
+                this.speed = baseSpeed + Math.random() * 1.5;
+                
+                let rand = Math.random();
+                if(rand < 0.1) {
+                    this.color = COLOR_GOLD;
+                    this.type = "gold";
+                } else {
+                    this.color = Math.random() < 0.5 ? COLOR_1 : COLOR_2;
+                    this.type = "normal";
+                }
+            }
+            update() {
+                if (this.direction === 0) this.y += this.speed;
+                else this.y -= this.speed;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = this.type === "gold" ? 25 : 15;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+                ctx.closePath();
+                ctx.shadowBlur = 0;
+                
+                if(this.type === "gold") {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius/2, 0, Math.PI * 2);
+                    ctx.fillStyle = "white";
+                    ctx.fill();
+                }
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color, speedMult) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.size = Math.random() * 4 + 1;
+                this.speedX = (Math.random() * 8 - 4) * speedMult;
+                this.speedY = (Math.random() * 8 - 4) * speedMult;
+                this.life = 1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= 0.04;
+            }
+            draw() {
+                ctx.globalAlpha = this.life;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        class FloatingText {
+            constructor(x, y, text, color) {
+                this.x = x + (Math.random() * 40 - 20);
+                this.y = y;
+                this.text = text;
+                this.color = color;
+                this.life = 1.0;
+            }
+            update() {
+                this.y -= 1.5;
+                this.life -= 0.02;
+            }
+            draw() {
+                ctx.globalAlpha = Math.max(0, this.life);
+                ctx.font = "bold 20px 'Orbitron'";
+                ctx.fillStyle = this.color;
+                ctx.textAlign = "center";
+                ctx.fillText(this.text, this.x, this.y);
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        function createParticles(x, y, color, count = 15, speedMult = 1) {
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(x, y, color, speedMult));
+            }
+        }
+
+        function drawBackground() {
+            ctx.fillStyle = "#0f0f1b";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "#ffffff";
+            stars.forEach(star => {
+                star.y += star.speed;
+                if(star.y > canvas.height) {
+                    star.y = 0;
+                    star.x = Math.random() * canvas.width;
+                }
+                ctx.globalAlpha = star.size / 2;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1.0;
+        }
+
+        function drawShield() {
+            const topColor = isFlipped ? COLOR_2 : COLOR_1;
+            const bottomColor = isFlipped ? COLOR_1 : COLOR_2;
+
+            ctx.beginPath();
+            ctx.arc(shield.x, shield.y, shield.radius, Math.PI, Math.PI * 2);
+            ctx.fillStyle = topColor;
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = topColor;
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.arc(shield.x, shield.y, shield.radius, 0, Math.PI);
+            ctx.fillStyle = bottomColor;
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = bottomColor;
+            ctx.fill();
+            ctx.closePath();
+            
+            ctx.shadowBlur = 0;
+
+            ctx.beginPath();
+            ctx.moveTo(shield.x - shield.radius - 5, shield.y);
+            ctx.lineTo(shield.x + shield.radius + 5, shield.y);
+            ctx.strokeStyle = "#0f0f1b";
+            ctx.lineWidth = 6;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.arc(shield.x, shield.y, 8, 0, Math.PI*2);
+            ctx.fillStyle = "white";
+            ctx.fill();
+        }
+
+        function loop() {
+            if (gameState !== "playing") return;
+
+            frameCount++;
+
+            ctx.save();
+            if (shakeAmount > 0) {
+                let dx = (Math.random() * shakeAmount * 2) - shakeAmount;
+                let dy = (Math.random() * shakeAmount * 2) - shakeAmount;
+                ctx.translate(dx, dy);
+                shakeAmount *= 0.9; 
+                if (shakeAmount < 0.5) shakeAmount = 0;
+            }
+
+            drawBackground();
+
+            if (frameCount % Math.floor(spawnRate) === 0) {
+                enemies.push(new Enemy());
+                if(spawnRate > 40) spawnRate -= 1.5; 
+                if(score > 0 && score % 15 === 0) baseSpeed += 0.3;
+            }
+
+            drawShield();
+
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                let e = enemies[i];
+                e.update();
+                e.draw();
+
+                let dist = Math.abs(e.y - shield.y);
+                if (dist <= shield.radius + e.radius - 5) { 
+                    
+                    let hitTop = e.y < shield.y;
+                    let currentTopColor = isFlipped ? COLOR_2 : COLOR_1;
+                    let currentBottomColor = isFlipped ? COLOR_1 : COLOR_2;
+
+                    let matched = false;
+                    let earnedPoints = 1;
+
+                    if (e.type === "gold") {
+                        matched = true; 
+                        earnedPoints = 5;
+                    } else {
+                        if (hitTop && e.color === currentTopColor) matched = true;
+                        if (!hitTop && e.color === currentBottomColor) matched = true;
+                    }
+
+                    if (matched) {
+                        score += earnedPoints;
+                        scoreText.innerText = score;
+                        
+                        createParticles(e.x, shield.y + (hitTop ? -shield.radius : shield.radius), e.color, 15, 1.5);
+                        floatingTexts.push(new FloatingText(e.x, e.y, "+" + earnedPoints, e.color));
+                        
+                        if(e.type === "gold") triggerShake(3); 
+                        
+                        enemies.splice(i, 1);
+                    } else {
+                        triggerShake(15);
+                        createParticles(shield.x, shield.y, e.color, 40, 3);
+                        createParticles(shield.x, shield.y, "white", 20, 2);
+                        endGame();
+                        ctx.restore();
+                        return; 
+                    }
+                }
+                
+                if(e.y < -50 || e.y > canvas.height + 50) {
+                    enemies.splice(i, 1);
+                }
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.update();
+                p.draw();
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+
+            for (let i = floatingTexts.length - 1; i >= 0; i--) {
+                let ft = floatingTexts[i];
+                ft.update();
+                ft.draw();
+                if (ft.life <= 0) floatingTexts.splice(i, 1);
+            }
+
+            ctx.restore(); 
+            requestAnimationFrame(loop);
+        }
+
+        function endGame() {
+            gameState = "gameover";
+            
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem("quantumHighScore", highScore);
+                highScoreText.innerText = highScore;
+            }
+            
+            finalScoreText.innerHTML = `Skorun: <span style="color:#00e5ff">${score}</span>`;
+            
+            setTimeout(() => {
+                gameOverScreen.classList.remove("hidden");
+            }, 800);
+        }
+
+        function idleLoop() {
+            if(gameState === "start") {
+                drawBackground();
+                requestAnimationFrame(idleLoop);
+            }
+        }
+        idleLoop();
+
+    </script>
+</body>
+</html>
