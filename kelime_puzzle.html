@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#030712">
     <title>Kelime Puzzle</title>
+    
+    <!-- HARİCİ KELİME DOSYASINI BAĞLADIK -->
+    <script src="kelimeler-kategorili.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap');
 
@@ -22,8 +26,6 @@
             --font-main: 'Outfit', sans-serif;
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-bg: rgba(15, 23, 42, 0.6);
-            
-            /* DİNAMİK IZGARA DEĞİŞKENİ (JS ile güncellenir) */
             --grid-size: 8; 
         }
 
@@ -54,6 +56,7 @@
                 radial-gradient(circle at 20% 30%, var(--nebula-1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 70%, var(--nebula-2) 0%, transparent 50%);
             filter: blur(60px); animation: nebulaPulse 12s infinite alternate;
+            will-change: transform, opacity;
         }
         @keyframes nebulaPulse { 0% { opacity: 0.5; transform: scale(1); } 100% { opacity: 0.8; transform: scale(1.1); } }
         .stars-overlay {
@@ -61,6 +64,7 @@
             background-image: radial-gradient(white 1.5px, transparent 1.5px);
             background-size: 70px 70px; opacity: 0.25;
             mask-image: radial-gradient(circle at 50% 50%, black 30%, transparent 100%);
+            will-change: transform;
         }
 
         /* --- ÜST PANEL --- */
@@ -74,7 +78,7 @@
             border-radius: 20px;
             padding: 8px 15px; z-index: 20;
             display: flex; flex-direction: column; gap: 5px;
-            flex-shrink: 0; /* Küçülmesini engelle */
+            flex-shrink: 0;
         }
         .ice-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -111,56 +115,37 @@
         .focus-btn { color: #60a5fa; border-color: rgba(96, 165, 250, 0.15); background: rgba(96, 165, 250, 0.05); }
         .freeze-btn { color: #93c5fd; border-color: rgba(147, 197, 253, 0.2); background: rgba(147, 197, 253, 0.08); }
 
-        /* --- OYUN ALANI (TAŞMA SORUNU BURADA ÇÖZÜLDÜ) --- */
+        /* --- OYUN ALANI --- */
         #game-area {
-            flex: 1; /* Kalan tüm alanı kapla */
-            display: flex; justify-content: center; align-items: center;
-            width: 100%; position: relative;
-            overflow: hidden; /* Dışarı taşanları gizle */
-            perspective: 1200px;
+            flex: 1; display: flex; justify-content: center; align-items: center;
+            width: 100%; position: relative; overflow: hidden; perspective: 1200px;
         }
 
         .shake-screen { animation: shakeStrong 0.4s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes shakeStrong { 0% { transform: translate(0, 0); } 20% { transform: translate(-4px, 4px); } 40% { transform: translate(-4px, -4px); } 60% { transform: translate(4px, 4px); } 80% { transform: translate(4px, -4px); } 100% { transform: translate(0, 0); } }
 
         #grid {
-            display: grid;
-            gap: 3px; 
-            padding: 8px;
-            background: rgba(15, 23, 42, 0.3);
-            border-radius: 20px; 
+            display: grid; gap: 3px; padding: 8px;
+            background: rgba(15, 23, 42, 0.5); border-radius: 20px; 
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 30px 80px -20px rgba(0,0,0,0.8), 0 0 30px var(--nebula-1);
-            backdrop-filter: blur(10px);
             transition: transform 0.3s ease;
-            
-            /* -- KRİTİK DÜZELTME: Responsive Boyutlandırma -- */
-            /* Ekranın genişliğinin %96'sı veya yüksekliğin %55'inden hangisi küçükse onu al */
-            width: min(96vw, 55vh); 
-            height: min(96vw, 55vh); /* Kare olmasını zorla */
-            margin: auto;
+            width: min(96vw, 55vh); height: min(96vw, 55vh); margin: auto;
+            will-change: transform;
         }
 
         .cell {
-            /* Hücreler grid içine otomatik sığar */
             width: 100%; height: 100%;
             background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
-            border-radius: 15%; /* Daha modern yuvarlaklık */
-            display: flex; justify-content: center; align-items: center;
-            
-            /* Font boyutu Gridin genel boyutuna ve hücre sayısına göre hesaplanır */
+            border-radius: 15%; display: flex; justify-content: center; align-items: center;
             font-size: calc( (min(96vw, 55vh) - 20px) / var(--grid-size) * 0.65 );
-            font-weight: 800;
-            color: #e2e8f0; 
-            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-            cursor: pointer; position: relative;
-            border-top: 1px solid rgba(255,255,255,0.15);
-            border-bottom: 1px solid rgba(0,0,0,0.3);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            user-select: none;
+            font-weight: 800; color: #e2e8f0; 
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8); cursor: pointer; position: relative;
+            border-top: 1px solid rgba(255,255,255,0.15); border-bottom: 1px solid rgba(0,0,0,0.3);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); user-select: none;
         }
 
-        .cell.selected { background: #fff; color: #020617; border-radius: 50%; transform: scale(0.92); box-shadow: 0 0 20px rgba(255,255,255,0.5); z-index: 10; border: none; text-shadow: none; }
+        .cell.selected { background: #fff; color: #020617; border-radius: 50%; transform: scale(0.92); box-shadow: 0 0 15px rgba(255,255,255,0.5); z-index: 10; border: none; text-shadow: none; }
         .cell.found { z-index: 5; color: #fff !important; font-weight: 900; border-radius: 8px; transform: scale(1); box-shadow: inset 0 0 10px rgba(255,255,255,0.3); text-shadow: 0 2px 4px rgba(0,0,0,0.4); animation: foundPop 0.5s; border: 1px solid rgba(255,255,255,0.4); }
         .cell.bonus-found { background: linear-gradient(135deg, #d946ef, #8b5cf6) !important; box-shadow: 0 0 15px var(--bonus); animation: bonusPulse 1s infinite alternate; }
         @keyframes bonusPulse { 0% { box-shadow: 0 0 10px var(--bonus); } 100% { box-shadow: 0 0 25px var(--bonus); } }
@@ -170,12 +155,9 @@
 
         /* --- ALT PANEL --- */
         #word-panel {
-            flex: 0 0 auto; padding: 10px 15px;
-            background: linear-gradient(to top, var(--bg-grad-2), transparent);
-            max-height: 22vh; overflow-y: auto;
-            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
-            padding-bottom: 60px; 
-            transition: opacity 0.5s;
+            flex: 0 0 auto; padding: 10px 15px; background: linear-gradient(to top, var(--bg-grad-2), transparent);
+            max-height: 22vh; overflow-y: auto; mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            padding-bottom: 60px; transition: opacity 0.5s;
         }
         #word-panel.blind-mode { opacity: 0; pointer-events: none; }
         #word-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
@@ -311,24 +293,25 @@
     </div>
 
     <script>
-    const WORD_POOLS = {
-        "Renkler": [{w:"MAVİ",m:"Gökyüzü rengi"},{w:"YEŞİL",m:"Doğa rengi"},{w:"SARI",m:"Güneş rengi"},{w:"KIRMIZI",m:"Ateş rengi"},{w:"MOR",m:"Asalet rengi"},{w:"SİYAH",m:"Karanlık"},{w:"BEYAZ",m:"Aydınlık"},{w:"TURUNCU",m:"Portakal rengi"},{w:"PEMBE",m:"Şeker rengi"},{w:"GRİ",m:"Bulutlu hava"},{w:"LACİVERT",m:"Gece mavisi"},{w:"BORDO",m:"Koyu kırmızı"},{w:"TURKUAZ",m:"Deniz rengi"},{w:"BEJ",m:"Açık toprak"},{w:"LİLA",m:"Açık mor"},{w:"ALTIN",m:"Değerli sarı"},{w:"GÜMÜŞ",m:"Parlak gri"},{w:"KAHVE",m:"Toprak rengi"}],
-        "Meyveler": [{w:"ELMA",m:"Kırmızı/Yeşil"},{w:"ARMUT",m:"Sulu meyve"},{w:"MUZ",m:"Sarı uzun"},{w:"KİRAZ",m:"Çift saplı"},{w:"ÇİLEK",m:"Kırmızı benekli"},{w:"KARPUZ",m:"Yazın kralı"},{w:"KAVUN",m:"Sarı yaz meyvesi"},{w:"ÜZÜM",m:"Salkımlı"},{w:"ANANAS",m:"Tropikal"},{w:"AYVA",m:"Sarı kış meyvesi"},{w:"NAR",m:"Bereket simgesi"},{w:"KİVİ",m:"Yeşil içli"},{w:"DUT",m:"Ağaç yemişi"},{w:"İNCİR",m:"Tatlı"},{w:"MANDALİNA",m:"Turuncu"},{w:"PORTAKAL",m:"C vitamini"},{w:"ERİK",m:"Yeşil ekşi"},{w:"KAYISI",m:"Yumuşak"},{w:"ŞEFTALİ",m:"Tüylü"}],
-        "Vücut": [{w:"BAŞ",m:"Vücudun tepesi"},{w:"GÖZ",m:"Görme organı"},{w:"KULAK",m:"İşitme organı"},{w:"BURUN",m:"Koku organı"},{w:"AĞIZ",m:"Tat alma"},{w:"EL",m:"Tutma organı"},{w:"AYAK",m:"Yürüme organı"},{w:"KALP",m:"Kan pompalar"},{w:"MİDE",m:"Sindirir"},{w:"BEYİN",m:"Yönetir"},{w:"DİŞ",m:"Çiğneme aracı"},{w:"DİL",m:"Tat alma"},{w:"TIRNAK",m:"Parmak ucu"},{w:"SAÇ",m:"Baş örtüsü"},{w:"KOL",m:"Uzuv"},{w:"BACAK",m:"Uzuv"}],
-        "Hayvanlar": [{w:"ASLAN",m:"Orman kralı"},{w:"KAPLAN",m:"Çizgili kedi"},{w:"FİL",m:"Hortumlu dev"},{w:"ZÜRAFA",m:"Uzun boyunlu"},{w:"MAYMUN",m:"Muz sever"},{w:"YILAN",m:"Sürünür"},{w:"KARTAL",m:"Yırtıcı kuş"},{w:"YUNUS",m:"Zeki denizci"},{w:"PENGUEN",m:"Uçamaz"},{w:"KEDİ",m:"Evcil dost"},{w:"KÖPEK",m:"Sadık dost"},{w:"KUŞ",m:"Kanatlı"},{w:"BALIK",m:"Suda yaşar"},{w:"AT",m:"Binek hayvanı"},{w:"AYI",m:"Bal sever"},{w:"KURT",m:"Vahşi köpek"},{w:"TİLKİ",m:"Kurnaz"}],
-        "Astronomi": [{w:"GEZEGEN",m:"Yörüngede döner"},{w:"YILDIZ",m:"Işık kaynağı"},{w:"GÜNEŞ",m:"Isı kaynağı"},{w:"DÜNYA",m:"Yaşam alanı"},{w:"MARS",m:"Kızıl gezegen"},{w:"AY",m:"Uydumuz"},{w:"KUYRUKLU",m:"Yıldız türü"},{w:"GALAKSİ",m:"Yıldız kümesi"},{w:"UZAY",m:"Sonsuz boşluk"},{w:"METEOR",m:"Gök taşı"},{w:"ASTRONOT",m:"Uzay adamı"},{w:"ROKET",m:"Uzay aracı"},{w:"SATÜRN",m:"Halkalı"},{w:"JÜPİTER",m:"Dev gezegen"},{w:"VENÜS",m:"Çoban yıldızı"}],
-        "Mutfak": [{w:"TENCERE",m:"Yemek pişirilir"},{w:"TAVA",m:"Kızartma aracı"},{w:"ÇATAL",m:"Yemek yerken"},{w:"KAŞIK",m:"Sıvı için"},{w:"BIÇAK",m:"Kesmek için"},{w:"TABAK",m:"Servis aracı"},{w:"BARDAK",m:"İçmek için"},{w:"FIRIN",m:"Isıtır"},{w:"BUZDOLABI",m:"Soğutur"},{w:"KEPÇE",m:"Çorba için"},{w:"SÜZGEÇ",m:"Süzmek için"},{w:"RENDE",m:"Parçalar"},{w:"TEPSİ",m:"Taşıma aracı"},{w:"KASE",m:"Derin kap"}],
-        "Okul": [{w:"SINIF",m:"Derslik"},{w:"ÖĞRETMEN",m:"Eğitmen"},{w:"ÖĞRENCİ",m:"Talebe"},{w:"KİTAP",m:"Okuma aracı"},{w:"DEFTER",m:"Yazma aracı"},{w:"KALEM",m:"Yazar"},{w:"SİLGİ",m:"Siler"},{w:"CETVEL",m:"Ölçer"},{w:"TEBEŞİR",m:"Tahta kalemi"},{w:"TAHTA",m:"Yazı alanı"},{w:"ÇANTA",m:"Eşya taşır"},{w:"SIRASI",m:"Oturak"},{w:"DERS",m:"Konu"},{w:"TENEFFÜS",m:"Mola"},{w:"ÖDEV",m:"Ev çalışması"}]
-    };
-
+    // YENİ KATEGORİLER İÇEREN GÜNCELLENMİŞ BÖLÜM LİSTESİ
     const LEVEL_CONFIGS = [
         { cat: "Renkler", count: 6, minGrid: 7, time: 60 },
         { cat: "Meyveler", count: 7, minGrid: 8, time: 80 },
         { cat: "Vücut", count: 8, minGrid: 8, time: 90 },
+        { cat: "Bilim", count: 8, minGrid: 9, time: 100 }, // Yeni
         { cat: "Hayvanlar", count: 8, minGrid: 9, time: 100 },
+        { cat: "Edebiyat", count: 8, minGrid: 10, time: 110 }, // Yeni
         { cat: "Okul", count: 8, minGrid: 9, time: 100 },
         { cat: "Mutfak", count: 9, minGrid: 10, time: 110 },
-        { cat: "Astronomi", count: 9, minGrid: 11, time: 120 }
+        { cat: "Tarih", count: 9, minGrid: 10, time: 110 }, // Yeni
+        { cat: "Astronomi", count: 9, minGrid: 11, time: 120 },
+        { cat: "Meslekler", count: 9, minGrid: 10, time: 110 },
+        { cat: "Spor", count: 9, minGrid: 10, time: 110 },
+        { cat: "Bitkiler", count: 8, minGrid: 9, time: 100 },
+        { cat: "Bilim", count: 10, minGrid: 11, time: 130 }, // Zorlaştırılmış Yeni
+        { cat: "Tarih", count: 10, minGrid: 11, time: 130 }, // Zorlaştırılmış Yeni
+        { cat: "Hayvanlar", count: 10, minGrid: 11, time: 130 }, 
+        { cat: "Astronomi", count: 10, minGrid: 11, time: 130 }
     ];
 
     const THEMES = [
@@ -354,14 +337,25 @@
     let startTime = 0, levelTimeGoal = 100;
     let totalScore = 0, lastFoundTime = 0, comboMultiplier = 1, isBlindMode = false, isTimeFrozen = false, freezeTimeout;
 
+    // PERFORMAS İÇİN DEĞİŞKENLER
+    let cachedCells = []; 
+    let lastHoveredCell = null;
+    let parallaxAnimationFrame;
+    let moveTicking = false; // Touch Event Throttle
+
     window.onload = () => { 
         loadProgress(); applyTheme(currentLevelIdx);
-        document.addEventListener('mousemove', (e) => {
+        document.addEventListener('mousemove', handleParallax);
+    };
+
+    function handleParallax(e) {
+        if (parallaxAnimationFrame) cancelAnimationFrame(parallaxAnimationFrame);
+        parallaxAnimationFrame = requestAnimationFrame(() => {
             const x = (window.innerWidth - e.pageX * 2) / 100, y = (window.innerHeight - e.pageY * 2) / 100;
             document.getElementById('parallax-nebula').style.transform = `translate(${x}px, ${y}px) scale(1.1)`;
             document.getElementById('parallax-stars').style.transform = `translate(${x*2}px, ${y*2}px)`;
         });
-    };
+    }
 
     function loadProgress() {
         const saved = localStorage.getItem('crystalWordSaveUlt');
@@ -396,7 +390,6 @@
         const longestBonus = Math.max(...bonusWords.map(o => o.w.length));
         gridSize = Math.max(config.minGrid, longestMain + 1, longestBonus + 1);
         
-        // CSS Variable Update for responsive logic
         document.documentElement.style.setProperty('--grid-size', gridSize);
 
         levelTimeGoal = config.time;
@@ -443,6 +436,9 @@
         const gridEl = document.getElementById('grid'); gridEl.innerHTML = '';
         gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
         grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
+        
+        cachedCells = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
+        
         const allToPlace = [...currentWordsObj.map(o=>o.w), ...bonusWords.map(o=>o.w)];
         allToPlace.sort((a,b)=>b.length-a.length).forEach(placeWord);
         const chars = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
@@ -451,6 +447,9 @@
             for(let c=0; c<gridSize; c++) {
                 if(grid[r][c] === '') grid[r][c] = chars[Math.floor(Math.random() * chars.length)];
                 const cell = document.createElement('div'); cell.className = 'cell'; cell.textContent = grid[r][c]; cell.dataset.r = r; cell.dataset.c = c; cell.style.animationDelay = `${delay}s`; delay += 0.002;
+                
+                cachedCells[r][c] = cell; 
+
                 const handler = (e) => { if(e.type === 'touchstart') e.preventDefault(); startSel(e); };
                 cell.onmousedown = handler; cell.ontouchstart = handler; gridEl.appendChild(cell);
             }
@@ -481,7 +480,7 @@
         const hiddenWords = currentWordsObj.filter(obj => !document.getElementById(`tag-${obj.w}`).classList.contains('found'));
         if(hiddenWords.length > 0) {
             const target = hiddenWords[Math.floor(Math.random() * hiddenWords.length)].w; const loc = wordLocations[target];
-            const cell = document.querySelector(`.cell[data-r="${loc.r}"][data-c="${loc.c}"]`);
+            const cell = cachedCells[loc.r][loc.c]; 
             if(cell) { cell.classList.remove('hint-flash'); void cell.offsetWidth; cell.classList.add('hint-flash'); playSound('hint'); currentScore = Math.max(0, currentScore - 50); showFloatingText(cell.getBoundingClientRect().left, cell.getBoundingClientRect().top, "-50 Puan", true); }
         }
     }
@@ -489,12 +488,16 @@
         if(isPaused) return; const hiddenWords = currentWordsObj.filter(obj => !document.getElementById(`tag-${obj.w}`).classList.contains('found')); if(hiddenWords.length === 0) return;
         currentScore = Math.max(0, currentScore - 75); showFloatingText(window.innerWidth/2, window.innerHeight/2, "ODAK -75", true); playSound('powerup');
         const target = hiddenWords[0].w; const loc = wordLocations[target];
-        const allCells = document.querySelectorAll('.cell');
-        allCells.forEach(c => {
-            const r = parseInt(c.dataset.r), col = parseInt(c.dataset.c); let isTarget = false;
-            for(let i=0; i<loc.len; i++) { let tr = loc.r, tc = loc.c; if(loc.dir === 0) tc += i; else if(loc.dir === 1) tr += i; else { tr += i; tc += i; } if(r === tr && col === tc) isTarget = true; }
-            if(!isTarget && !c.classList.contains('found') && !c.classList.contains('bonus-found')) c.classList.add('dimmed');
-        }); setTimeout(() => document.querySelectorAll('.dimmed').forEach(c => c.classList.remove('dimmed')), 3000);
+        
+        for(let r=0; r<gridSize; r++){
+            for(let c=0; c<gridSize; c++){
+                let isTarget = false;
+                for(let i=0; i<loc.len; i++) { let tr = loc.r, tc = loc.c; if(loc.dir === 0) tc += i; else if(loc.dir === 1) tr += i; else { tr += i; tc += i; } if(r === tr && c === tc) isTarget = true; }
+                const cell = cachedCells[r][c];
+                if(!isTarget && !cell.classList.contains('found') && !cell.classList.contains('bonus-found')) cell.classList.add('dimmed');
+            }
+        }
+        setTimeout(() => document.querySelectorAll('.dimmed').forEach(c => c.classList.remove('dimmed')), 3000);
     }
     function useFreeze() {
         if(isPaused || isTimeFrozen) return; isTimeFrozen = true; currentScore = Math.max(0, currentScore - 30); showFloatingText(window.innerWidth/2, window.innerHeight/2, "ZAMAN DONDU!", true);
@@ -545,10 +548,87 @@
     function showMeaning(wordText) { const wordObj = currentWordsObj.find(o => o.w === wordText); if(wordObj) { const toast = document.getElementById('meaning-toast'); document.getElementById('toast-word-el').textContent = wordObj.w; document.getElementById('toast-text-el').textContent = wordObj.m; toast.style.borderColor = `var(--primary)`; toast.classList.add('active'); clearTimeout(cardTimeout); cardTimeout = setTimeout(() => { toast.classList.remove('active'); }, 4000); } }
 
     const previewBubble = document.getElementById('preview-bubble');
-    function startSel(e) { if(isPaused) return; isSelecting = true; lockedAxis = null; const t = e.target.closest('.cell'); if(t) { startCell = {r: parseInt(t.dataset.r), c: parseInt(t.dataset.c)}; drawSel(t); } }
-    function moveSel(e) { if(!isSelecting || isPaused) return; let cx = e.type.includes('touch') ? e.touches[0].clientX : e.clientX, cy = e.type.includes('touch') ? e.touches[0].clientY : e.clientY; let t = document.elementFromPoint(cx, cy); if(t && t.classList.contains('cell')) { const rc = parseInt(t.dataset.r), cc = parseInt(t.dataset.c), rs = startCell.r, cs = startCell.c; if(!lockedAxis && (rc !== rs || cc !== cs)) { const dr = Math.abs(rc - rs), dc = Math.abs(cc - cs); if(dr === 0) lockedAxis = 'row'; else if(dc === 0) lockedAxis = 'col'; else if(Math.abs(dr - dc) < 2) lockedAxis = 'diag'; } let target = t; if(lockedAxis === 'row') target = document.querySelector(`.cell[data-r="${rs}"][data-c="${cc}"]`); else if(lockedAxis === 'col') target = document.querySelector(`.cell[data-r="${rc}"][data-c="${cs}"]`); else if(lockedAxis === 'diag') { const dist = Math.abs(rc - rs), rDir = rc > rs ? 1 : -1, cDir = cc > cs ? 1 : -1; target = document.querySelector(`.cell[data-r="${rs + dist*rDir}"][data-c="${cs + dist*cDir}"]`); } if(target) { drawSel(target); const txt = selectedCells.map(c => c.textContent).join(''); if(txt.length>0) { previewBubble.style.display='block'; previewBubble.textContent=txt; previewBubble.style.left=cx+'px'; previewBubble.style.top=cy+'px'; } } } }
-    function drawSel(t) { document.querySelectorAll('.cell.selected').forEach(c => c.classList.remove('selected')); selectedCells = []; const r1 = startCell.r, c1 = startCell.c, r2 = parseInt(t.dataset.r), c2 = parseInt(t.dataset.c), dr = r2 - r1, dc = c2 - c1, steps = Math.max(Math.abs(dr), Math.abs(dc)), sr = dr === 0 ? 0 : dr/steps, sc = dc === 0 ? 0 : dc/steps; for(let i=0; i<=steps; i++) { const nextR = Math.round(r1 + i*sr), nextC = Math.round(c1 + i*sc), cell = document.querySelector(`.cell[data-r="${nextR}"][data-c="${nextC}"]`); if(cell) { cell.classList.add('selected'); selectedCells.push(cell); } } }
-    function endSel() { if(!isSelecting) return; isSelecting = false; lockedAxis = null; previewBubble.style.display = 'none'; const txt = selectedCells.map(c => c.textContent).join(''), rev = txt.split('').reverse().join(''); let matched = checkWord(txt); if(!matched) matched = checkWord(rev); if(!matched) { mistakeCount++; const gridEl = document.getElementById('grid'); gridEl.style.animation = 'none'; gridEl.offsetHeight; gridEl.style.animation = 'shake 0.4s'; if(navigator.vibrate) navigator.vibrate(50); selectedCells.forEach(c => c.classList.remove('selected')); } }
+    
+    // YENİ PERFORMANS VE DONMA OPTİMİZASYONLARI EKLENDİ
+    function startSel(e) { 
+        if(isPaused) return; 
+        isSelecting = true; lockedAxis = null; 
+        const t = e.target.closest('.cell'); 
+        if(t) { startCell = {r: parseInt(t.dataset.r), c: parseInt(t.dataset.c)}; drawSel(t); lastHoveredCell = t; } 
+    }
+    
+    function moveSel(e) { 
+        if(!isSelecting || isPaused) return; 
+        
+        // Touch olaylarında scroll engellenerek donma hissi azaltılır
+        if(e.type.includes('touch') && e.cancelable) e.preventDefault(); 
+        
+        if (!moveTicking) {
+            requestAnimationFrame(() => {
+                let cx = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                let cy = e.type.includes('touch') ? e.touches[0].clientY : e.clientY; 
+                
+                let t = document.elementFromPoint(cx, cy); 
+
+                // Yeni hücreye geçmediysek boşuna hesap yapma
+                if (t && t !== lastHoveredCell && t.classList.contains('cell')) { 
+                    lastHoveredCell = t;
+                    const rc = parseInt(t.dataset.r), cc = parseInt(t.dataset.c), rs = startCell.r, cs = startCell.c; 
+                    
+                    if(!lockedAxis && (rc !== rs || cc !== cs)) { 
+                        const dr = Math.abs(rc - rs), dc = Math.abs(cc - cs); 
+                        if(dr === 0) lockedAxis = 'row'; else if(dc === 0) lockedAxis = 'col'; else if(Math.abs(dr - dc) < 2) lockedAxis = 'diag'; 
+                    } 
+                    
+                    let target = t; 
+                    if(lockedAxis === 'row') target = cachedCells[rs][cc]; 
+                    else if(lockedAxis === 'col') target = cachedCells[rc][cs]; 
+                    else if(lockedAxis === 'diag') { 
+                        const dist = Math.abs(rc - rs), rDir = rc > rs ? 1 : -1, cDir = cc > cs ? 1 : -1; 
+                        if (cachedCells[rs + dist*rDir]) target = cachedCells[rs + dist*rDir][cs + dist*cDir]; 
+                    } 
+                    
+                    if(target) { 
+                        drawSel(target); 
+                        const txt = selectedCells.map(c => c.textContent).join(''); 
+                        if(txt.length>0) { 
+                            previewBubble.style.display='block'; previewBubble.textContent=txt; previewBubble.style.left=cx+'px'; previewBubble.style.top=cy+'px'; 
+                        } 
+                    } 
+                }
+                moveTicking = false;
+            });
+            moveTicking = true;
+        }
+    }
+
+    function drawSel(t) { 
+        // DOM'da arama yapmak yerine varolan dizi üzerinden siliyoruz. Müthiş hız artışı!
+        selectedCells.forEach(c => c.classList.remove('selected'));
+        selectedCells = []; 
+        
+        const r1 = startCell.r, c1 = startCell.c, r2 = parseInt(t.dataset.r), c2 = parseInt(t.dataset.c);
+        const dr = r2 - r1, dc = c2 - c1, steps = Math.max(Math.abs(dr), Math.abs(dc));
+        const sr = dr === 0 ? 0 : dr/steps, sc = dc === 0 ? 0 : dc/steps; 
+        
+        for(let i=0; i<=steps; i++) { 
+            const nextR = Math.round(r1 + i*sr), nextC = Math.round(c1 + i*sc);
+            const cell = cachedCells[nextR] ? cachedCells[nextR][nextC] : null; 
+            if(cell) { cell.classList.add('selected'); selectedCells.push(cell); } 
+        } 
+    }
+
+    function endSel() { 
+        if(!isSelecting) return; 
+        isSelecting = false; lockedAxis = null; lastHoveredCell = null; previewBubble.style.display = 'none'; 
+        const txt = selectedCells.map(c => c.textContent).join(''), rev = txt.split('').reverse().join(''); 
+        let matched = checkWord(txt); if(!matched) matched = checkWord(rev); 
+        if(!matched) { 
+            mistakeCount++; const gridEl = document.getElementById('grid'); 
+            gridEl.style.animation = 'none'; gridEl.offsetHeight; gridEl.style.animation = 'shake 0.4s'; 
+            if(navigator.vibrate) navigator.vibrate(50); selectedCells.forEach(c => c.classList.remove('selected')); 
+        } 
+    }
 
     function launchConfetti() { const theme = THEMES[currentLevelIdx % THEMES.length], colors = [theme.primary, theme.accent, '#fbbf24', '#ffffff']; for(let i=0; i<80; i++) { const c = document.createElement('div'); c.className = 'confetti'; c.style.left = Math.random()*100 + 'vw'; c.style.top = -10 + 'px'; c.style.background = colors[Math.floor(Math.random()*colors.length)]; c.style.animationDuration = (2 + Math.random()*3) + 's'; document.body.appendChild(c); setTimeout(()=>c.remove(), 5000); } }
     function showWin() { launchConfetti(); totalScore += currentScore; saveProgress(); document.getElementById('level-stats').textContent = `Bölüm Skoru: ${currentScore} | Toplam: ${totalScore}`; document.getElementById('win-badge').style.display = mistakeCount === 0 ? 'inline-block' : 'none'; document.getElementById('win-modal').style.display = 'flex'; }
