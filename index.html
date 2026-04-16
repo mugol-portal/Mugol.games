@@ -256,12 +256,12 @@
         <div class="menu-item active-cat" id="menu-all" onclick="menuFilter('all')">
             <div class="menu-item-icon" style="background:rgba(59,130,246,0.15);">🕹️</div>
             <span>Tüm Oyunlar</span>
-            <span class="menu-count">16</span>
+            <span class="menu-count">17</span>
         </div>
         <div class="menu-item" id="menu-action" onclick="menuFilter('action')">
             <div class="menu-item-icon" style="background:rgba(239,68,68,0.15);">⚡</div>
             <span>Aksiyon</span>
-            <span class="menu-count">5</span>
+            <span class="menu-count">6</span>
         </div>
         <div class="menu-item" id="menu-puzzle" onclick="menuFilter('puzzle')">
             <div class="menu-item-icon" style="background:rgba(168,85,247,0.15);">🧠</div>
@@ -355,6 +355,15 @@
                 </div>
 
                 <div class="games-grid" id="gamesGrid">
+
+                    <!-- YENİ: Masa Hokeyi -->
+                    <a href="masa-hokeyi.html" class="game-card" data-category="action" onclick="openGame(event,'masa-hokeyi.html')">
+                        <div class="game-thumb" style="background:linear-gradient(135deg,#d900ff,#00ffff)!important; text-shadow: 0 0 15px rgba(255,255,255,0.5);">🏒</div>
+                        <div class="game-info">
+                            <div class="game-title">Neon Masa Hokeyi</div>
+                            <div class="game-cat" style="color:#00ffff;">Aksiyon</div>
+                        </div>
+                    </a>
 
                     <!-- YENİ: Kelime Puzzle -->
                     <a href="kelime_puzzle.html" class="game-card" data-category="puzzle" onclick="openGame(event,'kelime_puzzle.html')">
@@ -473,6 +482,7 @@
 
     <script>
         const gamesDB = [
+            { title: "Neon Masa Hokeyi", desc: "Neon ışıklar altında yapay zekaya veya arkadaşına karşı kapış!", icon: "🏒", url: "masa-hokeyi.html", color: "#d900ff" },
             { title: "Kelime Puzzle", desc: "Kozmik uzayda kelimeleri bul, zekanı test et!", icon: "🔠", url: "kelime_puzzle.html", color: "#8b5cf6" },
             { title: "2048 Pro", desc: "Sayıları birleştir, 2048'e ulaş! Premium temalarla zekanızı geliştirin.", icon: "🔢", url: "2048.html", color: "#eab308" },
             { title: "Enerji Tüpleri", desc: "Tüpleri bağla, enerjiyi akıt! Bağlantı bulmacasının tadını çıkar.", icon: "⚡", url: "enerji-toplari.html", color: "#eab308" },
@@ -486,7 +496,10 @@
             { title: "Stack Tower", desc: "Blokları üst üste diz ve gökyüzüne ulaşan bir kule inşa et.", icon: "🏗️", url: "stack-tower.html", color: "#10b981" },
             { title: "Bubble Shooter", desc: "Aynı renk topları eşleştir ve patlat. 40 bölümü tamamla!", icon: "🔮", url: "bubble.html", color: "#8b5cf6" },
             { title: "Yılan Oyunu", desc: "Klasik Nokia efsanesi! Yemi ye, uza ama kuyruğuna çarpma.", icon: "🐍", url: "yilan-oyunu.html", color: "#22c55e" },
-            { title: "Araba Yarışı", desc: "Trafikte makas at, en yüksek puanı topla. Hız tutkunları buraya!", icon: "🏎️", url: "araba.html", color: "#ef4444" }
+            { title: "Araba Yarışı", desc: "Trafikte makas at, en yüksek puanı topla. Hız tutkunları buraya!", icon: "🏎️", url: "araba.html", color: "#ef4444" },
+            { title: "Kelime Üstadı", desc: "Harfleri birleştir, kelimeleri türet ve kelime dağarcığını zorla.", icon: "🔡", url: "kelime-ustadi.html", color: "#f97316" },
+            { title: "Dama Oyunu", desc: "Türk daması kurallarıyla stratejini konuştur, rakibini alt et.", icon: "⚫", url: "turk-damasi.html", color: "#64748b" },
+            { title: "Kızma Birader", desc: "Klasik aile oyunu! Zarlarını at, piyonlarını eve ulaştır.", icon: "🎲", url: "kizma-birader.html", color: "#eab308" }
         ];
 
         const categoryLabels = {
