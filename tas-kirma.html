@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>3D Stack Ball - Ultra Tasarım</title>
+    <!-- Modern Yazı Tipi -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,700;0,900;1,900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #1a1a2e; font-family: 'Poppins', sans-serif; touch-action: none; user-select: none; }
+        
+        #ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 40px 0; box-sizing: border-box; }
+        
+        /* Oyun İçi Skor ve Combo */
+        #topUI { display: flex; flex-direction: column; align-items: center; }
+        #scoreBoard { font-size: 70px; font-weight: 900; color: #ffffff; line-height: 1; -webkit-text-stroke: 2px rgba(0,0,0,0.2); filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.3)); }
+        
+        #comboContainer { width: 220px; height: 12px; background: rgba(0,0,0,0.4); border-radius: 20px; margin-top: 15px; overflow: hidden; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        #comboBar { width: 0%; height: 100%; background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); transition: width 0.1s, background 0.3s; }
+        
+        #feverText { color: #ff3366; font-weight: 900; font-size: 26px; text-transform: uppercase; margin-top: 10px; opacity: 0; text-shadow: 0 0 10px #ff3366, 0 2px 4px rgba(0,0,0,0.5); transform: scale(0.8); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #feverText.active { opacity: 1; transform: scale(1); animation: pulse 0.5s infinite alternate; }
+
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        /* Modern Menü Tasarımı (Glassmorphism) */
+        #menu { background: rgba(20, 25, 40, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 50px 40px; border-radius: 30px; text-align: center; pointer-events: auto; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 25px 50px rgba(0,0,0,0.5); transform: translateY(0); transition: 0.4s; }
+        
+        h1 { color: #ffffff; margin: 0 0 10px 0; font-size: 50px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 4px 10px rgba(0,0,0,0.4); background: -webkit-linear-gradient(#fff, #d4d4d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        p { color: #e0e0e0; font-size: 16px; font-weight: 700; margin-bottom: 35px; line-height: 1.6; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        
+        /* 3D Buton Tasarımı */
+        button { background: linear-gradient(to bottom, #00f2fe, #4facfe); color: white; border: none; padding: 18px 50px; font-size: 24px; font-family: 'Poppins', sans-serif; font-weight: 900; border-radius: 40px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 8px 0 #028db9, 0 15px 20px rgba(0,0,0,0.4); transition: all 0.1s; position: relative; top: 0; }
+        button:active { top: 8px; box-shadow: 0 0px 0 #028db9, 0 5px 10px rgba(0,0,0,0.4); }
+
+        .hidden { display: none !important; opacity: 0; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div id="ui">
+        <div id="topUI" class="hidden">
+            <div id="scoreBoard">0</div>
+            <div id="comboContainer"><div id="comboBar"></div></div>
+            <div id="feverText">ÖFKE MODU!</div>
+        </div>
+        
+        <div id="menu">
+            <h1 id="titleText">STACK BALL</h1>
+            <p id="infoText">Ekrana basılı tutarak kuleyi yık!<br>Hızlı inip <b>Ateş Modunu</b> açarsan<br>siyah engelleri de parçalarsın.</p>
+            <button id="startBtn">OYNA</button>
+        </div>
+    </div>
+
+<script>
+    // --- OYUN DEĞİŞKENLERİ ---
+    let scene, camera, renderer;
+    let ball, pillar, feverLight;
+    let levels = []; 
+    let particles = []; 
+    let splatters = []; 
+    
+    let isSmashing = false;
+    let gameState = 'menu'; 
+    let score = 0;
+    
+    let combo = 0;
+    let isFeverMode = false;
+    const comboMax = 100; 
+    
+    let ballVelocityY = 0;
+    const gravity = 0.018;
+    const bounceForce = 0.30;
+    const smashSpeed = -0.5; 
+    const feverSmashSpeed = -0.7; 
+    const platformHeight = 0.55;
+    const levelGap = 2.5;
+    let rotationSpeed = 0.015;
+
+    // Canlı (Neon/Pastel) Renk Paleti
+    const colors = [0x00f2fe, 0xfa709a, 0xfee140, 0x43e97b, 0xa18cd1, 0xff0844];
+    let currentColor = colors[0];
+    
+    // Arka plan rengi için hedef renk
+    let targetBgColor = new THREE.Color();
+
+    // --- SAHNE KURULUMU ---
+    function init() {
+        scene = new THREE.Scene();
+        
+        // Başlangıç rengi
+        targetBgColor.setHex(currentColor).lerp(new THREE.Color(0x111122), 0.7);
+        scene.background = targetBgColor.clone();
+        scene.fog = new THREE.Fog(scene.background, 15, 45);
+
+        camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 5, 12);
+        
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Yumuşak gölgeler
+        document.body.appendChild(renderer.domElement);
+
+        // --- GELİŞMİŞ IŞIKLANDIRMA ---
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
+        hemiLight.position.set(0, 20, 0);
+        scene.add(hemiLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+        dirLight.position.set(10, 20, 10);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 1024;
+        dirLight.shadow.mapSize.height = 1024;
+        scene.add(dirLight);
+
+        // Koyu Şık Merkez Direk
+        const pillarGeo = new THREE.CylinderGeometry(1.4, 1.4, 300, 32);
+        const pillarMat = new THREE.MeshStandardMaterial({ color: 0x1a1a24, roughness: 0.6, metalness: 0.2 });
+        pillar = new THREE.Mesh(pillarGeo, pillarMat);
+        pillar.position.y = -140;
+        pillar.receiveShadow = true;
+        scene.add(pillar);
+
+        // Top - Parlak Plastik Görünüm
+        const ballGeo = new THREE.SphereGeometry(0.65, 32, 32);
+        const ballMat = new THREE.MeshStandardMaterial({ color: 0xff0055, roughness: 0.1, metalness: 0.3, emissive: 0x000000 });
+        ball = new THREE.Mesh(ballGeo, ballMat);
+        ball.castShadow = true;
+        scene.add(ball);
+
+        // Öfke Modu Işığı (Topa bağlı)
+        feverLight = new THREE.PointLight(0xff3300, 0, 10);
+        ball.add(feverLight);
+
+        window.addEventListener('resize', onWindowResize);
+        
+        const startSmash = (e) => { if(gameState==='playing') isSmashing = true; };
+        const stopSmash = (e) => { isSmashing = false; };
+        
+        window.addEventListener('mousedown', startSmash);
+        window.addEventListener('touchstart', startSmash, {passive: false});
+        window.addEventListener('mouseup', stopSmash);
+        window.addEventListener('touchend', stopSmash);
+        window.addEventListener('touchcancel', stopSmash);
+
+        document.getElementById('startBtn').addEventListener('click', startGame);
+
+        animate();
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // --- PARLAK PLATFORM OLUŞTURMA ---
+    function createLevel(yPosition, levelIndex) {
+        const levelGroup = new THREE.Group();
+        levelGroup.position.y = yPosition;
+        
+        const slices = 12; 
+        const sliceAngle = (Math.PI * 2) / slices;
+        const emptySlice = Math.floor(Math.random() * slices);
+        const dangerSlices = [];
+        
+        if (levelIndex > 2) {
+            let numDanger = Math.min(Math.floor(levelIndex / 15) + 1, 5); 
+            for(let i=0; i<numDanger; i++) {
+                dangerSlices.push((emptySlice + 2 + (i*2)) % slices);
+            }
+        }
+
+        // Kenarları yumuşatılmış görünüm için hafif boşluklu silindir dilimleri
+        const geo = new THREE.CylinderGeometry(4, 4, platformHeight, 24, 1, false, 0, sliceAngle - 0.08);
+
+        for (let i = 0; i < slices; i++) {
+            if (i === emptySlice) continue; 
+
+            let isDanger = dangerSlices.includes(i);
+            // Standart Materyal: Işığı yansıtır, parlak durur
+            let mat = new THREE.MeshStandardMaterial({ 
+                color: isDanger ? 0x111111 : currentColor,
+                roughness: 0.2, // Düşük roughness = Parlak
+                metalness: 0.1
+            });
+
+            let slice = new THREE.Mesh(geo, mat);
+            slice.position.y = 0;
+            slice.rotation.y = i * sliceAngle;
+            slice.castShadow = true;
+            slice.receiveShadow = true;
+            slice.userData = { isDanger: isDanger };
+            levelGroup.add(slice);
+        }
+
+        scene.add(levelGroup);
+        return levelGroup;
+    }
+
+    function disposeLevel(levelGroup) {
+        scene.remove(levelGroup);
+        levelGroup.children.forEach(child => {
+            if(child.geometry) child.geometry.dispose();
+            if(child.material) child.material.dispose();
+        });
+    }
+
+    function buildWorld() {
+        levels.forEach(l => disposeLevel(l));
+        splatters.forEach(s => { scene.remove(s); s.geometry.dispose(); s.material.dispose(); });
+        
+        levels = [];
+        splatters = [];
+        currentColor = colors[Math.floor(Math.random() * colors.length)];
+        updateBackgroundTargetColor();
+
+        for (let i = 0; i < 100; i++) {
+            levels.push(createLevel(-i * levelGap, i));
+        }
+    }
+
+    function updateBackgroundTargetColor() {
+        // Arka planı platform renginin çok koyu/pastel bir tonu yap
+        let tempColor = new THREE.Color(currentColor);
+        targetBgColor.copy(tempColor).lerp(new THREE.Color(0x1a1a2e), 0.85);
+    }
+
+    // --- OYUN MEKANİKLERİ ---
+    function updateCombo() {
+        const comboBar = document.getElementById('comboBar');
+        const feverText = document.getElementById('feverText');
+
+        if (isSmashing && ballVelocityY < 0) {
+            combo += 2; 
+        } else {
+            combo -= 1.5; 
+            isFeverMode = false;
+        }
+
+        combo = Math.max(0, Math.min(combo, comboMax));
+
+        // Combo Bar CSS Genişliği
+        comboBar.style.width = combo + "%";
+
+        if (combo >= comboMax && !isFeverMode) {
+            isFeverMode = true;
+            comboBar.style.background = "linear-gradient(90deg, #f12711 0%, #f5af19 100%)";
+            feverText.classList.add('active');
+            
+            // Top Görünümü Değişir (Alevlenir)
+            ball.material.color.setHex(0xffffff);
+            ball.material.emissive.setHex(0xff5500);
+            feverLight.intensity = 2; // Işık açılır
+            
+        } else if (!isFeverMode) {
+            comboBar.style.background = "linear-gradient(90deg, #00f2fe 0%, #4facfe 100%)";
+            feverText.classList.remove('active');
+            
+            // Top Normal Hale Döner
+            ball.material.color.setHex(0xff0055);
+            ball.material.emissive.setHex(0x000000);
+            feverLight.intensity = 0; // Işık kapanır
+        }
+    }
+
+    function addScore() {
+        score++;
+        document.getElementById('scoreBoard').innerText = score;
+        
+        if(score % 5 === 0) {
+            rotationSpeed = (Math.random() * 0.02 + 0.015) * (Math.random() > 0.5 ? 1 : -1);
+        }
+
+        if(score > 0 && score % 10 === 0) {
+            currentColor = colors[Math.floor(Math.random() * colors.length)];
+            updateBackgroundTargetColor(); // Arka plan rengini de değiştir
+            
+            levels.forEach(l => {
+                l.children.forEach(c => {
+                    if(!c.userData.isDanger) {
+                        c.material.color.setHex(currentColor);
+                    }
+                });
+            });
+        }
+    }
+
+    function addSplatter(yPos, colorHex) {
+        const geo = new THREE.CylinderGeometry(1.42, 1.42, 0.8, 16);
+        const mat = new THREE.MeshBasicMaterial({ color: colorHex, transparent: true, opacity: 0.9 });
+        const splatter = new THREE.Mesh(geo, mat);
+        splatter.position.y = yPos;
+        scene.add(splatter);
+        splatters.push(splatter);
+    }
+
+    function breakLevel(levelGroup) {
+        levelGroup.children.forEach(slice => {
+            let p = slice.clone();
+            
+            let worldPos = new THREE.Vector3();
+            slice.getWorldPosition(worldPos);
+            p.position.copy(worldPos);
+            
+            let worldRot = new THREE.Euler();
+            p.getWorldQuaternion(new THREE.Quaternion()).setFromEuler(worldRot);
+            p.rotation.copy(worldRot);
+
+            scene.add(p);
+            
+            let angle = p.rotation.y;
+            particles.push({
+                mesh: p,
+                vx: Math.cos(angle) * (Math.random() * 0.6 + 0.2),
+                vy: Math.random() * 0.5 + 0.2, 
+                vz: -Math.sin(angle) * (Math.random() * 0.6 + 0.2),
+                rx: Math.random() * 0.3 - 0.15,
+                ry: Math.random() * 0.3 - 0.15,
+                life: 1.0,
+                isFragment: true
+            });
+        });
+        
+        let splatColor = levelGroup.children[0].userData.isDanger ? 0x000000 : currentColor;
+        addSplatter(levelGroup.position.y, splatColor);
+
+        disposeLevel(levelGroup);
+        addScore();
+    }
+
+    function createTrailParticle() {
+        if(!isSmashing) return;
+        const size = Math.random() * 0.4 + 0.2;
+        const geo = new THREE.SphereGeometry(size, 8, 8);
+        const mat = new THREE.MeshBasicMaterial({ 
+            color: isFeverMode ? 0xffff00 : 0xffffff, 
+            transparent: true, 
+            opacity: 0.5 
+        });
+        const p = new THREE.Mesh(geo, mat);
+        
+        p.position.set(
+            ball.position.x + (Math.random() * 0.5 - 0.25),
+            ball.position.y + 0.5,
+            ball.position.z + (Math.random() * 0.5 - 0.25)
+        );
+        scene.add(p);
+        
+        particles.push({ mesh: p, vx: 0, vy: 0.08, vz: 0, rx: 0, ry: 0, life: 1.0, isFragment: false });
+    }
+
+    const raycaster = new THREE.Raycaster();
+    const downVector = new THREE.Vector3(0, -1, 0);
+
+    function checkCollisions() {
+        if (levels.length === 0) return;
+
+        let currentLevel = levels[0];
+
+        if (ball.position.y < currentLevel.position.y - 0.5) {
+            levels.shift(); 
+            disposeLevel(currentLevel); 
+            addScore(); 
+            return;
+        }
+
+        raycaster.set(ball.position, downVector);
+        let intersects = raycaster.intersectObjects(currentLevel.children, false);
+
+        if (intersects.length > 0) {
+            let hit = intersects[0];
+            
+            if (hit.distance <= 0.68 && ballVelocityY <= 0) { 
+                
+                if (isSmashing) {
+                    let isDanger = hit.object.userData.isDanger;
+                    
+                    if (isDanger && !isFeverMode) {
+                        gameOver();
+                    } else {
+                        breakLevel(currentLevel);
+                        levels.shift(); 
+                        ballVelocityY = isFeverMode ? feverSmashSpeed : smashSpeed; 
+                    }
+                } else {
+                    ball.position.y = hit.point.y + 0.62; 
+                    ballVelocityY = bounceForce;
+                }
+            }
+        }
+    }
+
+    // --- UI YÖNETİMİ ---
+    function startGame() {
+        document.getElementById('menu').classList.add('hidden');
+        document.getElementById('topUI').classList.remove('hidden');
+        
+        buildWorld();
+        
+        ball.position.set(0, 3, 3.8); // Topu kameraya biraz daha yakınlaştırdım (daha dolgun dursun)
+        ballVelocityY = 0;
+        score = 0;
+        combo = 0;
+        isFeverMode = false;
+        rotationSpeed = 0.015;
+        document.getElementById('scoreBoard').innerText = score;
+        isSmashing = false;
+        gameState = 'playing';
+    }
+
+    function gameOver() {
+        gameState = 'gameover';
+        isSmashing = false;
+        document.getElementById('menu').classList.remove('hidden');
+        document.getElementById('topUI').classList.add('hidden');
+        
+        document.getElementById('titleText').innerText = "YANDIN!";
+        document.getElementById('titleText').style.background = "-webkit-linear-gradient(#ff0844, #ffb199)";
+        document.getElementById('titleText').style.webkitBackgroundClip = "text";
+        
+        document.getElementById('infoText').innerHTML = "Skorun: <b style='color:#fff; font-size:22px;'>" + score + "</b>";
+        
+        let btn = document.getElementById('startBtn');
+        btn.innerText = "TEKRAR DENE";
+        btn.style.background = "linear-gradient(to bottom, #f5515f, #9f041b)";
+        btn.style.boxShadow = "0 8px 0 #5c010f, 0 15px 20px rgba(0,0,0,0.4)";
+    }
+
+    // --- ANA DÖNGÜ ---
+    function animate() {
+        requestAnimationFrame(animate);
+
+        // Arka Plan Rengini Yumuşakça Geçir (Lerp)
+        scene.background.lerp(targetBgColor, 0.05);
+        scene.fog.color.copy(scene.background);
+
+        if (gameState === 'playing') {
+            levels.forEach(l => l.rotation.y += rotationSpeed);
+
+            updateCombo();
+
+            if (isSmashing) {
+                ballVelocityY = isFeverMode ? feverSmashSpeed : smashSpeed; 
+                createTrailParticle(); 
+            } else {
+                ballVelocityY -= gravity; 
+            }
+            ball.position.y += ballVelocityY;
+
+            checkCollisions();
+
+            if (levels.length === 0 || ball.position.y < -240) {
+                document.getElementById('titleText').innerText = "KAZANDIN!";
+                document.getElementById('titleText').style.background = "-webkit-linear-gradient(#43e97b, #38f9d7)";
+                gameOver();
+            }
+
+            // Daha dramatik kamera takibi
+            let targetCameraY = ball.position.y + 4.5;
+            camera.position.y += (targetCameraY - camera.position.y) * 0.15;
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            let p = particles[i];
+            p.mesh.position.x += p.vx;
+            p.mesh.position.y += p.vy;
+            p.mesh.position.z += p.vz;
+            
+            if (p.isFragment) {
+                p.vy -= 0.025; 
+                p.mesh.rotation.x += p.rx;
+                p.mesh.rotation.y += p.ry;
+                p.mesh.scale.multiplyScalar(0.95); 
+                p.life -= 0.02;
+            } else {
+                p.mesh.scale.multiplyScalar(0.85);
+                p.life -= 0.08;
+            }
+
+            if (p.life <= 0) {
+                scene.remove(p.mesh);
+                p.mesh.geometry.dispose();
+                p.mesh.material.dispose();
+                particles.splice(i, 1);
+            }
+        }
+
+        camera.lookAt(0, camera.position.y - 5, 0);
+        renderer.render(scene, camera);
+    }
+
+    init();
+
+</script>
+</body>
+</html>
