@@ -310,6 +310,7 @@
     <script src="sorular/cografya.js"></script>
     <script src="sorular/spor.js"></script>
     <script src="sorular/sinema.js"></script>
+    <script src="sorular/din.js"></script> <!-- DİN KATEGORİSİ EKLENDİ -->
 
     <script>
         const oduller = ["500 TL", "1.000 TL", "2.000 TL", "3.000 TL", "5.000 TL", "7.500 TL", "15.000 TL", "30.000 TL", "60.000 TL", "125.000 TL", "250.000 TL", "1.000.000 TL"];
@@ -356,7 +357,15 @@
             }
         }
 
-        function uyarKapat() { alert("Oyundan çıkmak için tarayıcı sekmesini kapatabilirsiniz."); }
+        // DEĞİŞTİRİLDİ: Oyundan çık butonu tarayıcının önceki sayfasına dönecek
+        function uyarKapat() { 
+            window.history.back();
+            
+            // Eğer sayfa yeni sekmede açılmışsa ve geri gidilemiyorsa fallback olarak sekmeyi kapatmayı dener.
+            setTimeout(() => {
+                window.close();
+            }, 300);
+        }
 
         function kategorileriYukle() {
             const btnContainer = document.getElementById("category-buttons");
@@ -389,6 +398,8 @@
             else if (kategori === "Spor") gradient = "linear-gradient(-45deg, #002200, #004d00, #001a00, #000000)";
             else if (kategori === "Coğrafya") gradient = "linear-gradient(-45deg, #002626, #004d4d, #001a1a, #000000)";
             else if (kategori === "Sinema / TV") gradient = "linear-gradient(-45deg, #330000, #660000, #1a0000, #000000)";
+            else if (kategori === "Din") gradient = "linear-gradient(-45deg, #002b18, #004d2c, #001a0f, #000000)"; // DİN KATEGORİSİ ARKAPLANI
+            
             document.body.style.background = gradient;
             document.body.style.backgroundSize = "400% 400%";
         }
