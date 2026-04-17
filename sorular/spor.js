@@ -1,0 +1,14 @@
+window.tumSorular.push(
+    { seviye: 1, kategori: "Spor", soru: "Futbolda bir takım sahaya kaleci dahil kaç oyuncu ile çıkar?", secenekler: { A: "9", B: "10", C: "11", D: "12" }, dogruCevap: "C" },
+    { seviye: 2, kategori: "Spor", soru: "Basketbol maçlarında atılan serbest atış kaç sayı değerindedir?", secenekler: { A: "1", B: "2", C: "3", D: "4" }, dogruCevap: "A" },
+    { seviye: 3, kategori: "Spor", soru: "Olimpiyat halkalarında toplam kaç adet iç içe geçmiş halka bulunur?", secenekler: { A: "4", B: "5", C: "6", D: "7" }, dogruCevap: "B" },
+    { seviye: 4, kategori: "Spor", soru: "'Smaç', 'Manşet' ve 'Blok' terimleri hangi sporda sıkça kullanılır?", secenekler: { A: "Tenis", B: "Voleybol", C: "Basketbol", D: "Masa Tenisi" }, dogruCevap: "B" },
+    { seviye: 5, kategori: "Spor", soru: "Türkiye Milli Futbol Takımı, 2002 Dünya Kupası'nda kaçıncı olmuştur?", secenekler: { A: "Şampiyon", B: "İkinci", C: "Üçüncü", D: "Dördüncü" }, dogruCevap: "C" },
+    { seviye: 6, kategori: "Spor", soru: "Boks sporunda 'Kelebek gibi uçarım, arı gibi sokarım' sözü kime aittir?", secenekler: { A: "Mike Tyson", B: "Joe Frazier", C: "Muhammed Ali", D: "Floyd Mayweather" }, dogruCevap: "C" },
+    { seviye: 7, kategori: "Spor", soru: "Tenis turnuvası Wimbledon hangi ülkenin başkentinde düzenlenir?", secenekler: { A: "Fransa", B: "Amerika Birleşik Devletleri", C: "İngiltere", D: "Avustralya" }, dogruCevap: "C" },
+    { seviye: 8, kategori: "Spor", soru: "Futbol tarihinde 'El Pibe de Oro' (Altın Çocuk) lakabıyla bilinen Arjantinli efsane kimdir?", secenekler: { A: "Lionel Messi", B: "Diego Maradona", C: "Gabriel Batistuta", D: "Javier Zanetti" }, dogruCevap: "B" },
+    { seviye: 9, kategori: "Spor", soru: "Atletizmde 'Erkekler 100 Metre' dünya rekoru (9.58 sn) kimin elindedir?", secenekler: { A: "Tyson Gay", B: "Justin Gatlin", C: "Carl Lewis", D: "Usain Bolt" }, dogruCevap: "D" },
+    { seviye: 10, kategori: "Spor", soru: "Formula 1 tarihinde 7 kez dünya şampiyonu olarak rekoru paylaşan iki pilot kimlerdir?", secenekler: { A: "Senna - Prost", B: "Schumacher - Hamilton", C: "Vettel - Alonso", D: "Verstappen - Lauda" }, dogruCevap: "B" },
+    { seviye: 11, kategori: "Spor", soru: "1950 Dünya Kupası finalinde, ev sahibi Brezilya'yı yenerek tarihe 'Maracanazo' olarak geçen maçı kazanan ülke hangisidir?", secenekler: { A: "Arjantin", B: "İtalya", C: "Uruguay", D: "Almanya" }, dogruCevap: "C" },
+    { seviye: 12, kategori: "Spor", soru: "Modern Olimpiyat Oyunları'nın kurucusu sayılan Fransız pedagog kimdir?", secenekler: { A: "Pierre de Coubertin", B: "Jacques Rogge", C: "Thomas Bach", D: "Juan Antonio Samaranch" }, dogruCevap: "A" }
+);
