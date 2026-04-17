@@ -56,80 +56,187 @@
             white-space: nowrap; text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
-        /* --- ANA MENÜ --- */
-        #start-screen { justify-content: center; align-items: center; padding: 15px; }
+        /* --- YENİLENMİŞ ANA MENÜ --- */
+        #start-screen { justify-content: center; align-items: center; padding: 20px; }
         
         .glass-card {
-            background: rgba(10, 10, 25, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(212, 175, 55, 0.4);
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            border-left: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 30px;
-            padding: 35px 25px; text-align: center; max-width: 650px; width: 100%;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.8), inset 0 0 25px rgba(212, 175, 55, 0.1);
+            background: linear-gradient(135deg, rgba(10, 10, 30, 0.85) 0%, rgba(0, 0, 15, 0.95) 100%);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 35px;
+            padding: 40px 30px; 
+            text-align: center; 
+            max-width: 750px; 
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 40px rgba(0, 212, 255, 0.05);
             position: relative;
+            overflow: hidden;
+            animation: slideUpFade 0.6s ease-out forwards;
         }
 
-        .crown-icon { font-size: 2.5rem; margin-bottom: -10px; filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.8)); animation: float 3s ease-in-out infinite; display: inline-block;}
-        @keyframes float { 0% {transform: translateY(0px);} 50% {transform: translateY(-8px);} 100% {transform: translateY(0px);} }
+        /* Kart üstü parlayan çizgi efekti */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -50%; width: 200%; height: 4px;
+            background: linear-gradient(90deg, transparent, #00d4ff, #d4af37, #00d4ff, transparent);
+            animation: glowingLine 4s linear infinite;
+        }
+
+        @keyframes glowingLine { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
+
+        .crown-icon { 
+            font-size: 3.5rem; 
+            margin-bottom: -15px; 
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 1)); 
+            animation: float 3s ease-in-out infinite; 
+            display: inline-block;
+        }
+        @keyframes float { 0% {transform: translateY(0px) scale(1);} 50% {transform: translateY(-10px) scale(1.05);} 100% {transform: translateY(0px) scale(1);} }
         
         .logo-title {
-            color: #d4af37; font-size: clamp(2rem, 8vw, 3.8rem); font-weight: 900;
-            text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px;
-            text-shadow: 0 5px 15px rgba(0,0,0,0.9), 0 0 20px rgba(212, 175, 55, 0.6);
+            font-size: clamp(2.2rem, 8vw, 4rem); 
+            font-weight: 900;
+            text-transform: uppercase; 
+            letter-spacing: 4px; 
+            margin-bottom: 10px;
+            /* Altın gradyan metin efekti */
+            background: linear-gradient(to bottom, #fff7d6 0%, #d4af37 40%, #aa771c 60%, #ffdf00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.8));
             line-height: 1.1;
         }
         
-        .subtitle { margin-bottom: 30px; font-size: 1.05rem; color: #a0c4ff; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;}
+        .subtitle { 
+            display: inline-block;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 6px 20px;
+            border-radius: 20px;
+            margin-bottom: 35px; 
+            font-size: 1rem; 
+            color: #bbf0ff; 
+            font-weight: 800; 
+            letter-spacing: 2px; 
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.15);
+        }
+
+        .category-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .category-section-header::before, .category-section-header::after {
+            content: '';
+            height: 1px;
+            flex: 1;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+        }
+
+        .category-section-header span {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
         
-        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 15px; margin-bottom: 25px;}
+        .category-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
+            gap: 15px; 
+            margin-bottom: 30px;
+        }
         
         .category-btn {
-            background: linear-gradient(145deg, rgba(15, 12, 41, 0.8), rgba(48, 43, 99, 0.8));
-            border: 1px solid rgba(0, 212, 255, 0.3); border-bottom: 3px solid #00d4ff;
-            color: white; padding: 15px 10px;
-            border-radius: 20px; cursor: pointer;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+            background: linear-gradient(160deg, rgba(20, 20, 45, 0.9) 0%, rgba(5, 5, 15, 0.9) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            border-bottom: 3px solid rgba(0, 212, 255, 0.5);
+            color: white; 
+            padding: 18px 10px;
+            border-radius: 20px; 
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); 
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-btn::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.3s;
         }
         
         .category-btn:hover { 
-            background: linear-gradient(145deg, rgba(0, 212, 255, 0.9), rgba(0, 114, 255, 0.9)); 
-            border-color: #ffffff; color: #000033; transform: translateY(-5px) scale(1.05); 
-            box-shadow: 0 12px 25px rgba(0, 212, 255, 0.5); 
+            background: linear-gradient(160deg, rgba(0, 212, 255, 0.2), rgba(0, 114, 255, 0.1)); 
+            border-color: #00d4ff; 
+            border-bottom: 3px solid #00d4ff;
+            transform: translateY(-5px); 
+            box-shadow: 0 15px 25px rgba(0, 212, 255, 0.2); 
         }
+
+        .category-btn:hover::after { opacity: 1; }
         
-        .cat-icon { font-size: 2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); transition: transform 0.3s;}
-        .category-btn:hover .cat-icon { transform: scale(1.2); }
-        .cat-text { font-size: 0.9rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; line-height: 1.2; word-wrap: break-word; width:100%;}
+        .cat-icon { font-size: 2.2rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
+        .category-btn:hover .cat-icon { transform: scale(1.25) rotate(5deg); }
+        .cat-text { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-align: center; line-height: 1.2; word-wrap: break-word; width:100%; color: #f0f0f0;}
 
         .btn-mixed { 
-            border-bottom-color: #d4af37; border-color: rgba(212, 175, 55, 0.4);
-            background: linear-gradient(145deg, rgba(75, 56, 0, 0.8), rgba(26, 19, 0, 0.8)); 
+            border-bottom-color: rgba(212, 175, 55, 0.6);
+            background: linear-gradient(160deg, rgba(45, 35, 10, 0.9), rgba(15, 10, 0, 0.9)); 
         }
-        .btn-mixed:hover { background: linear-gradient(145deg, #d4af37, #ffdf00); }
+        .btn-mixed:hover { 
+            background: linear-gradient(160deg, rgba(212, 175, 55, 0.2), rgba(255, 223, 0, 0.1)); 
+            border-color: #d4af37;
+            border-bottom-color: #ffdf00;
+            box-shadow: 0 15px 25px rgba(212, 175, 55, 0.2); 
+        }
 
+        /* Yeni Dock Görünümlü Kontrol Paneli */
         .control-panel { 
-            background: rgba(0,0,0,0.3); padding: 15px; border-radius: 20px;
-            display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0, 0, 0, 0.4); 
+            padding: 15px; 
+            border-radius: 25px;
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            flex-wrap: wrap; 
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
         }
         
         .cp-btn { 
-            background: transparent; padding: 10px 20px; border-radius: 15px; 
-            font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: 0.3s; 
-            display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2)); 
+            padding: 12px 20px; 
+            border-radius: 20px; 
+            font-weight: 800; 
+            font-size: 0.9rem; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
-        .btn-about { border: 2px solid #00d4ff; color: #00d4ff; }
-        .btn-about:hover { background: #00d4ff; color: #000; box-shadow: 0 5px 15px rgba(0,212,255,0.5); transform: translateY(-2px);}
+        .btn-about { border: 1px solid #00d4ff; border-bottom: 3px solid #00d4ff; color: #00d4ff; }
+        .btn-about:hover { background: #00d4ff; color: #000; box-shadow: 0 8px 20px rgba(0,212,255,0.4); transform: translateY(-3px);}
 
-        .btn-kasa { border: 2px solid #2ecc71; color: #2ecc71; }
-        .btn-kasa:hover { background: #2ecc71; color: #000; box-shadow: 0 5px 15px rgba(46,204,113,0.5); transform: translateY(-2px);}
+        .btn-kasa { border: 1px solid #2ecc71; border-bottom: 3px solid #2ecc71; color: #2ecc71; }
+        .btn-kasa:hover { background: #2ecc71; color: #000; box-shadow: 0 8px 20px rgba(46,204,113,0.4); transform: translateY(-3px);}
 
-        .btn-exit { border: 2px solid #ff4444; color: #ff4444; }
-        .btn-exit:hover { background: #ff4444; color: #fff; box-shadow: 0 5px 15px rgba(255,68,68,0.5); transform: translateY(-2px);}
+        .btn-exit { border: 1px solid #ff4444; border-bottom: 3px solid #ff4444; color: #ff4444; }
+        .btn-exit:hover { background: #ff4444; color: #fff; box-shadow: 0 8px 20px rgba(255,68,68,0.4); transform: translateY(-3px);}
 
         /* --- OYUN EKRANI & ÖDÜL AĞACI --- */
         .prize-container { width: 100%; background: rgba(0, 0, 15, 0.95); border-bottom: 2px solid #d4af37; padding: 8px; overflow-x: auto; white-space: nowrap; box-shadow: 0 5px 15px rgba(0,0,0,0.8); z-index: 5; }
@@ -251,6 +358,7 @@
             .main-game { order: 1; padding: 90px 50px 40px; }
             .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
             .jokers { justify-content: flex-start; }
+            .glass-card { padding: 50px 40px; }
         }
     </style>
 </head>
@@ -267,8 +375,12 @@
             <h1 class="logo-title">MUGÖLYONER</h1>
             <p class="subtitle">Milyoner Bilgi Yarışması</p>
             
+            <div class="category-section-header">
+                <span>Kategori Seçin</span>
+            </div>
+
             <div class="category-grid" id="category-buttons">
-                <!-- Dinamik Kategoriler -->
+                <!-- Dinamik Kategoriler Buraya Yüklenecek -->
             </div>
             
             <div class="control-panel">
@@ -395,6 +507,7 @@
     <script src="sorular/bilmece.js"></script>  
     <script src="sorular/canlilar.js"></script>
     <script src="sorular/onemli-yerler.js"></script>
+    <script src="sorular/soz-siir.js"></script>
     <!-- YENİ BİR KATEGORİ EKLERSENİZ BURAYA YAZIN. Örnek: <script src="sorular/arabalar.js"></script> -->
 
     <script>
@@ -493,12 +606,10 @@
             const btnContainer = document.getElementById("category-buttons"); btnContainer.innerHTML = "";
             if(!window.tumSorular || window.tumSorular.length === 0) { btnContainer.innerHTML = "<p>Sorular yüklenemedi!</p>"; return; }
             
-            // YENİ BİR KATEGORİ EKLERSENİZ BURAYA İKONUNU EKLEYEBİLİRSİNİZ. 
-            // Eğer eklemezseniz varsayılan olarak ⭐ çıkar (oyun bozulmaz).
             const katSimgeleri = {
                 "Genel Kültür": "🌐", "Bilim": "🔬", "Tarih": "📜", "Coğrafya": "🌍", "Spor": "⚽",
                 "Sinema / TV": "🎬", "Din / İslamiyet": "🕌", "Edebiyat": "📚", "Bilmece": "🧩", 
-                "Canlılar": "🦁", "Önemli Yerler": "🏛️"
+                "Canlılar": "🦁", "Önemli Yerler": "🏛️", "Söz-Şiir":"📖" 
             };
 
             const kategoriler = [...new Set(window.tumSorular.map(s => s.kategori))];
@@ -517,9 +628,6 @@
 
         function arkaplanAyarla(kategori) {
             let gradient = "linear-gradient(-45deg, #020024, #090979, #002a4d, #000000)"; 
-            
-            // YENİ KATEGORİNİZE ÖZEL ARKA PLAN RENGİ İSTERSENİZ BURAYA EKLEYİN. 
-            // Eklemezseniz standart lacivert arka plan çıkar. Oyun asla bozulmaz.
             if (kategori === "Bilim") gradient = "linear-gradient(-45deg, #1a0033, #4b0082, #2a004d, #000000)";
             else if (kategori === "Tarih") gradient = "linear-gradient(-45deg, #331a00, #5c2e00, #8b4513, #1a0d00)";
             else if (kategori === "Spor") gradient = "linear-gradient(-45deg, #002200, #004d00, #001a00, #000000)";
