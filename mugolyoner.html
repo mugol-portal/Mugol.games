@@ -35,7 +35,7 @@
         }
         
         /* Sağdaki Ses ve Paylaş butonlarını gruplamak için */
-        .top-bar-right { display: flex; gap: 5px; }
+        .top-bar-right { display: flex; gap: 5px; align-items: center; }
 
         .action-btn {
             background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(0,0,0,0.5));
@@ -50,6 +50,14 @@
 
         .title-text { color: #d4af37; font-weight: 900; font-size: 1.1rem; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 10px rgba(212, 175, 55, 0.6); text-align: center; flex: 1; overflow: hidden; text-overflow: ellipsis; }
 
+        /* KASA / PARA ROZETİ */
+        .kasa-badge {
+            background: linear-gradient(145deg, #27ae60, #1e5a2d);
+            border: 1px solid #2ecc71; color: white; padding: 6px 12px; border-radius: 20px;
+            font-weight: 900; font-size: 0.85rem; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            white-space: nowrap; text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
         /* --- ANA MENÜ --- */
         #start-screen { justify-content: center; align-items: center; padding: 15px; }
         .glass-card {
@@ -61,7 +69,6 @@
             margin-top: 20px;
         }
         
-        /* CLAMP KULLANARAK TAŞMAYI ÖNLEYEN DİNAMİK YAZI BOYUTU */
         .logo-title {
             color: #d4af37; font-size: clamp(1.8rem, 8vw, 3.5rem); font-weight: 900;
             text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;
@@ -82,9 +89,15 @@
         .btn-mixed { border-color: #d4af37; background: linear-gradient(145deg, #4b3800, #1a1300); }
         .btn-mixed:hover { background: linear-gradient(145deg, #d4af37, #ffdf00); color: #000000; border-color: #ffffff; }
 
-        .exit-container { margin-top: 30px; width: 100%; display: flex; justify-content: center; }
+        .exit-container { margin-top: 30px; width: 100%; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
         .btn-exit { background: transparent; border: 2px solid #ff4444; color: #ff4444; padding: 8px 25px; border-radius: 20px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s; }
         .btn-exit:hover { background: #ff4444; color: white; box-shadow: 0 5px 15px rgba(255,68,68,0.5); }
+        
+        .btn-about { background: transparent; border: 2px solid #00d4ff; color: #00d4ff; padding: 8px 25px; border-radius: 20px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s; }
+        .btn-about:hover { background: #00d4ff; color: #000033; box-shadow: 0 5px 15px rgba(0,212,255,0.5); }
+
+        .btn-kasa { background: transparent; border: 2px solid #2ecc71; color: #2ecc71; padding: 8px 25px; border-radius: 20px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s; }
+        .btn-kasa:hover { background: #2ecc71; color: #000033; box-shadow: 0 5px 15px rgba(46,204,113,0.5); }
 
         /* --- OYUN EKRANI & ÖDÜL AĞACI --- */
         .prize-container { width: 100%; background: rgba(0, 0, 15, 0.95); border-bottom: 2px solid #d4af37; padding: 8px; overflow-x: auto; white-space: nowrap; box-shadow: 0 5px 15px rgba(0,0,0,0.8); z-index: 5; }
@@ -108,6 +121,10 @@
         .joker-btn:hover:not(:disabled) { background: #d4af37; color: #000; box-shadow: 0 0 15px rgba(212, 175, 55, 0.6); transform: translateY(-2px); }
         .joker-btn:active { transform: scale(0.95); }
         .joker-btn:disabled { background: #222; border-color: #444; color: #555; cursor: not-allowed; box-shadow: none; opacity: 0.5; }
+        
+        /* Satın Alınabilir Joker Tasarımı */
+        .joker-buy { background: linear-gradient(145deg, #1a4a28, #112b18) !important; border-color: #2ecc71 !important; color: #2ecc71 !important; opacity: 1 !important; cursor: pointer !important; }
+        .joker-buy:hover:not(:disabled) { background: #2ecc71 !important; color: #000 !important; box-shadow: 0 0 15px rgba(46, 204, 113, 0.6) !important; }
 
         .timer-circle {
             background: radial-gradient(circle, #001a4d, #000); border: 3px solid #00d4ff; color: #00d4ff;
@@ -124,11 +141,10 @@
         .animate-up { animation: slideUpFade 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
         @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- SADECE İNDİRİLECEK ALAN --- */
+        /* PREMIUM SORU KUTUSU */
         .capture-container { width: 100%; position: relative; background: transparent; margin: 0 auto; }
         .capture-watermark { display: none; width: 100%; text-align: center; font-size: 1.1rem; font-weight: 900; color: rgba(255,255,255,0.4); letter-spacing: 2px; margin-top: 20px; }
-
-        /* PREMIUM SORU KUTUSU */
+        
         .question-box {
             background: linear-gradient(160deg, #07001f 0%, #000000 100%); 
             border: 2px solid #d4af37; border-radius: 20px; 
@@ -139,7 +155,6 @@
 
         .options-grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; }
 
-        /* PREMIUM ŞIKLAR */
         .option-btn {
             display: flex; align-items: stretch; 
             background: linear-gradient(90deg, #000514, #001f3f); 
@@ -179,24 +194,33 @@
         .capturing-mode .letter-box { background-color: #001a4d !important; color: #d4af37 !important; border-right: 2px solid #00d4ff !important; text-shadow: none !important; }
         .capturing-mode .text-box, .capturing-mode .text { color: #ffffff !important; }
 
-        /* --- SEYİRCİ JOKERİ MODALI --- */
-        #audience-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 10, 0.95); backdrop-filter: blur(5px); z-index: 30; justify-content: center; align-items: center; padding: 15px; }
-        .audience-content { background: linear-gradient(160deg, #1a0b2e, #0a001a); border: 2px solid #b83b5e; border-radius: 20px; padding: 30px 20px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(184, 59, 94, 0.4); }
+        /* --- MODAL TASARIMLARI --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 10, 0.95); backdrop-filter: blur(5px); z-index: 40; justify-content: center; align-items: center; padding: 15px; }
+        .modal-content { background: linear-gradient(160deg, #1a0b2e, #0a001a); border-radius: 20px; padding: 30px 20px; width: 100%; max-width: 400px; text-align: center; }
+        
+        .audience-content { border: 2px solid #b83b5e; box-shadow: 0 10px 30px rgba(184, 59, 94, 0.4); }
         .audience-content h3 { color: #f08a5d; margin-bottom: 20px; font-size: 1.4rem; font-weight: 900; }
         .chart-container { display: flex; justify-content: space-around; align-items: flex-end; height: 150px; margin-bottom: 20px; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
         .chart-bar-group { display: flex; flex-direction: column; align-items: center; width: 40px; }
         .chart-bar { width: 100%; background: linear-gradient(to top, #6a2c70, #b83b5e); border-radius: 5px 5px 0 0; transition: height 1s ease; box-shadow: 0 0 10px rgba(184, 59, 94, 0.5); height: 0%; }
         .chart-label { margin-top: 10px; font-weight: 900; color: white; font-size: 1.1rem; }
         .chart-percent { font-size: 0.85rem; margin-bottom: 5px; color: #f9ed69; font-weight: 900; }
-        .btn-close-modal { background: linear-gradient(145deg, #e74c3c, #c0392b); color: white; border: 2px solid #ff7675; padding: 10px 20px; border-radius: 25px; font-weight: 900; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-close-audience { background: linear-gradient(145deg, #e74c3c, #c0392b); color: white; border: 2px solid #ff7675; padding: 10px 20px; border-radius: 25px; font-weight: 900; cursor: pointer; transition: 0.3s; width: 100%; }
+        
+        .about-content { border: 2px solid #00d4ff; box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4); color: white; }
+        .about-content h3 { color: #00d4ff; margin-bottom: 20px; font-size: 1.5rem; font-weight: 900; }
+        .about-stats { margin-bottom: 25px; font-size: 1.1rem; line-height: 1.6; text-align: left; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 15px; border: 1px solid rgba(0, 212, 255, 0.3); max-height: 300px; overflow-y: auto;}
+        .about-stats strong { color: #d4af37; }
+        .btn-close-about { background: linear-gradient(145deg, #00d4ff, #0099cc); color: #000033; border: none; padding: 10px 20px; border-radius: 25px; font-weight: 900; font-size: 1.1rem; cursor: pointer; transition: 0.3s; width: 100%; box-shadow: 0 5px 15px rgba(0,212,255,0.4); }
+        .btn-close-about:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,212,255,0.6); }
 
         /* --- OYUN SONU EKRANI --- */
         #game-over { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 15, 0.95); backdrop-filter: blur(10px); z-index: 20; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
         #game-over h1 { color: #ffaa00; margin-bottom: 10px; font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 900; text-shadow: 0 0 20px rgba(255,170,0,0.6); }
-        #end-reason { color: white; font-size: 1.2rem; margin-bottom: 25px; font-weight: 600; }
+        #end-reason { color: white; font-size: 1.2rem; margin-bottom: 15px; font-weight: 600; }
         #game-over button { padding: 12px 30px; font-size: 1.1rem; cursor: pointer; background: linear-gradient(145deg, #00d4ff, #0099cc); color: #000033; border: none; border-radius: 30px; font-weight: 900; margin-top: 20px; box-shadow: 0 5px 15px rgba(0,212,255,0.4); }
 
-        /* PC (Desktop) Responsive */
+        /* PC Responsive */
         @media (min-width: 768px) {
             #screen-game { flex-direction: row; position: relative; }
             .top-bar-game { position: absolute; top: 0; left: 0; width: 100%; background: transparent; border:none; box-shadow: none; }
@@ -211,8 +235,8 @@
 <body>
 
     <div id="start-screen" class="screen active">
-        <!-- ANA EKRAN ÜST BAR DÜZELTİLDİ -->
-        <div class="top-bar" style="position: relative; width: 100%; background: transparent; border:none; box-shadow:none; justify-content: center;">
+        <div class="top-bar" style="position: relative; width: 100%; background: transparent; border:none; box-shadow:none; justify-content: space-between;">
+            <div class="kasa-badge" id="kasa-main">💰 Kasa: 0 TL</div>
             <button class="action-btn sound-btn" id="sound-toggle-main" onclick="toggleSound()">🔊 Ses Açık</button>
         </div>
         <div class="glass-card">
@@ -220,8 +244,16 @@
             <p>Büyük ödül için bilgini test etmeye hazır mısın?</p>
             <div class="category-grid" id="category-buttons"></div>
         </div>
+        
+        <!-- YENİ: Kasa Yedekleme / Yükleme ve Hakkında Butonları -->
         <div class="exit-container">
+            <button class="btn-about" onclick="hakkindaGoster()">ℹ️ Hakkında</button>
+            <button class="btn-kasa" onclick="kasaIndir()">💾 Kasa İndir</button>
+            <button class="btn-kasa" onclick="document.getElementById('kasa-upload').click()">📂 Kasa Yükle</button>
             <button class="btn-exit" onclick="uyarKapat()">Oyundan Çık</button>
+            
+            <!-- Gizli dosya yükleme inputu -->
+            <input type="file" id="kasa-upload" style="display:none;" accept=".mgy" onchange="kasaYukle(event)">
         </div>
     </div>
 
@@ -230,6 +262,7 @@
             <button class="action-btn" onclick="anaMenuyeDon()">◀ Geri</button>
             <span class="title-text" id="current-category-label">Karışık</span>
             <div class="top-bar-right">
+                <div class="kasa-badge" id="kasa-game">💰 0 TL</div>
                 <button class="action-btn sound-btn" id="sound-toggle-game" onclick="toggleSound()">🔊</button>
                 <button class="action-btn" onclick="soruyuIndir()">📸 Paylaş</button>
             </div>
@@ -282,8 +315,8 @@
     </div>
 
     <!-- SEYİRCİ JOKERİ EKRANI -->
-    <div id="audience-modal">
-        <div class="audience-content">
+    <div id="audience-modal" class="modal-overlay">
+        <div class="modal-content audience-content">
             <h3>Seyirci Oylaması Sonucu</h3>
             <div class="chart-container">
                 <div class="chart-bar-group"><span class="chart-percent" id="perc-A">0%</span><div class="chart-bar" id="bar-A"></div><span class="chart-label">A</span></div>
@@ -291,7 +324,16 @@
                 <div class="chart-bar-group"><span class="chart-percent" id="perc-C">0%</span><div class="chart-bar" id="bar-C"></div><span class="chart-label">C</span></div>
                 <div class="chart-bar-group"><span class="chart-percent" id="perc-D">0%</span><div class="chart-bar" id="bar-D"></div><span class="chart-label">D</span></div>
             </div>
-            <button class="btn-close-modal" onclick="closeAudienceModal()">Kapat ve Seçimi Yap</button>
+            <button class="btn-close-audience" onclick="closeAudienceModal()">Kapat ve Seçimi Yap</button>
+        </div>
+    </div>
+
+    <!-- HAKKINDA MODALI -->
+    <div id="about-modal" class="modal-overlay">
+        <div class="modal-content about-content">
+            <h3>Oyun Hakkında</h3>
+            <div class="about-stats" id="about-stats"></div>
+            <button class="btn-close-about" onclick="hakkindaKapat()">Kapat</button>
         </div>
     </div>
 
@@ -299,29 +341,139 @@
         <h1 id="end-message">Oyun Bitti!</h1>
         <div id="end-reason"></div>
         <h2 id="final-prize">Kazandığınız Ödül: 0 TL</h2>
+        <h3 id="kasa-eklenen" style="color: #2ecc71; font-weight: 800; margin-top:10px;"></h3>
         <button onclick="anaMenuyeDon()">Ana Menüye Dön</button>
     </div>
 
-    <!-- DIŞARIDAN DOSYA YÜKLEME ALANI -->
-    <script>window.tumSorular = [];</script>
+    <script>
+        // --- VERİ KAYBINI (OVERWRITE) ÖNLEYEN SİSTEM ---
+        window._soruHavuzu = [];
+        Object.defineProperty(window, 'tumSorular', {
+            get: function() { return window._soruHavuzu; },
+            set: function(yeniSorular) {
+                if (Array.isArray(yeniSorular)) {
+                    yeniSorular.forEach(soruItem => {
+                        if (!window._soruHavuzu.includes(soruItem)) { window._soruHavuzu.push(soruItem); }
+                    });
+                }
+            },
+            configurable: true
+        });
+    </script>
+    
+    <!-- Soru Dosyalarınız -->
     <script src="sorular/genel_kultur.js"></script>
     <script src="sorular/bilim.js"></script>
     <script src="sorular/tarih.js"></script>
     <script src="sorular/cografya.js"></script>
     <script src="sorular/spor.js"></script>
     <script src="sorular/sinema.js"></script>
-    <script src="sorular/din.js"></script> <!-- DİN KATEGORİSİ EKLENDİ -->
+    <script src="sorular/din.js"></script>
+    <script src="sorular/edebiyat.js"></script>
+    <script src="sorular/bilmece.js"></script>  
+    <script src="sorular/canlilar.js"></script>
 
     <script>
         const oduller = ["500 TL", "1.000 TL", "2.000 TL", "3.000 TL", "5.000 TL", "7.500 TL", "15.000 TL", "30.000 TL", "60.000 TL", "125.000 TL", "250.000 TL", "1.000.000 TL"];
         let suankiSeviye = 1, aktifSoru = null, seciliKategori = "Karışık", tiklanabilir = true;
         let sure = 60, zamanlayiciInterval;
         
-        let joker50Kullanildi = false, jokerDegistirKullanildi = false, jokerCiftKullanildi = false, jokerSeyirciKullanildi = false;
         let ciftCevapAktif = false;
+
+        // --- KASA & JOKER SATIN ALMA SİSTEMİ ---
+        let kasaParasi = parseInt(localStorage.getItem('mugolyoner_kasa')) || 0;
+        
+        const JOKER_PRICES = { '50': 5000, 'degistir': 10000, 'cift': 15000, 'seyirci': 5000 };
+        let jokersUsed = { '50': false, 'degistir': false, 'cift': false, 'seyirci': false };
+        let jokersThisQuestion = { '50': false, 'degistir': false, 'cift': false, 'seyirci': false };
+
+        function kasaGuncelle(miktar) {
+            kasaParasi += miktar;
+            localStorage.setItem('mugolyoner_kasa', kasaParasi);
+            let formatli = kasaParasi.toLocaleString('tr-TR') + " TL";
+            
+            let mBtn = document.getElementById('kasa-main'); if(mBtn) mBtn.innerText = "💰 Kasa: " + formatli;
+            let gBtn = document.getElementById('kasa-game'); if(gBtn) gBtn.innerText = "💰 " + formatli;
+        }
+
+        // --- KASA YEDEKLEME & YÜKLEME SİSTEMİ ---
+        const YEDEK_SECRET = "MuGolyoner_Ozel_Sifre_2024";
+
+        function kasaIndir() {
+            sesCal('tiklama');
+            let suankiPara = kasaParasi;
+            let hash = btoa(suankiPara + YEDEK_SECRET); // Basit Hash Sistemi (Kurcalanmayı önlemek için)
+            let data = JSON.stringify({ miktar: suankiPara, guvenlik: hash });
+            
+            let blob = new Blob([data], { type: "text/plain" });
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.href = url;
+            a.download = "kasa_yedeği.mgy"; 
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            setTimeout(() => { alert("Kasa yedeğiniz indirildi! İleride geri yüklemek için bu 'kasa_yedeği.mgy' dosyasını saklayın."); }, 500);
+        }
+
+        function kasaYukle(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let data = JSON.parse(e.target.result);
+                    let checkHash = btoa(data.miktar + YEDEK_SECRET);
+                    
+                    if (data.guvenlik === checkHash && typeof data.miktar === "number") {
+                        sesCal('dogru');
+                        kasaParasi = data.miktar;
+                        localStorage.setItem('mugolyoner_kasa', kasaParasi);
+                        kasaGuncelle(0); 
+                        alert("✅ Kasa başarıyla geri yüklendi! Mevcut Kasanız: " + kasaParasi.toLocaleString('tr-TR') + " TL");
+                    } else {
+                        sesCal('yanlis');
+                        alert("❌ HATA: Yedek dosyası bozuk veya içeriğiyle oynanmış! Lütfen orijinal dosyayı kullanın.");
+                    }
+                } catch (err) {
+                    sesCal('yanlis');
+                    alert("❌ HATA: Geçersiz dosya formatı seçtiniz.");
+                }
+                event.target.value = ""; // Aynı dosyayı tekrar seçebilmek için sıfırlama
+            };
+            reader.readAsText(file);
+        }
+        // ----------------------------------------
+
+        function setJokerButtonState(type, btnId, defaultText) {
+            let btn = document.getElementById(btnId);
+            if(jokersThisQuestion[type]) {
+                btn.disabled = true;
+                btn.innerText = defaultText;
+                btn.classList.remove('joker-buy');
+            } else if (jokersUsed[type]) {
+                btn.disabled = false;
+                btn.innerText = `💰 ${JOKER_PRICES[type] / 1000}K`;
+                btn.classList.add('joker-buy');
+            } else {
+                btn.disabled = false;
+                btn.innerText = defaultText;
+                btn.classList.remove('joker-buy');
+            }
+        }
+
+        function jokerButonlariniGuncelle() {
+            setJokerButtonState('50', 'btn-joker-50', '%50 Joker');
+            setJokerButtonState('degistir', 'btn-joker-degistir', '🔄 Değiştir');
+            setJokerButtonState('cift', 'btn-joker-cift', 'x2 Cevap');
+            setJokerButtonState('seyirci', 'btn-joker-seyirci', '👥 Seyirci');
+        }
 
         // SORU HAFIZASI
         let sorulmusSorular = [];
+        try { sorulmusSorular = JSON.parse(localStorage.getItem('mugolyoner_sorulmus')) || []; } catch(e) {}
+        function kaydetSorulmus() { try { localStorage.setItem('mugolyoner_sorulmus', JSON.stringify(sorulmusSorular)); } catch(e) {} }
 
         let sesAcik = true;
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -357,37 +509,38 @@
             }
         }
 
-        // DEĞİŞTİRİLDİ: Oyundan çık butonu tarayıcının önceki sayfasına dönecek
-        function uyarKapat() { 
-            window.history.back();
-            
-            // Eğer sayfa yeni sekmede açılmışsa ve geri gidilemiyorsa fallback olarak sekmeyi kapatmayı dener.
-            setTimeout(() => {
-                window.close();
-            }, 300);
+        function uyarKapat() { window.history.back(); setTimeout(() => { window.close(); }, 300); }
+
+        function hakkindaGoster() {
+            sesCal('tiklama');
+            let statsDiv = document.getElementById("about-stats");
+            if (!window.tumSorular || window.tumSorular.length === 0) {
+                statsDiv.innerHTML = "<p style='color:#ff4444; text-align:center; font-weight:bold;'>Soru veritabanı yüklenemedi.</p>";
+            } else {
+                let toplamSoru = window.tumSorular.length;
+                let html = `<div style="text-align:center; font-size:1.3rem; margin-bottom:10px;"><strong>Toplam Soru:</strong> <span style="color:white">${toplamSoru}</span></div><hr style="border:1px solid rgba(0,212,255,0.2); margin-bottom:15px;">`;
+                let katSayilari = {};
+                window.tumSorular.forEach(s => { katSayilari[s.kategori] = (katSayilari[s.kategori] || 0) + 1; });
+                let katAnahtarlar = Object.keys(katSayilari).sort();
+                katAnahtarlar.forEach(k => { html += `<div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom:1px dashed rgba(255,255,255,0.1); padding-bottom:5px;"><span>${k}:</span> <strong>${katSayilari[k]} Soru</strong></div>`; });
+                statsDiv.innerHTML = html;
+            }
+            document.getElementById("about-modal").style.display = "flex";
         }
 
+        function hakkindaKapat() { sesCal('tiklama'); document.getElementById("about-modal").style.display = "none"; }
+
         function kategorileriYukle() {
-            const btnContainer = document.getElementById("category-buttons");
-            btnContainer.innerHTML = "";
-            
+            const btnContainer = document.getElementById("category-buttons"); btnContainer.innerHTML = "";
             if(!window.tumSorular || window.tumSorular.length === 0) {
-                btnContainer.innerHTML = "<p style='color:#ff4444; font-weight:bold;'>Sorular yüklenemedi! js dosyalarını kontrol edin.</p>";
-                return;
+                btnContainer.innerHTML = "<p style='color:#ff4444; font-weight:bold;'>Sorular yüklenemedi! js dosyalarını kontrol edin.</p>"; return;
             }
-
             const kategoriler = [...new Set(window.tumSorular.map(s => s.kategori))];
-
-            let mixBtn = document.createElement("button");
-            mixBtn.innerText = "Karışık"; mixBtn.className = "category-btn btn-mixed";
-            mixBtn.onclick = () => oyunuBaslat("Karışık");
-            btnContainer.appendChild(mixBtn);
-
+            let mixBtn = document.createElement("button"); mixBtn.innerText = "Karışık"; mixBtn.className = "category-btn btn-mixed";
+            mixBtn.onclick = () => oyunuBaslat("Karışık"); btnContainer.appendChild(mixBtn);
             kategoriler.forEach(kat => {
-                let btn = document.createElement("button");
-                btn.innerText = kat; btn.className = "category-btn";
-                btn.onclick = () => oyunuBaslat(kat);
-                btnContainer.appendChild(btn);
+                let btn = document.createElement("button"); btn.innerText = kat; btn.className = "category-btn";
+                btn.onclick = () => oyunuBaslat(kat); btnContainer.appendChild(btn);
             });
         }
 
@@ -398,22 +551,16 @@
             else if (kategori === "Spor") gradient = "linear-gradient(-45deg, #002200, #004d00, #001a00, #000000)";
             else if (kategori === "Coğrafya") gradient = "linear-gradient(-45deg, #002626, #004d4d, #001a1a, #000000)";
             else if (kategori === "Sinema / TV") gradient = "linear-gradient(-45deg, #330000, #660000, #1a0000, #000000)";
-            else if (kategori === "Din") gradient = "linear-gradient(-45deg, #002b18, #004d2c, #001a0f, #000000)"; // DİN KATEGORİSİ ARKAPLANI
-            
-            document.body.style.background = gradient;
-            document.body.style.backgroundSize = "400% 400%";
+            else if (kategori === "Din") gradient = "linear-gradient(-45deg, #002b18, #004d2c, #001a0f, #000000)"; 
+            document.body.style.background = gradient; document.body.style.backgroundSize = "400% 400%";
         }
 
         function oyunuBaslat(kategori) {
             sesCal('tiklama');
-            seciliKategori = kategori; suankiSeviye = 1;
-            arkaplanAyarla(kategori);
+            seciliKategori = kategori; suankiSeviye = 1; arkaplanAyarla(kategori);
             
-            joker50Kullanildi = false; jokerDegistirKullanildi = false; jokerCiftKullanildi = false; jokerSeyirciKullanildi = false; ciftCevapAktif = false;
-            document.getElementById("btn-joker-50").disabled = false;
-            document.getElementById("btn-joker-degistir").disabled = false;
-            document.getElementById("btn-joker-cift").disabled = false;
-            document.getElementById("btn-joker-seyirci").disabled = false;
+            jokersUsed = { '50': false, 'degistir': false, 'cift': false, 'seyirci': false };
+            jokerButonlariniGuncelle();
 
             document.getElementById("current-category-label").innerText = kategori;
             document.getElementById("start-screen").classList.remove("active");
@@ -430,6 +577,7 @@
             document.getElementById("screen-game").classList.remove("active");
             document.getElementById("game-over").style.display = "none";
             document.getElementById("start-screen").classList.add("active");
+            kasaGuncelle(0); 
         }
 
         function odulAgaciniOlustur() {
@@ -444,29 +592,21 @@
 
         function sureyiBaslat() {
             clearInterval(zamanlayiciInterval); sure = 60; 
-            let timerEl = document.getElementById("timer");
-            let barEl = document.getElementById("progress-bar");
-            
-            timerEl.innerText = sure; 
-            timerEl.classList.remove("timer-warning");
-            barEl.style.width = "100%";
-            barEl.style.background = "linear-gradient(90deg, #00d4ff, #0072ff)";
+            let timerEl = document.getElementById("timer"); let barEl = document.getElementById("progress-bar");
+            timerEl.innerText = sure; timerEl.classList.remove("timer-warning");
+            barEl.style.width = "100%"; barEl.style.background = "linear-gradient(90deg, #00d4ff, #0072ff)";
 
             zamanlayiciInterval = setInterval(() => {
                 sure--; timerEl.innerText = sure;
                 let yuzde = (sure / 60) * 100; barEl.style.width = yuzde + "%";
 
-                if (sure <= 10) {
-                    timerEl.classList.add("timer-warning");
-                    barEl.style.background = "linear-gradient(90deg, #ff4444, #cc0000)"; 
-                }
+                if (sure <= 10) { timerEl.classList.add("timer-warning"); barEl.style.background = "linear-gradient(90deg, #ff4444, #cc0000)"; }
                 if (sure <= 0) { clearInterval(zamanlayiciInterval); sesCal('yanlis'); oyunuBitir(false, "SÜRENİZ BİTTİ!"); }
             }, 1000);
         }
 
         function AnimasyonlariTetikle() {
-            let qBox = document.getElementById('question-box');
-            let oGrid = document.querySelector('.options-grid');
+            let qBox = document.getElementById('question-box'), oGrid = document.querySelector('.options-grid');
             qBox.classList.remove('animate-up'); oGrid.classList.remove('animate-up');
             void qBox.offsetWidth; 
             qBox.classList.add('animate-up'); oGrid.classList.add('animate-up');
@@ -474,6 +614,9 @@
 
         function soruyuYukle(jokerKullanildiMi = false) {
             tiklanabilir = true; ciftCevapAktif = false; 
+            
+            jokersThisQuestion = { '50': false, 'degistir': false, 'cift': false, 'seyirci': false };
+            jokerButonlariniGuncelle();
             
             document.querySelectorAll('.option-btn').forEach(btn => { btn.classList.remove('selected', 'correct', 'wrong', 'hidden'); });
             document.querySelectorAll('.prize-item').forEach(item => item.classList.remove('active'));
@@ -487,16 +630,18 @@
             let havuz = window.tumSorular;
             if (seciliKategori !== "Karışık") { havuz = window.tumSorular.filter(s => s.kategori === seciliKategori); }
 
-            let oSeviye = havuz.filter(s => s.seviye === suankiSeviye);
+            let oSeviye = havuz.filter(s => s.seviye == suankiSeviye);
             if (oSeviye.length === 0) oSeviye = havuz;
 
             let sorulmamislar = oSeviye.filter(s => !sorulmusSorular.includes(s.soru));
-            if (sorulmamislar.length === 0) { sorulmamislar = oSeviye; }
+            if (sorulmamislar.length === 0) { 
+                let seviyeSorulari = oSeviye.map(s => s.soru);
+                sorulmusSorular = sorulmusSorular.filter(q => !seviyeSorulari.includes(q));
+                kaydetSorulmus(); sorulmamislar = oSeviye; 
+            }
 
             let yeniSoru = sorulmamislar[Math.floor(Math.random() * sorulmamislar.length)];
-            
-            sorulmusSorular.push(yeniSoru.soru);
-            aktifSoru = yeniSoru;
+            sorulmusSorular.push(yeniSoru.soru); kaydetSorulmus(); aktifSoru = yeniSoru;
 
             document.getElementById('q-text-span').innerText = aktifSoru.soru;
             document.querySelector('#btn-A .text').innerText = aktifSoru.secenekler.A;
@@ -509,28 +654,54 @@
 
         // --- JOKERLER ---
         function joker50Kullan() {
-            if (!tiklanabilir || joker50Kullanildi) return;
-            sesCal('tiklama'); joker50Kullanildi = true; document.getElementById("btn-joker-50").disabled = true;
-            let yanlislar = ['A', 'B', 'C', 'D'].filter(s => s !== aktifSoru.dogruCevap).sort(() => Math.random() - 0.5); 
-            document.getElementById(`btn-${yanlislar[0]}`).classList.add('hidden');
-            document.getElementById(`btn-${yanlislar[1]}`).classList.add('hidden');
+            if (!tiklanabilir || jokersThisQuestion['50']) return;
+            if (jokersUsed['50']) {
+                if (kasaParasi < JOKER_PRICES['50']) { alert("Kasanızda yeterli paranız yok! Gerekli Miktar: " + (JOKER_PRICES['50'].toLocaleString('tr-TR')) + " TL"); return; }
+                kasaGuncelle(-JOKER_PRICES['50']);
+            }
+            
+            sesCal('tiklama'); jokersUsed['50'] = true; jokersThisQuestion['50'] = true;
+            jokerButonlariniGuncelle();
+            
+            let yanlislar = ['A', 'B', 'C', 'D'].filter(s => s !== aktifSoru.dogruCevap && !document.getElementById(`btn-${s}`).classList.contains('hidden')).sort(() => Math.random() - 0.5); 
+            if(yanlislar.length >= 2) {
+                document.getElementById(`btn-${yanlislar[0]}`).classList.add('hidden');
+                document.getElementById(`btn-${yanlislar[1]}`).classList.add('hidden');
+            }
         }
 
         function jokerDegistirKullan() {
-            if (!tiklanabilir || jokerDegistirKullanildi) return;
-            sesCal('tiklama'); jokerDegistirKullanildi = true; document.getElementById("btn-joker-degistir").disabled = true;
+            if (!tiklanabilir || jokersThisQuestion['degistir']) return;
+            if (jokersUsed['degistir']) {
+                if (kasaParasi < JOKER_PRICES['degistir']) { alert("Kasanızda yeterli paranız yok! Gerekli Miktar: " + (JOKER_PRICES['degistir'].toLocaleString('tr-TR')) + " TL"); return; }
+                kasaGuncelle(-JOKER_PRICES['degistir']);
+            }
+
+            sesCal('tiklama'); jokersUsed['degistir'] = true; jokersThisQuestion['degistir'] = true;
             soruyuYukle(true); 
         }
 
         function jokerCiftCevapKullan() {
-            if (!tiklanabilir || jokerCiftKullanildi) return;
-            sesCal('tiklama'); jokerCiftKullanildi = true; document.getElementById("btn-joker-cift").disabled = true;
-            ciftCevapAktif = true; alert("Çift Cevap Hakkı Aktif! İlk tahmininiz yanlış çıkarsa 1 hakkınız daha olacak.");
+            if (!tiklanabilir || jokersThisQuestion['cift']) return;
+            if (jokersUsed['cift']) {
+                if (kasaParasi < JOKER_PRICES['cift']) { alert("Kasanızda yeterli paranız yok! Gerekli Miktar: " + (JOKER_PRICES['cift'].toLocaleString('tr-TR')) + " TL"); return; }
+                kasaGuncelle(-JOKER_PRICES['cift']);
+            }
+
+            sesCal('tiklama'); jokersUsed['cift'] = true; jokersThisQuestion['cift'] = true;
+            ciftCevapAktif = true; jokerButonlariniGuncelle();
+            alert("Çift Cevap Hakkı Aktif! İlk tahmininiz yanlış çıkarsa 1 hakkınız daha olacak.");
         }
 
         function jokerSeyirciKullan() {
-            if (!tiklanabilir || jokerSeyirciKullanildi) return;
-            sesCal('tiklama'); jokerSeyirciKullanildi = true; document.getElementById("btn-joker-seyirci").disabled = true;
+            if (!tiklanabilir || jokersThisQuestion['seyirci']) return;
+            if (jokersUsed['seyirci']) {
+                if (kasaParasi < JOKER_PRICES['seyirci']) { alert("Kasanızda yeterli paranız yok! Gerekli Miktar: " + (JOKER_PRICES['seyirci'].toLocaleString('tr-TR')) + " TL"); return; }
+                kasaGuncelle(-JOKER_PRICES['seyirci']);
+            }
+
+            sesCal('tiklama'); jokersUsed['seyirci'] = true; jokersThisQuestion['seyirci'] = true;
+            jokerButonlariniGuncelle();
             clearInterval(zamanlayiciInterval); 
 
             let dCevap = aktifSoru.dogruCevap, secenekler = ['A', 'B', 'C', 'D'], yuzdeler = {A:0, B:0, C:0, D:0};
@@ -589,12 +760,24 @@
             let finalEkrani = document.getElementById('game-over');
             finalEkrani.style.display = 'flex'; document.getElementById('end-reason').innerText = sebepYazisi;
 
+            let kazanilanOdulStr = "0 TL";
+
             if (kazandi) {
-                document.getElementById('end-message').innerText = "TEBRİKLER! MİLYONER OLDUNUZ!"; document.getElementById('final-prize').innerText = `Kazanç: ${oduller[11]}`;
+                kazanilanOdulStr = oduller[11];
+                document.getElementById('end-message').innerText = "TEBRİKLER! MİLYONER OLDUNUZ!"; 
+                document.getElementById('final-prize').innerText = `Kazanılan Ödül: ${kazanilanOdulStr}`;
             } else {
                 document.getElementById('end-message').innerText = "ELENDİNİZ.";
-                let kazanilan = suankiSeviye > 7 ? oduller[6] : (suankiSeviye > 2 ? oduller[1] : "0 TL");
-                document.getElementById('final-prize').innerText = `Garanti Edilen Ödül: ${kazanilan}`;
+                kazanilanOdulStr = suankiSeviye > 7 ? oduller[6] : (suankiSeviye > 2 ? oduller[1] : "0 TL");
+                document.getElementById('final-prize').innerText = `Garanti Edilen Ödül: ${kazanilanOdulStr}`;
+            }
+
+            let eklenecekMiktar = parseInt(kazanilanOdulStr.replace(/[^0-9]/g, '')) || 0;
+            if (eklenecekMiktar > 0) {
+                kasaGuncelle(eklenecekMiktar);
+                document.getElementById('kasa-eklenen').innerText = `Kasanıza Eklendi: +${eklenecekMiktar.toLocaleString('tr-TR')} TL`;
+            } else {
+                document.getElementById('kasa-eklenen').innerText = "";
             }
         }
 
@@ -623,7 +806,10 @@
             });
         }
 
-        window.onload = () => { setTimeout(kategorileriYukle, 300); };
+        window.onload = () => { 
+            setTimeout(kategorileriYukle, 300); 
+            kasaGuncelle(0); 
+        };
     </script>
 </body>
 </html>
