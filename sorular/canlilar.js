@@ -1,0 +1,67 @@
+window.tumSorular = window.tumSorular || [];
+
+window.tumSorular.push(
+    // 1-25: Memeliler ve Türkiye'nin İkonik Hayvanları
+    { seviye: 1, kategori: "Canlılar", soru: "Farklı renkli gözleriyle ünlü, Van ilimize özgü kedi türü hangisidir?", secenekler: { A: "Ankara Kedisi", B: "Van Kedisi", C: "Tekir", D: "Siyam" }, dogruCevap: "B" },
+    { seviye: 2, kategori: "Canlılar", soru: "Türkiye'nin en büyük vahşi kedi türü olan ve nesli tehlike altında bulunan canlı hangisidir?", secenekler: { A: "Anadolu Parsı", B: "Vaşak", C: "Sırtlan", D: "Aslan" }, dogruCevap: "A" },
+    { seviye: 3, kategori: "Canlılar", soru: "Denizli ilimizin simgesi haline gelen, uzun ötüşüyle bilinen canlı hangisidir?", secenekler: { A: "Tavus Kuşu", B: "Denizli Horozu", C: "Güvercin", D: "Keklik" }, dogruCevap: "B" },
+    { seviye: 4, kategori: "Canlılar", soru: "Şanlıurfa Birecik'te koruma altına alınan, nesli tükenme tehlikesindeki kuş türü?", secenekler: { A: "Kelaynak", B: "Pelikan", C: "Flamingo", D: "Turna" }, dogruCevap: "A" },
+    { seviye: 5, kategori: "Canlılar", soru: "Yumurtalarını Akdeniz sahillerine (özellikle İztuzu) bırakan deniz kaplumbağası?", secenekler: { A: "Caretta Caretta", B: "Nil Kaplumbağası", C: "Kara Kaplumbağası", D: "Deri Sırtlı" }, dogruCevap: "A" },
+    { seviye: 6, kategori: "Canlılar", soru: "Ankara'ya özgü, uzun tüyleriyle bilinen keçi türü hangisidir?", secenekler: { A: "Tiftik Keçisi", B: "Dağ Keçisi", C: "Kıl Keçisi", D: "Yaban Keçisi" }, dogruCevap: "A" },
+    { seviye: 7, kategori: "Canlılar", soru: "Türkiye'nin tek endemik deniz memelisi olan ve Akdeniz'de yaşayan canlı?", secenekler: { A: "Akdeniz Foku", B: "Yunus", C: "Balina", D: "Deniz Fili" }, dogruCevap: "A" },
+    { seviye: 8, kategori: "Canlılar", soru: "Kangallarıyla meşhur olan ilimiz hangisidir?", secenekler: { A: "Sivas", B: "Kayseri", C: "Yozgat", D: "Tokat" }, dogruCevap: "A" },
+    { seviye: 9, kategori: "Canlılar", soru: "Sadece Aksaray çevresinde yetişen ve dünyaca ünlü çoban köpeği türü?", secenekler: { A: "Kangal", B: "Malaklı", C: "Akbaş", D: "Çatalburun" }, dogruCevap: "B" },
+    { seviye: 10, kategori: "Canlılar", soru: "Tarsus'a özgü, avcılık yetenekleriyle bilinen köpek türü hangisidir?", secenekler: { A: "Çatalburun", B: "Dogo", C: "Terrier", D: "Kangal" }, dogruCevap: "A" },
+    { seviye: 11, kategori: "Canlılar", soru: "Eskişehir'de koruma altında olan, beyaz tüyleriyle ünlü çoban köpeği?", secenekler: { A: "Akbaş", B: "Karabaş", C: "Kangal", D: "Bulldog" }, dogruCevap: "A" },
+    { seviye: 12, kategori: "Canlılar", soru: "Türkiye'deki en büyük kemirgen türü hangisidir?", secenekler: { A: "Hint Oku", B: "Kunduz", C: "Oklu Kirpi", D: "Tarla Faresi" }, dogruCevap: "C" },
+    { seviye: 13, kategori: "Canlılar", soru: "Anadolu yaban koyunu en çok hangi ilimizde bulunur?", secenekler: { A: "Konya (Bozdağlar)", B: "Ankara", C: "Niğde", D: "Kayseri" }, dogruCevap: "A" },
+    { seviye: 14, kategori: "Canlılar", soru: "Doğu Anadolu'da yaşayan ve 'dağ faresi' olarak da bilinen canlı?", secenekler: { A: "Kör Fare", B: "Avurtlak", C: "Yediuyur", D: "Dağ Tavşanı" }, dogruCevap: "B" },
+    { seviye: 15, kategori: "Canlılar", soru: "Türkiye'nin en yaygın geyik türü hangisidir?", secenekler: { A: "Kızıl Geyik", B: "Alageyik", C: "Karaca", D: "Sığın" }, dogruCevap: "A" },
+
+    // 26-50: Türkiye Endemik Bitkileri ve Doğa
+    { seviye: 26, kategori: "Canlılar", soru: "Sadece Muğla Köyceğiz çevresinde yetişen dünyaca ünlü ağaç?", secenekler: { A: "Sığla (Günlük)", B: "Çınar", C: "Sedir", D: "Ladin" }, dogruCevap: "A" },
+    { seviye: 27, kategori: "Canlılar", soru: "Dünyada sadece Şanlıurfa Halfeti'de yetişen çiçek hangisidir?", secenekler: { A: "Kara Gül", B: "Lale", C: "Nergis", D: "Papatya" }, dogruCevap: "A" },
+    { seviye: 28, kategori: "Canlılar", soru: "Antalya ve çevresinde yetişen, boyu 40 metreyi bulan anıt ağaç türü?", secenekler: { A: "Lübnan Sediri", B: "Sarıçam", C: "Meşe", D: "Gürgen" }, dogruCevap: "A" },
+    { seviye: 29, kategori: "Canlılar", soru: "İstanbul'un simgesi olan ve her yıl festivali yapılan çiçek?", secenekler: { A: "Lale", B: "Erguvan", C: "Gül", D: "Karanfil" }, dogruCevap: "A" },
+    { seviye: 30, kategori: "Canlılar", soru: "Türkiye'de yetişen ve dondurma yapımında kullanılan bitki kökü?", secenekler: { A: "Salep (Orkide)", B: "Zencefil", C: "Tarçın", D: "Zerdeçal" }, dogruCevap: "A" },
+    { seviye: 31, kategori: "Canlılar", soru: "Kaz Dağları'na özgü endemik göknar türü hangisidir?", secenekler: { A: "Kazdağı Göknarı", B: "Ladin", C: "Ardıç", D: "Kızılçam" }, dogruCevap: "A" },
+    { seviye: 32, kategori: "Canlılar", soru: "Türkiye'nin en çok orman alanına sahip bölgesi hangisidir?", secenekler: { A: "Karadeniz", B: "Ege", C: "Akdeniz", D: "Marmara" }, dogruCevap: "A" },
+    { seviye: 33, kategori: "Canlılar", soru: "Mantar türleri içinde en değerli olan ve Anadolu'da da yetişen tür?", secenekler: { A: "Trüf Mantarı", B: "Kuzu Göbeği", C: "İstiridye", D: "Kültür Mantarı" }, dogruCevap: "A" },
+    { seviye: 34, kategori: "Canlılar", soru: "Çukurova'nın en önemli tarımsal bitkisi (canlısı)?", secenekler: { A: "Pamuk", B: "Buğday", C: "Arpa", D: "Pirinç" }, dogruCevap: "A" },
+    { seviye: 35, kategori: "Canlılar", soru: "Anadolu lalesi olarak da bilinen ve koruma altında olan bitki?", secenekler: { A: "Ters Lale", B: "Ağlayan Gelin", C: "Manisa Lalesi", D: "Hepsi" }, dogruCevap: "D" },
+
+    // 51-75: Kuşlar, Böcekler ve Sürüngenler (Türkiye Odaklı)
+    { seviye: 51, kategori: "Canlılar", soru: "Türkiye'nin en büyük yırtıcı kuşu hangisidir?", secenekler: { A: "Kızıl Akbaba", B: "Kaya Kartalı", C: "Şahin", D: "Atmaca" }, dogruCevap: "A" },
+    { seviye: 52, kategori: "Canlılar", soru: "Baharın müjdecisi olarak bilinen ve çatılara yuva yapan kuş?", secenekler: { A: "Leylek", B: "Kırlangıç", C: "Saka", D: "Serçe" }, dogruCevap: "A" },
+    { seviye: 53, kategori: "Canlılar", soru: "Türkiye'deki en zehirli yılan türü hangisidir?", secenekler: { A: "Koca Engerek", B: "Su Yılanı", C: "Kör Yılan", D: "Kara Yılan" }, dogruCevap: "A" },
+    { seviye: 54, kategori: "Canlılar", soru: "Ege ve Akdeniz sahillerinde görülen, şarkılara konu olan canlı?", secenekler: { A: "Ağustos Böceği", B: "Ateş Böceği", C: "Arı", D: "Kelebek" }, dogruCevap: "A" },
+    { seviye: 55, kategori: "Canlılar", soru: "Sadece gökyüzünde uyuyan ve ömrünün çoğunu uçarak geçiren kuş?", secenekler: { A: "Ebubekil (Sağan)", B: "Martı", C: "Kartal", D: "Doğan" }, dogruCevap: "A" },
+    { seviye: 56, kategori: "Canlılar", soru: "Türkiye'de üretilen en kaliteli bal hangi canlıdan elde edilir?", secenekler: { A: "Anzer Arısı", B: "Eşek Arısı", C: "Bombus Arısı", D: "Yaban Arısı" }, dogruCevap: "A" },
+
+    // 76-100: Genel Biyoloji ve Dünya Canlıları
+    { seviye: 76, kategori: "Canlılar", soru: "Dünyanın en büyük memeli hayvanı hangisidir?", secenekler: { A: "Mavi Balina", B: "Fil", C: "Zürafa", D: "Balina Köpekbalığı" }, dogruCevap: "A" },
+    { seviye: 77, kategori: "Canlılar", soru: "Kendi ağırlığının 50 katını taşıyabilen böcek?", secenekler: { A: "Karınca", B: "Arı", C: "Sinek", D: "Örümcek" }, dogruCevap: "A" },
+    { seviye: 78, kategori: "Canlılar", soru: "Kan grubu olmayan ve her şeyi yiyebilen deniz canlısı?", secenekler: { A: "Deniz Yıldızı", B: "Ahtapot", C: "Mürekkep Balığı", D: "Yengeç" }, dogruCevap: "A" },
+    { seviye: 79, kategori: "Canlılar", soru: "Işık kirliliğinden en çok etkilenen, ışık saçan böcek?", secenekler: { A: "Ateş Böceği", B: "Uğur Böceği", C: "Çekirge", D: "Hamam Böceği" }, dogruCevap: "A" },
+    { seviye: 80, kategori: "Canlılar", soru: "Vücudunda kemik yerine kıkırdak bulunan deniz avcısı?", secenekler: { A: "Köpekbalığı", B: "Balina", C: "Yunus", D: "Palamut" }, dogruCevap: "A" },
+    { seviye: 81, kategori: "Canlılar", soru: "Dünyanın en hızlı koşan kara hayvanı?", secenekler: { A: "Çita", B: "Aslan", C: "Tazı", D: "At" }, dogruCevap: "A" },
+    { seviye: 82, kategori: "Canlılar", soru: "Renk değiştirme özelliğiyle bilinen sürüngen?", secenekler: { A: "Bukalemun", B: "İguana", C: "Kertenkele", D: "Timsah" }, dogruCevap: "A" },
+    { seviye: 83, kategori: "Canlılar", soru: "Yumurta ile çoğalan tek memeli türü?", secenekler: { A: "Ornitorenk", B: "Kanguru", C: "Koala", D: "Yarasa" }, dogruCevap: "A" },
+    { seviye: 84, kategori: "Canlılar", soru: "Gözleri kafasından büyük olan gece avcısı kuş?", secenekler: { A: "Baykuş", B: "Atmaca", C: "Kartal", D: "Kuzgun" }, dogruCevap: "A" },
+    { seviye: 85, kategori: "Canlılar", soru: "Dünyanın en uzun ömürlü canlısı olarak bilinen denizanası türü?", secenekler: { A: "Ölümsüz Denizanası", B: "Mavi Denizanası", C: "Kutu Denizanası", D: "Aslan Yelesi" }, dogruCevap: "A" },
+    { seviye: 86, kategori: "Canlılar", soru: "Bitkilerin nefes almasını sağlayan yaprak bölgesi?", secenekler: { A: "Stoma", B: "Kök", C: "Gövde", D: "Çiçek" }, dogruCevap: "A" },
+    { seviye: 87, kategori: "Canlılar", soru: "Arıların bal yapmak için çiçeklerden topladığı sıvı?", secenekler: { A: "Nektar", B: "Polen", C: "Su", D: "Reçine" }, dogruCevap: "A" },
+    { seviye: 88, kategori: "Canlılar", soru: "Fotosentez yapabilen tek hücreli canlılara örnek?", secenekler: { A: "Algler", B: "Bakteriler", C: "Virüsler", D: "Mantarlar" }, dogruCevap: "A" },
+    { seviye: 89, kategori: "Canlılar", soru: "Kalbi vücudunun dışında olan tek canlı?", secenekler: { A: "Sinek Kuşu", B: "Mavi Balina", C: "Karınca", D: "Yoktur" }, dogruCevap: "D" },
+    { seviye: 90, kategori: "Canlılar", soru: "Kış uykusuna yatan bir hayvan örneği?", secenekler: { A: "Ayı", B: "Köpek", C: "At", D: "Zürafa" }, dogruCevap: "A" },
+    { seviye: 91, kategori: "Canlılar", soru: "Bitkilerde yeşil rengi veren madde hangisidir?", secenekler: { A: "Klorofil", B: "Hemoglobin", C: "Melanin", D: "Keratin" }, dogruCevap: "A" },
+    { seviye: 92, kategori: "Canlılar", soru: "Dünyanın en küçük kuşu hangisidir?", secenekler: { A: "Arı Sinek Kuşu", B: "Serçe", C: "Saka", D: "Güvercin" }, dogruCevap: "A" },
+    { seviye: 93, kategori: "Canlılar", soru: "Hangi canlı türü sosyal bir topluluk (koloni) halinde yaşamaz?", secenekler: { A: "Kaplan", B: "Karınca", C: "Arı", D: "Termit" }, dogruCevap: "A" },
+    { seviye: 94, kategori: "Canlılar", soru: "İnsan vücudundaki en büyük organ hangisidir?", secenekler: { A: "Deri", B: "Karaciğer", C: "Akciğer", D: "Beyin" }, dogruCevap: "A" },
+    { seviye: 95, kategori: "Canlılar", soru: "Böceklerin kaç adet bacağı bulunur?", secenekler: { A: "6", B: "8", C: "4", D: "10" }, dogruCevap: "A" },
+    { seviye: 96, kategori: "Canlılar", soru: "Sürüngenlerin vücudu ne ile kaplıdır?", secenekler: { A: "Pullar", B: "Tüyler", C: "Kıl", D: "Deri" }, dogruCevap: "A" },
+    { seviye: 97, kategori: "Canlılar", soru: "Balıklar hangi organları ile solunum yaparlar?", secenekler: { A: "Solungaç", B: "Akciğer", C: "Deri", D: "Burun" }, dogruCevap: "A" },
+    { seviye: 98, kategori: "Canlılar", soru: "Hem karada hem suda yaşayabilen canlı grubu?", secenekler: { A: "Amfibiler", B: "Memeliler", C: "Kuşlar", D: "Balıklar" }, dogruCevap: "A" },
+    { seviye: 99, kategori: "Canlılar", soru: "Bitkilerin güneş ışığını enerjiye dönüştürmesi olayına ne denir?", secenekler: { A: "Fotosentez", B: "Solunum", C: "Terleme", D: "Boşaltım" }, dogruCevap: "A" },
+    { seviye: 100, kategori: "Canlılar", soru: "Doğadaki en büyük hücre hangisidir?", secenekler: { A: "Devekuşu Yumurtası", B: "Sinir Hücresi", C: "Yumurta Hücresi", D: "Bakteri" }, dogruCevap: "A" }
+);
