@@ -6,6 +6,13 @@
     <meta name="theme-color" content="#030712">
     <title>Kelime Puzzle</title>
     
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1880946354382681" crossorigin="anonymous"></script>
+    <!-- AMP Otomatik Reklamlar -->
+    <script async custom-element="amp-auto-ads"
+            src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+
     <!-- HARİCİ KELİME DOSYASINI BAĞLADIK -->
     <script src="kelime/kelimeler-kategorili.js"></script>
 
@@ -197,6 +204,9 @@
     </style>
 </head>
 <body>
+<amp-auto-ads type="adsense"
+        data-ad-client="ca-pub-1880946354382681">
+</amp-auto-ads>
 
     <div class="universe-bg" id="parallax-bg">
         <div class="nebula" id="parallax-nebula"></div>
@@ -266,7 +276,13 @@
             <p style="color:#94a3b8; font-weight:700; letter-spacing:3px; font-size:0.7rem; margin-top:10px;">RESPONSIVE EDITION</p>
             <p id="saved-info" style="color:var(--gold); font-size:0.7rem; margin-top:5px; height:20px;"></p>
             <button class="btn-primary" onclick="startGame()">BAŞLA</button>
-            <button class="btn-primary btn-outline" onclick="resetProgress()">İlerlemeyi Sıfırla</button>
+            <div style="display:flex; gap:8px; margin-top:10px;">
+                <button class="btn-primary btn-outline" style="flex:1; margin-top:0; font-size:0.75rem; padding:10px 6px;" onclick="exportSave()">📤 Dışa Aktar</button>
+                <button class="btn-primary btn-outline" style="flex:1; margin-top:0; font-size:0.75rem; padding:10px 6px;" onclick="document.getElementById('import-file').click()">📥 İçe Aktar</button>
+            </div>
+            <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importSave(event)">
+            <button class="btn-primary btn-outline" style="margin-top:8px; font-size:0.75rem;" onclick="resetProgress()">🗑️ İlerlemeyi Sıfırla</button>
+            <p id="vault-msg" style="color:#10b981; font-size:0.65rem; margin-top:6px; min-height:16px; transition:opacity 0.5s;"></p>
         </div>
     </div>
 
@@ -365,7 +381,61 @@
         }
     }
     function saveProgress() { localStorage.setItem('crystalWordSaveUlt', JSON.stringify({ level: currentLevelIdx, totalScore: totalScore })); }
-    function resetProgress() { localStorage.removeItem('crystalWordSaveUlt'); currentLevelIdx = 0; totalScore = 0; document.getElementById('saved-info').textContent = "Kayıt Silindi"; }
+    function resetProgress() { localStorage.removeItem('crystalWordSaveUlt'); currentLevelIdx = 0; totalScore = 0; document.getElementById('saved-info').textContent = "Kayıt Silindi"; showVaultMsg("Kayıt silindi.", "#f43f5e"); }
+
+    /* ── KASA: Dışa / İçe Aktar ── */
+    function buildSaveData() {
+        return {
+            _info: "Kelime Puzzle Kayıt Dosyası",
+            _version: 1,
+            _date: new Date().toLocaleString('tr-TR'),
+            level: currentLevelIdx,
+            totalScore: totalScore
+        };
+    }
+
+    function exportSave() {
+        const data = buildSaveData();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const ts = new Date().toISOString().slice(0,10);
+        a.href = url; a.download = `kelime-puzzle-kayit-${ts}.json`;
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a); URL.revokeObjectURL(url);
+        showVaultMsg("✅ Kayıt dosyası indirildi!", "#10b981");
+    }
+
+    function importSave(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if(typeof data.level !== 'number' || typeof data.totalScore !== 'number')
+                    throw new Error("Geçersiz kayıt formatı");
+                currentLevelIdx = data.level || 0;
+                totalScore = data.totalScore || 0;
+                saveProgress();
+                document.getElementById('saved-info').textContent = `Kayıt: Seviye ${currentLevelIdx + 1} - Puan: ${totalScore}`;
+                showVaultMsg(`✅ Seviye ${currentLevelIdx + 1} · Puan ${totalScore} yüklendi!`, "#10b981");
+            } catch(err) {
+                showVaultMsg("❌ Geçersiz veya bozuk dosya!", "#f43f5e");
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    function showVaultMsg(msg, color) {
+        const el = document.getElementById('vault-msg');
+        if(!el) return;
+        el.style.color = color || '#10b981';
+        el.style.opacity = '1';
+        el.textContent = msg;
+        setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { el.textContent = ''; }, 500); }, 3000);
+    }
     function applyTheme(levelIndex) {
         const theme = THEMES[levelIndex % THEMES.length];
         const r = document.documentElement.style;
