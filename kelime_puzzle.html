@@ -252,6 +252,9 @@
                 <span class="star active">★</span><span class="star active">★</span><span class="star active">★</span>
             </div>
             <div style="display:flex; gap:6px;">
+                <button class="icon-btn" onclick="exportSave()" title="Kaydet" style="font-size:0.8rem; color:#34d399; border-color:rgba(52,211,153,0.2); background:rgba(52,211,153,0.05);">💾</button>
+                <button class="icon-btn" onclick="document.getElementById('import-game-file').click()" title="Yükle" style="font-size:0.8rem; color:#60a5fa; border-color:rgba(96,165,250,0.2); background:rgba(96,165,250,0.05);">📂</button>
+                <input type="file" id="import-game-file" accept=".json" style="display:none;" onchange="importSave(event)">
                 <button class="icon-btn hint-btn" onclick="useHint()">💡</button>
                 <button class="icon-btn focus-btn" onclick="useFocus()">👁️</button>
                 <button class="icon-btn freeze-btn" onclick="useFreeze()">❄️</button>
@@ -404,6 +407,7 @@
         document.body.appendChild(a); a.click();
         document.body.removeChild(a); URL.revokeObjectURL(url);
         showVaultMsg("✅ Kayıt dosyası indirildi!", "#10b981");
+        showInGameToast("💾 Kayıt indirildi!");
     }
 
     function importSave(event) {
@@ -418,14 +422,24 @@
                 currentLevelIdx = data.level || 0;
                 totalScore = data.totalScore || 0;
                 saveProgress();
-                document.getElementById('saved-info').textContent = `Kayıt: Seviye ${currentLevelIdx + 1} - Puan: ${totalScore}`;
+                document.getElementById('saved-info') && (document.getElementById('saved-info').textContent = `Kayıt: Seviye ${currentLevelIdx + 1} - Puan: ${totalScore}`);
                 showVaultMsg(`✅ Seviye ${currentLevelIdx + 1} · Puan ${totalScore} yüklendi!`, "#10b981");
+                showInGameToast(`📂 Seviye ${currentLevelIdx + 1} yüklendi!`);
             } catch(err) {
                 showVaultMsg("❌ Geçersiz veya bozuk dosya!", "#f43f5e");
+                showInGameToast("❌ Geçersiz dosya!", "#f43f5e");
             }
         };
         reader.readAsText(file);
         event.target.value = '';
+    }
+
+    function showInGameToast(msg, color) {
+        const el = document.createElement('div');
+        el.textContent = msg;
+        el.style.cssText = `position:fixed;top:80px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,0.95);color:${color||'#34d399'};border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:8px 18px;font-size:0.8rem;font-weight:700;z-index:99999;pointer-events:none;backdrop-filter:blur(10px);transition:opacity 0.5s;`;
+        document.body.appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 500); }, 2000);
     }
 
     function showVaultMsg(msg, color) {
@@ -635,6 +649,8 @@
         
         if (!moveTicking) {
             requestAnimationFrame(() => {
+                moveTicking = false;
+                if(!isSelecting) { previewBubble.style.display = 'none'; return; }
                 let cx = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
                 let cy = e.type.includes('touch') ? e.touches[0].clientY : e.clientY; 
                 
@@ -666,7 +682,6 @@
                         } 
                     } 
                 }
-                moveTicking = false;
             });
             moveTicking = true;
         }
@@ -690,7 +705,8 @@
 
     function endSel() { 
         if(!isSelecting) return; 
-        isSelecting = false; lockedAxis = null; lastHoveredCell = null; previewBubble.style.display = 'none'; 
+        isSelecting = false; lockedAxis = null; lastHoveredCell = null; moveTicking = false;
+        previewBubble.style.display = 'none'; previewBubble.textContent = '';
         const txt = selectedCells.map(c => c.textContent).join(''), rev = txt.split('').reverse().join(''); 
         let matched = checkWord(txt); if(!matched) matched = checkWord(rev); 
         if(!matched) { 
