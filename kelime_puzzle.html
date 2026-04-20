@@ -346,6 +346,7 @@
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let musicOscillators = [];
+    let usedWordsPerCategory = {}; // Her kategori için gösterilen kelimeleri takip eder
     let currentLevelIdx = 0, gridSize = 8, grid = [], currentWordsObj = [], bonusWords = [];
     let foundCount = 0, currentScore = 0, displayedScore = 0;
     let timerInterval, isSelecting = false, startCell = null, selectedCells = [];
@@ -384,7 +385,7 @@
         }
     }
     function saveProgress() { localStorage.setItem('crystalWordSaveUlt', JSON.stringify({ level: currentLevelIdx, totalScore: totalScore })); }
-    function resetProgress() { localStorage.removeItem('crystalWordSaveUlt'); currentLevelIdx = 0; totalScore = 0; document.getElementById('saved-info').textContent = "Kayıt Silindi"; showVaultMsg("Kayıt silindi.", "#f43f5e"); }
+    function resetProgress() { localStorage.removeItem('crystalWordSaveUlt'); currentLevelIdx = 0; totalScore = 0; usedWordsPerCategory = {}; document.getElementById('saved-info').textContent = "Kayıt Silindi"; showVaultMsg("Kayıt silindi.", "#f43f5e"); }
 
     /* ── KASA: Dışa / İçe Aktar ── */
     function buildSaveData() {
@@ -459,7 +460,18 @@
     }
 
     function startGame() { document.getElementById('start-modal').style.display = 'none'; if(audioCtx.state === 'suspended') audioCtx.resume(); loadLevel(); }
-    function getRandomWords(category) { const pool = [...WORD_POOLS[category]]; for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; } return pool; }
+    function getRandomWords(category) {
+        if (!usedWordsPerCategory[category]) usedWordsPerCategory[category] = [];
+        const used = usedWordsPerCategory[category];
+        const pool = WORD_POOLS[category];
+        // Daha önce gösterilmeyenler önce, gösterilmiş olanlar sonra
+        const unseen = pool.filter(o => !used.includes(o.w));
+        const seen = pool.filter(o => used.includes(o.w));
+        // Her grubu kendi içinde karıştır
+        for (let i = unseen.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [unseen[i], unseen[j]] = [unseen[j], unseen[i]]; }
+        for (let i = seen.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [seen[i], seen[j]] = [seen[j], seen[i]]; }
+        return [...unseen, ...seen];
+    }
 
     function loadLevel() {
         document.getElementById('win-modal').style.display = 'none';
@@ -469,6 +481,16 @@
         const allPool = getRandomWords(config.cat);
         currentWordsObj = allPool.slice(0, config.count);
         bonusWords = allPool.slice(config.count, config.count + 2);
+        // Seçilen kelimeleri "gösterildi" olarak işaretle
+        if (!usedWordsPerCategory[config.cat]) usedWordsPerCategory[config.cat] = [];
+        const shownWords = [...currentWordsObj, ...bonusWords].map(o => o.w);
+        // Tüm kelimeler bir kez gösterildiyse sıfırla (döngü başlasın)
+        const totalInCat = WORD_POOLS[config.cat].length;
+        if (usedWordsPerCategory[config.cat].length + shownWords.length >= totalInCat) {
+            usedWordsPerCategory[config.cat] = [];
+        } else {
+            shownWords.forEach(w => { if (!usedWordsPerCategory[config.cat].includes(w)) usedWordsPerCategory[config.cat].push(w); });
+        }
 
         const longestMain = Math.max(...currentWordsObj.map(o => o.w.length));
         const longestBonus = Math.max(...bonusWords.map(o => o.w.length));
