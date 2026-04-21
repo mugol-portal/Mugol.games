@@ -63,7 +63,13 @@
         }
 
         /* --- YENİLENMİŞ ANA MENÜ (Daha Derli Toplu) --- */
-        #start-screen { justify-content: center; align-items: center; padding: 15px; }
+        #start-screen { 
+            justify-content: flex-start; 
+            align-items: center; 
+            padding: 70px 12px 20px; 
+            overflow-y: auto; 
+            min-height: 100vh;
+        }
         
         .glass-card {
             background: linear-gradient(135deg, rgba(10, 10, 30, 0.85) 0%, rgba(0, 0, 15, 0.95) 100%);
@@ -71,9 +77,9 @@
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 25px;
-            padding: 25px 20px; /* Boşluklar azaltıldı */
+            padding: 22px 16px 20px;
             text-align: center; 
-            max-width: 750px; /* Genişlik biraz daraltıldı */
+            max-width: 700px;
             width: 100%;
             box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(0, 212, 255, 0.05);
             position: relative;
@@ -98,20 +104,20 @@
         @keyframes float { 0% {transform: translateY(0px) scale(1);} 50% {transform: translateY(-8px) scale(1.03);} 100% {transform: translateY(0px) scale(1);} }
         
         .logo-title {
-            font-size: clamp(1.8rem, 6vw, 3rem); /* Küçültüldü */
-            font-weight: 900; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px;
+            font-size: clamp(1.6rem, 5vw, 2.6rem);
+            font-weight: 900; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 4px;
             background: linear-gradient(to bottom, #fff7d6 0%, #d4af37 40%, #aa771c 60%, #ffdf00 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 6px 8px rgba(0,0,0,0.8)); line-height: 1.1;
         }
         
         .subtitle { 
-            display: inline-block; background: transparent; border: none; padding: 0; margin-bottom: 20px; /* Boşluk azaltıldı */
-            font-size: 0.85rem; color: #bbf0ff; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+            display: inline-block; background: transparent; border: none; padding: 0; margin-bottom: 16px;
+            font-size: 0.78rem; color: #bbf0ff; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
             opacity: 0.8;
         }
 
         .category-section-header {
-            display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; /* Daraltıldı */
+            display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px;
         }
 
         .category-section-header::before, .category-section-header::after {
@@ -122,88 +128,110 @@
             color: rgba(255, 255, 255, 0.4); font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
         }
         
-        /* --- DAHA KOMPAKT KATEGORİ TASARIMI --- */
+        /* --- KATEGORİ GRID --- */
         .category-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); /* Daha sıkışık ve çoklu sığdırma */
-            gap: 15px 10px; /* Boşluklar azaltıldı */
-            margin-bottom: 20px; /* Daraltıldı */
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px 6px;
+            margin-bottom: 18px;
         }
         
         .category-btn {
-            background: transparent; border: none; color: white; padding: 5px;
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            color: white; 
+            padding: 10px 4px 8px;
+            cursor: pointer; 
+            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
             position: relative;
+            min-width: 0;
         }
 
-        /* İkon halkası daraltıldı */
         .cat-icon { 
-            font-size: 1.6rem; 
-            width: 55px; height: 55px; /* Daha zarif ölçüler */
+            font-size: 1.5rem; 
+            width: 46px; height: 46px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); 
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5)); 
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            flex-shrink: 0;
         }
 
         .cat-text { 
-            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; 
-            text-align: center; color: #a0c4ff; transition: color 0.3s;
+            font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; 
+            text-align: center; color: #a0c4ff; transition: color 0.25s;
+            line-height: 1.2; word-break: keep-all;
+            width: 100%; padding: 0 2px;
         }
 
-        .category-btn:hover { transform: translateY(-5px); }
+        .category-btn:hover, .category-btn:active { 
+            transform: translateY(-3px) scale(1.04);
+            background: rgba(0, 212, 255, 0.08);
+            border-color: rgba(0, 212, 255, 0.35);
+        }
 
         .category-btn:hover .cat-icon { 
-            transform: scale(1.1); /* Daha hafif büyüme efekti */
-            background: rgba(0, 212, 255, 0.1);
-            border-color: rgba(0, 212, 255, 0.4);
-            filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.6)); 
+            background: rgba(0, 212, 255, 0.12);
+            border-color: rgba(0, 212, 255, 0.45);
+            filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.55)); 
         }
         
         .category-btn:hover .cat-text {
             color: #ffffff;
-            text-shadow: 0 0 6px rgba(0, 212, 255, 0.8);
         }
 
-        .btn-mixed .cat-text { color: #e6c56a; }
-        .btn-mixed:hover .cat-icon { 
-            background: rgba(212, 175, 55, 0.1);
-            border-color: rgba(212, 175, 55, 0.4);
-            filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.6)); 
+        .btn-mixed { 
+            background: rgba(212, 175, 55, 0.07);
+            border-color: rgba(212, 175, 55, 0.2);
         }
-        .btn-mixed:hover .cat-text { color: #ffdf00; text-shadow: 0 0 6px rgba(255, 223, 0, 0.8); }
+        .btn-mixed .cat-text { color: #e6c56a; }
+        .btn-mixed:hover, .btn-mixed:active { 
+            background: rgba(212, 175, 55, 0.13);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+        .btn-mixed:hover .cat-icon { 
+            background: rgba(212, 175, 55, 0.12);
+            border-color: rgba(212, 175, 55, 0.45);
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.6)); 
+        }
+        .btn-mixed:hover .cat-text { color: #ffdf00; }
 
         /* --- KONTROL PANELİ (Daraltıldı) --- */
         .control-panel { 
             background: transparent; 
-            padding: 15px 5px 0; 
-            display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; 
+            padding: 12px 5px 0; 
+            display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; 
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .cp-btn { 
-            background: transparent; border: none; padding: 5px; 
-            font-weight: 700; font-size: 0.8rem; 
-            cursor: pointer; transition: all 0.3s ease; 
+            background: rgba(255,255,255,0.04); 
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 20px;
+            padding: 7px 12px; 
+            font-weight: 700; font-size: 0.75rem; 
+            cursor: pointer; transition: all 0.25s ease; 
             display: flex; align-items: center; gap: 4px; 
-            text-transform: uppercase; letter-spacing: 1px;
-            position: relative; opacity: 0.7;
+            text-transform: uppercase; letter-spacing: 0.8px;
+            position: relative;
         }
 
         .cp-btn::after {
-            content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 0%; height: 2px; transition: 0.3s ease;
+            content: none;
         }
         
         .cp-btn:hover { opacity: 1; transform: translateY(-2px); }
-        .cp-btn:hover::after { width: 100%; }
 
-        .btn-about { color: #00d4ff; } .btn-about::after { background: #00d4ff; box-shadow: 0 0 8px #00d4ff;}
-        .btn-kasa { color: #2ecc71; } .btn-kasa::after { background: #2ecc71; box-shadow: 0 0 8px #2ecc71;}
-        .btn-exit { color: #ff4444; } .btn-exit::after { background: #ff4444; box-shadow: 0 0 8px #ff4444;}
+        .btn-about { color: #00d4ff; border-color: rgba(0,212,255,0.25); }
+        .btn-about:hover { background: rgba(0,212,255,0.12); border-color: rgba(0,212,255,0.5); }
+        .btn-kasa { color: #2ecc71; border-color: rgba(46,204,113,0.25); }
+        .btn-kasa:hover { background: rgba(46,204,113,0.12); border-color: rgba(46,204,113,0.5); }
+        .btn-exit { color: #ff4444; border-color: rgba(255,68,68,0.25); }
+        .btn-exit:hover { background: rgba(255,68,68,0.12); border-color: rgba(255,68,68,0.5); }
 
 
         /* --- OYUN EKRANI & DİĞERLERİ (Aynı Bırakıldı) --- */
@@ -326,8 +354,58 @@
             .main-game { order: 1; padding: 90px 50px 40px; }
             .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
             .jokers { justify-content: flex-start; }
-            .glass-card { padding: 40px 30px; } /* Masaüstünde biraz daha pay bırakıldı */
+            .glass-card { padding: 35px 30px; }
+            #start-screen { justify-content: center; padding: 20px; }
+            .category-grid { grid-template-columns: repeat(5, 1fr); gap: 14px 10px; }
+            .cat-icon { width: 58px; height: 58px; font-size: 1.7rem; }
+            .cat-text { font-size: 0.7rem; }
         }
+
+        /* --- MAĞAZA MODALı --- */
+        .shop-content {
+            border: 2px solid #d4af37;
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.4);
+            max-width: 420px;
+        }
+        .shop-content h3 {
+            color: #d4af37; margin-bottom: 5px; font-size: 1.5rem; font-weight: 900;
+        }
+        .shop-kasa-bilgi {
+            color: #2ecc71; font-size: 1rem; font-weight: 700; margin-bottom: 20px;
+            background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.3);
+            border-radius: 10px; padding: 8px 12px;
+        }
+        .shop-items { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .shop-item {
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px; padding: 12px 15px; gap: 10px;
+        }
+        .shop-item-info { display: flex; flex-direction: column; align-items: flex-start; flex: 1; }
+        .shop-item-name { font-weight: 800; font-size: 0.95rem; color: white; }
+        .shop-item-desc { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 2px; }
+        .shop-item-status {
+            font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 8px; margin-top: 4px;
+        }
+        .status-available { color: #2ecc71; background: rgba(46,204,113,0.15); border: 1px solid rgba(46,204,113,0.3); }
+        .status-owned { color: #00d4ff; background: rgba(0,212,255,0.12); border: 1px solid rgba(0,212,255,0.3); }
+        .shop-buy-btn {
+            background: linear-gradient(145deg, #b8860b, #d4af37);
+            color: #000; border: none; border-radius: 12px;
+            padding: 8px 14px; font-weight: 900; font-size: 0.8rem;
+            cursor: pointer; transition: all 0.25s ease; white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+        .shop-buy-btn:hover { background: linear-gradient(145deg, #d4af37, #ffdf00); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212,175,55,0.5); }
+        .shop-buy-btn:disabled { background: #333; color: #666; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-close-shop {
+            background: linear-gradient(145deg, #333, #222); color: rgba(255,255,255,0.7);
+            border: 1px solid rgba(255,255,255,0.15); padding: 10px 20px; border-radius: 25px;
+            font-weight: 900; cursor: pointer; transition: 0.3s; width: 100%;
+        }
+        .btn-close-shop:hover { background: #444; color: white; }
+        .kasa-badge { cursor: pointer; transition: all 0.2s ease; }
+        .kasa-badge:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(46,204,113,0.5); }
     </style>
 </head>
 <body>
@@ -337,12 +415,11 @@
 
     <div id="start-screen" class="screen active">
         <div class="top-bar" style="position: absolute; top: 0; width: 100%; background: transparent; border:none; box-shadow:none; justify-content: space-between;">
-            <div class="kasa-badge" id="kasa-main">💰 Kasa: 0 TL</div>
+            <div class="kasa-badge" id="kasa-main" onclick="magazayiAc()" title="Mağazayı Aç">💰 Kasa: 0 TL</div>
             <button class="action-btn sound-btn" id="sound-toggle-main" onclick="toggleSound()">🔊 Ses Açık</button>
         </div>
         
         <div class="glass-card">
-            <div class="crown-icon">👑</div>
             <h1 class="logo-title">MUGÖLYONER</h1>
             <p class="subtitle">Milyoner Bilgi Yarışması</p>
             
@@ -369,7 +446,7 @@
             <button class="action-btn" onclick="anaMenuyeDon()">◀ Geri</button>
             <span class="title-text" id="current-category-label">Karışık</span>
             <div class="top-bar-right">
-                <div class="kasa-badge" id="kasa-game">💰 0 TL</div>
+                <div class="kasa-badge" id="kasa-game" onclick="magazayiAc()" title="Mağazayı Aç">💰 0 TL</div>
                 <button class="action-btn sound-btn" id="sound-toggle-game" onclick="toggleSound()">🔊</button>
                 <button class="action-btn" onclick="soruyuIndir()">📸 Paylaş</button>
             </div>
@@ -440,6 +517,18 @@
             <h3>Oyun Hakkında</h3>
             <div class="about-stats" id="about-stats"></div>
             <button class="btn-close-about" onclick="hakkindaKapat()">Kapat</button>
+        </div>
+    </div>
+
+    <!-- MAĞAZA MODALı -->
+    <div id="shop-modal" class="modal-overlay">
+        <div class="modal-content shop-content">
+            <h3>🛒 Joker Mağazası</h3>
+            <div class="shop-kasa-bilgi" id="shop-kasa-goster">💰 Kasanız: 0 TL</div>
+            <div class="shop-items" id="shop-items-container">
+                <!-- Dinamik olarak doldurulacak -->
+            </div>
+            <button class="btn-close-shop" onclick="magazayiKapat()">✖ Kapat</button>
         </div>
     </div>
 
@@ -582,8 +671,24 @@
             const katSimgeleri = {
                 "Genel Kültür": "🌐", "Bilim": "🔬", "Tarih": "📜", "Coğrafya": "🌍", "Spor": "⚽",
                 "Sinema / TV": "🎬", "Din / İslamiyet": "🕌", "Edebiyat": "📚", "Bilmece": "🧩", 
-                "Canlılar": "🦁", "Önemli Yerler": "🏛️", "Söz-Şiir":"📖", "Başkentler":"🚩"
+                "Canlılar": "🦁", "Önemli Yerler": "🏛️", "Söz-Şiir":"📖", "Başkentler":"🚩",
+                "Matematik": "🔢", "Müzik": "🎵", "Sanat": "🎨", "Teknoloji": "💻",
+                "Sağlık": "🩺", "Hukuk": "⚖️", "Ekonomi": "💹", "Siyaset": "🗳️",
+                "Mitoloji": "🏺", "Astronomi": "🔭", "Gastronomi": "🍽️", "Moda": "👗",
+                "Doğa": "🌿", "Mimari": "🏗️", "Psikoloji": "🧠", "Felsefe": "💭",
+                "Arabalar": "🚗", "Uçaklar": "✈️", "Gemiler": "🚢", "Trenler": "🚂",
+                "Oyunlar": "🎮", "Animasyon": "🎥", "Çizgi Roman": "💥", "Şiir": "✍️",
+                "Dil": "🗣️", "Kimya": "⚗️", "Fizik": "⚛️", "Biyoloji": "🧬"
             };
+
+            // Bilinmeyen kategoriler için akıllı emoji seçici
+            const fallbackEmojiler = ["🎯","🌟","💡","🔑","🎪","🏆","🎭","🧪","🌈","🎲","💎","🔮"];
+            function kategoriSimgesiGetir(kat) {
+                if (katSimgeleri[kat]) return katSimgeleri[kat];
+                // Kategori adına göre deterministik bir emoji seç (her seferinde aynı çıksın)
+                let toplam = 0; for (let i = 0; i < kat.length; i++) toplam += kat.charCodeAt(i);
+                return fallbackEmojiler[toplam % fallbackEmojiler.length];
+            }
 
             const kategoriler = [...new Set(window.tumSorular.map(s => s.kategori))];
             
@@ -593,7 +698,7 @@
             
             kategoriler.forEach(kat => {
                 let btn = document.createElement("button"); btn.className = "category-btn";
-                let simge = katSimgeleri[kat] || "⭐"; 
+                let simge = kategoriSimgesiGetir(kat); 
                 btn.innerHTML = `<div class="cat-icon">${simge}</div><div class="cat-text">${kat}</div>`;
                 btn.onclick = () => oyunuBaslat(kat); btnContainer.appendChild(btn);
             });
@@ -752,6 +857,66 @@
                 let link = document.createElement('a'); link.download = `Soru_${suankiSeviye}.png`; link.href = canvas.toDataURL("image/png"); link.click();
             });
         }
+
+        // ===== MAĞAZA FONKSİYONLARI =====
+        const SHOP_JOKERLER = [
+            { key: '50',        icon: '✂️', ad: '%50 Joker',   aciklama: 'İki yanlış şıkkı eler',    fiyat: JOKER_PRICES['50'] },
+            { key: 'degistir',  icon: '🔄', ad: 'Değiştir',    aciklama: 'Soruyu tamamen değiştirir', fiyat: JOKER_PRICES['degistir'] },
+            { key: 'cift',      icon: '✌️', ad: 'Çift Cevap',  aciklama: 'İki cevap hakkı kazanır',  fiyat: JOKER_PRICES['cift'] },
+            { key: 'seyirci',   icon: '👥', ad: 'Seyirci',     aciklama: 'Seyirci oylaması yapar',   fiyat: JOKER_PRICES['seyirci'] },
+        ];
+
+        function magazayiAc() {
+            sesCal('tiklama');
+            document.getElementById('shop-kasa-goster').innerText = '💰 Kasanız: ' + kasaParasi.toLocaleString('tr-TR') + ' TL';
+            let container = document.getElementById('shop-items-container');
+            container.innerHTML = '';
+            SHOP_JOKERLER.forEach(j => {
+                let sahip = !jokersUsed[j.key];
+                let item = document.createElement('div');
+                item.className = 'shop-item';
+                item.innerHTML = `
+                    <span style="font-size:1.6rem;">${j.icon}</span>
+                    <div class="shop-item-info">
+                        <span class="shop-item-name">${j.ad}</span>
+                        <span class="shop-item-desc">${j.aciklama}</span>
+                        <span class="shop-item-status ${sahip ? 'status-owned' : 'status-available'}">
+                            ${sahip ? '✅ Zaten Var' : '🛒 Satın Al'}
+                        </span>
+                    </div>
+                    <button class="shop-buy-btn" id="shop-btn-${j.key}"
+                        onclick="jokerSatinAl('${j.key}')"
+                        ${sahip ? 'disabled' : ''}>
+                        ${sahip ? 'Sahipsin' : j.fiyat.toLocaleString('tr-TR') + ' TL'}
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+            document.getElementById('shop-modal').style.display = 'flex';
+        }
+
+        function jokerSatinAl(key) {
+            let joker = SHOP_JOKERLER.find(j => j.key === key);
+            if (!joker) return;
+            if (jokersUsed[key] === false) { alert('Bu jokere zaten sahipsiniz!'); return; }
+            if (kasaParasi < joker.fiyat) {
+                sesCal('yanlis');
+                alert('❌ Yeterli bakiyeniz yok!\nGerekli: ' + joker.fiyat.toLocaleString('tr-TR') + ' TL\nKasanız: ' + kasaParasi.toLocaleString('tr-TR') + ' TL');
+                return;
+            }
+            sesCal('dogru');
+            kasaGuncelle(-joker.fiyat);
+            jokersUsed[key] = false; // false = joker var (kullanılmadı)
+            jokerButonlariniGuncelle();
+            alert('✅ ' + joker.ad + ' jokeriniz satın alındı!');
+            magazayiAc(); // modalı yenile
+        }
+
+        function magazayiKapat() {
+            sesCal('tiklama');
+            document.getElementById('shop-modal').style.display = 'none';
+        }
+        // ===== MAĞAZA SONU =====
 
         window.onload = () => { setTimeout(kategorileriYukle, 300); kasaGuncelle(0); };
     </script>
