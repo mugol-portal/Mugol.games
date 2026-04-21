@@ -63,7 +63,8 @@
                 radial-gradient(circle at 20% 30%, var(--nebula-1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 70%, var(--nebula-2) 0%, transparent 50%);
             filter: blur(60px); animation: nebulaPulse 12s infinite alternate;
-            will-change: transform, opacity;
+            will-change: opacity, transform;
+            transform: translateZ(0);
         }
         @keyframes nebulaPulse { 0% { opacity: 0.5; transform: scale(1); } 100% { opacity: 0.8; transform: scale(1.1); } }
         .stars-overlay {
@@ -191,8 +192,8 @@
         #preview-bubble { position: fixed; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); color: #000; padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 1.2rem; pointer-events: none; transform: translate(-50%, -80px); z-index: 9999; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
         .particle { position: absolute; pointer-events: none; border-radius: 50%; animation: particleFade 0.8s ease-out forwards; z-index: 30; }
         @keyframes particleFade { 0% { transform: translate(0,0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
-        .heat-active .cell { animation: pulseGlow 2s infinite; }
-        @keyframes pulseGlow { 0% { box-shadow: inset 0 0 0 rgba(255,255,255,0); } 50% { box-shadow: inset 0 0 15px rgba(255,255,255,0.5); } 100% { box-shadow: inset 0 0 0 rgba(255,255,255,0); } }
+        .heat-active .cell { animation: pulseGlow 2s infinite; will-change: box-shadow; }
+        @keyframes pulseGlow { 0%, 100% { box-shadow: inset 0 0 0 rgba(255,255,255,0); } 50% { box-shadow: inset 0 0 10px rgba(255,255,255,0.35); } }
         .confetti { position: fixed; width: 6px; height: 6px; z-index: 2000; animation: fall linear forwards; pointer-events: none; }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
         .float-score { position: fixed; font-weight: 900; font-size: 1.8rem; pointer-events: none; z-index: 2000; text-shadow: 0 4px 15px rgba(0,0,0,0.6); animation: floatUp 0.8s ease-out forwards; color: var(--gold); }
@@ -540,7 +541,7 @@
                 gridEl.appendChild(cell);
             }
         }
-        document.onmousemove = moveSel; document.ontouchmove = moveSel; document.onmouseup = endSel; document.ontouchend = endSel;
+        document.onmousemove = moveSel; document.ontouchmove = moveSel; document.onmouseup = endSel; document.ontouchend = endSel; document.ontouchcancel = cancelSel;
     }
 
     function placeWord(word) {
@@ -578,8 +579,11 @@
             if(foundCount === currentWordsObj.length) { clearInterval(timerInterval); setTimeout(showWin, 1500); } return true;
         } 
         const bonusObj = bonusWords.find(obj => obj.w === w);
-        if(bonusObj && !selectedCells[0].classList.contains('bonus-found')) {
-            currentScore += 200; selectedCells.forEach(cell => { cell.classList.remove('selected'); cell.classList.add('bonus-found'); }); return true;
+        if(bonusObj) {
+            const alreadyFound = selectedCells.length > 0 && selectedCells[0].classList.contains('bonus-found');
+            if(!alreadyFound) {
+                currentScore += 200; selectedCells.forEach(cell => { cell.classList.remove('selected'); cell.classList.add('bonus-found'); }); return true;
+            }
         }
         return false;
     }
@@ -602,12 +606,23 @@
     }
     
     function moveSel(e) { 
-        if(!isSelecting || isPaused) return; 
+        if(!isSelecting || isPaused) return;
+        // Dokunuş koordinatlarını rAF öncesinde yakala (event pool'dan silinmeden önce)
+        let cx, cy;
+        if(e.type.includes('touch')) {
+            const touches = e.touches && e.touches.length > 0 ? e.touches : e.changedTouches;
+            if(!touches || touches.length === 0) return;
+            cx = touches[0].clientX;
+            cy = touches[0].clientY;
+        } else {
+            cx = e.clientX;
+            cy = e.clientY;
+        }
         if (!moveTicking) {
+            moveTicking = true;
             requestAnimationFrame(() => {
                 moveTicking = false;
-                let cx = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-                let cy = e.type.includes('touch') ? e.touches[0].clientY : e.clientY; 
+                if(!isSelecting) return; // Parmak kalktıysa iptal et
                 let t = document.elementFromPoint(cx, cy); 
                 if (t && t.classList.contains('cell')) { 
                     const rc = parseInt(t.dataset.r), cc = parseInt(t.dataset.c), rs = startCell.r, cs = startCell.c; 
@@ -625,7 +640,6 @@
                     if(target) drawSel(target); 
                 }
             });
-            moveTicking = true;
         }
     }
 
@@ -641,11 +655,24 @@
         } 
     }
 
+    function cancelSel() {
+        if(!isSelecting) return;
+        isSelecting = false; moveTicking = false;
+        selectedCells.forEach(c => c.classList.remove('selected'));
+        selectedCells = []; startCell = null; lockedAxis = null;
+    }
+
     function endSel() { 
         if(!isSelecting) return; isSelecting = false; moveTicking = false;
         const txt = selectedCells.map(c => c.textContent).join(''), rev = txt.split('').reverse().join(''); 
         let matched = checkWord(txt); if(!matched) matched = checkWord(rev); 
-        if(!matched) { mistakeCount++; selectedCells.forEach(c => c.classList.remove('selected')); } 
+        if(!matched) { 
+            selectedCells.forEach(c => c.classList.remove('selected')); 
+        }
+        // Her durumda seçimi temizle (eşleşme olduysa checkWord zaten 'found' class'ı ekledi)
+        selectedCells = [];
+        startCell = null;
+        lockedAxis = null;
     }
 
     function showWin() { totalScore += currentScore; saveProgress(); document.getElementById('win-modal').style.display = 'flex'; }
