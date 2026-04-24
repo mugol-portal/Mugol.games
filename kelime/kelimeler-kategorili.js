@@ -128,7 +128,159 @@ const WORD_POOLS = {
         {w:"GALAKSİ",m:"Yıldız sistemleri"},{w:"IŞINHIZI",m:"En yüksek hız"},{w:"UZAYLI",m:"Dünya dışı varlık"},{w:"KOLONİ",m:"Yerleşim birimi"},
         {w:"ROBOT",m:"Mekanik yardımcı"},{w:"MEKİK",m:"Gidiş geliş aracı"},{w:"IŞINLAMA",m:"Anlık ulaşım"},{w:"KAPSÜL",m:"Küçük yaşam alanı"},
         {w:"ASTEROİT",m:"Gök taşı kuşağı"},{w:"İSTASYON",m:"Uzaydaki üs"}
+    ], 
+    "Psikoloji": [
+        {w:"BİLİNÇ",m:"Farkındalık hali"},{w:"ALGI",m:"Duyumları yorumlama"},{w:"BELLEK",m:"Hafıza"},{w:"REFLEKS",m:"İstemsiz tepki"},
+        {w:"TRAVMA",m:"Ruhsal sarsıntı"},{w:"GÜDÜ",m:"Harekete geçiren güç"},{w:"ZİHİN",m:"Düşünce merkezi"},{w:"KİŞİLİK",m:"Bireysel özellikler"},
+        {w:"STRES",m:"Gerginlik hali"},{w:"EMPATİ",m:"Kendini başkası yerine koyma"}
+    ],
+    "Denizcilik": [
+        {w:"KAPTAN",m:"Gemi yöneticisi"},{w:"DEMİR",m:"Gemi çıpası"},{w:"GÜVERTE",m:"Gemi üstü alanı"},{w:"LİMAN",m:"Gemi park yeri"},
+        {w:"YELKEN",m:"Rüzgarla ilerleme"},{w:"ROTA",m:"Gidilecek yol"},{w:"PUSULA",m:"Yön gösterici"},{w:"KAMARA",m:"Gemi odası"},
+        {w:"MÜRETTEBAT",m:"Gemi çalışanları"},{w:"İSKELE",m:"Geminin sol tarafı"}
+    ],
+    "Sanat": [
+        {w:"HEYKEL",m:"Üç boyutlu eser"},{w:"TABLO",m:"Çerçeveli resim"},{w:"MÜZE",m:"Eser sergi alanı"},{w:"SERGİ",m:"Sanat sunumu"},
+        {w:"ESTETİK",m:"Güzellik algısı"},{w:"ATÖLYE",m:"Çalışma mekanı"},{w:"MİNYATÜR",m:"Küçük resim sanatı"},{w:"MOZAİK",m:"Parçalı resim"},
+        {w:"GRAFİTİ",m:"Duvar sanatı"},{w:"KÜRATÖR",m:"Sergi düzenleyicisi"}
+    ],
+    "Felsefe": [
+        {w:"BİLGİ",m:"Öğrenilen gerçek"},{w:"VARLIK",m:"Mevcut olan her şey"},{w:"ERDEM",m:"Ahlaki üstünlük"},{w:"MANTIK",m:"Doğru düşünme yolu"},
+        {w:"DİSİPLİN",m:"Düzenli çalışma"},{w:"ETİK",m:"Ahlak felsefesi"},{w:"İDEA",m:"Fikir, düşünce"},{w:"EVRENSEL",m:"Herkesi kapsayan"},
+        {w:"SORGULAMA",m:"Nedenini arama"},{w:"BİLGELİK",m:"Derin bilgi sahibi"}
+    ],
+    "Bahçe İşleri": [
+        {w:"KÜREK",m:"Toprak kazma aracı"},{w:"TIRMIK",m:"Toprak düzeltici"},{w:"SULAMA",m:"Can suyu verme"},{w:"GÜBRE",m:"Bitki besini"},
+        {w:"BUDAMA",m:"Dalları kesme"},{w:"FİDAN",m:"Genç ağaç"},{w:"SERA",m:"Korunaklı bahçe"},{w:"ÇİM",m:"Yeşil örtü"},
+        {w:"MAKAS",m:"Bahçe keski aracı"},{w:"ÇAPA",m:"Toprak havalandırıcı"}
+    ],
+    "Havacılık": [
+        {w:"KOKPİT",m:"Pilot kabini"},{w:"HAVAALANI",m:"Uçak terminali"},{w:"RADAR",m:"Tespit cihazı"},{w:"PARAŞÜT",m:"İniş ekipmanı"},
+        {w:"KANAT",m:"Uçuş uzvu"},{w:"JET",m:"Hızlı hava aracı"},{w:"HOSTES",m:"Kabin görevlisi"},{w:"İRTİFA",m:"Yükseklik seviyesi"},
+        {w:"PİST",m:"Kalkış yolu"},{w:"TÜRBÜLANS",m:"Hava sarsıntısı"}
+    ],
+    "Medya": [
+        {w:"HABER",m:"Güncel bilgi"},{w:"GAZETE",m:"Günlük yayın"},{w:"TELEVİZYON",m:"Görüntülü cihaz"},{w:"RADYO",m:"Sesli yayın"},
+        {w:"REKLAM",m:"Tanıtım filmi"},{w:"DERGİ",m:"Süreli yayın"},{w:"MUHABİR",m:"Haber toplayan"},{w:"SPİKER",m:"Sunucu"},
+        {w:"MANŞET",m:"Ana başlık"},{w:"RÖPORTAJ",m:"Soru-cevap söyleşisi"}
+    ],
+    "Tarım": [
+        {w:"HASAT",m:"Ürün toplama"},{w:"BUĞDAY",m:"Ekmek hammaddesi"},{w:"TARLA",m:"Ekim alanı"},{w:"TOHUM",m:"Yaşam özü"},
+        {w:"TRAKTÖR",m:"Tarım makinesi"},{w:"PAMUK",m:"Lifli bitki"},{w:"TOPRAK",m:"Ekim zemini"},{w:"VERİM",m:"Üretim miktarı"},
+        {w:"SİLO",m:"Ürün deposu"},{w:"SULAMA",m:"Ziraat yöntemi"}
+    ],
+    "Meslekler 2": [
+        {w:"ECZACI",m:"İlaç uzmanı"},{w:"MARANGOZ",m:"Ahşap ustası"},{w:"TESİSATÇI",m:"Su/gaz tamircisi"},{w:"MUHASEBE",m:"Hesap uzmanı"},
+        {w:"FOTOĞRAFÇI",m:"Anı ölümsüzleştiren"},{w:"DANIŞMAN",m:"Fikir veren uzman"},{w:"GÜVENLİK",m:"Koruma görevlisi"},{w:"KAPTAN",m:"Gemi/uçak sevk eden"},
+        {w:"VALE",m:"Araç park eden"},{w:"REHBER",m:"Gezi yol göstereni"}
+    ],
+    "Kimya": [
+        {w:"ELEMENT",m:"Saf madde"},{w:"BİLEŞİK",m:"Karma madde"},{w:"REAKSİYON",m:"Tepkime"},{w:"ASİT",m:"Ekşi, aşındırıcı"},
+        {w:"BAZ",m:"Kaygan, acı"},{w:"ÇÖZELTİ",m:"Karışım"},{w:"MOLEKÜL",m:"Atom grubu"},{w:"LABORATUVAR",m:"Deney alanı"},
+        {w:"ALAŞIM",m:"Metal karışımı"},{w:"KRİSTAL",m:"Düzenli yapı"}
+    ],
+    "Coğrafi Oluşumlar": [
+        {w:"ŞELALE",m:"Yüksekten akan su"},{w:"MAĞARA",m:"Yer altı boşluğu"},{w:"KÖRFEZ",m:"Deniz girintisi"},{w:"YARIMADA",m:"Üç tarafı su"},
+        {w:"KRATER",m:"Volkan ağzı"},{w:"BUZUL",m:"Büyük buz kütlesi"},{w:"KANYON",m:"Derin vadi"},{w:"YAYLA",m:"Yüksek düzlük"},
+        {w:"FİYORT",m:"Dar deniz koyu"},{w:"DELTA",m:"Irmak ağzı ovası"}
+    ],
+    "Mutfak Gereçleri 2": [
+        {w:"KEVGİR",m:"Delikli süzgeç"},{w:"HAVAN",m:"Ezme kabı"},{w:"SAHAN",m:"Küçük derin tava"},{w:"MERDANE",m:"Hamur açıcı"},
+        {w:"ÖNLÜK",m:"Mutfak giysisi"},{w:"TERAZİ",m:"Ağırlık ölçer"},{w:"IHLAMUR",m:"Bitki çayı"},{w:"BAHARAT",m:"Çeşni"},
+        {w:"SÜRAHİ",m:"Su kabı"},{w:"KAVANOZ",m:"Saklama kabı"}
+    ],
+    "Hava Durumu 2": [
+        {w:"KIRAGI",m:"Donmuş çiy"},{w:"MELTEM",m:"Hafif rüzgar"},{w:"POYRAZ",m:"Kuzey rüzgarı"},{w:"LODOS",m:"Güney rüzgarı"},
+        {w:"NEM",m:"Havadaki su buharı"},{w:"BASINÇ",m:"Hava ağırlığı"},{w:"YAKAMOZ",m:"Deniz parlaması"},{w:"GURUP",m:"Güneş batışı"},
+        {w:"ŞAFAK",m:"Güneş doğuşu"},{w:"BORAN",m:"Sert fırtına"}
+    ],
+    "Spor 2": [
+        {w:"MADALYA",m:"Başarı ödülü"},{w:"HAKEM",m:"Yönetici"},{w:"ANTRENÖR",m:"Çalıştırıcı"},{w:"STADYUM",m:"Spor alanı"},
+        {w:"MARATON",m:"Uzun koşu"},{w:"POTA",m:"Basketbol hedefi"},{w:"FİLE",m:"Voleybol ağı"},{w:"RAKET",m:"Tenis aracı"},
+        {w:"KRAMPON",m:"Futbol ayakkabısı"},{w:"KUPA",m:"Şampiyonluk ödülü"}
+    ],
+    "Teknoloji 2": [
+        {w:"YAZICI",m:"Kağıda döker"},{w:"TARAYICI",m:"Dijitale aktarır"},{w:"İŞLEMCİ",m:"Bilgisayar kalbi"},{w:"BELLEK",m:"Veri deposu"},
+        {w:"KABLO",m:"İletim hattı"},{w:"ŞİFRE",m:"Güvenlik kodu"},{w:"SUNUCU",m:"Veri paylaşımcı"},{w:"YAZILIM",m:"Program bütünü"},
+        {w:"MODEM",m:"İnternet kutusu"},{w:"PİKSEL",m:"Görüntü birimi"}
+    ],
+    "Hayvanlar 2": [
+        {w:"AHTAPOT",m:"Sekiz kollu"},{w:"BALİNA",m:"Dev deniz memelisi"},{w:"KAPLUMBAĞA",m:"Evini taşır"},{w:"KARGA",m:"Zeki kuş"},
+        {w:"GEYİK",m:"Boynuzlu orman hayvanı"},{w:"SİNCAP",m:"Fındık sever"},{w:"ARI",m:"Bal yapar"},{w:"ÖRÜMCEK",m:"Ağ örer"},
+        {w:"KOALA",m:"Okaliptüs sever"},{w:"KANGURU",m:"Keseli hayvan"}
+    ],
+    "Duygular 2": [
+        {w:"SABIR",m:"Bekleme gücü"},{w:"VİCDAN",m:"İç muhakeme"},{w:"CESARET",m:"Korkusuzluk"},{w:"NEFRET",m:"Aşırı sevgisizlik"},
+        {w:"UMUT",m:"Beklenti"},{w:"KAYGI",m:"Endişe"},{w:"MİNNET",m:"Şükran duyma"},{w:"COŞKU",m:"Büyük heyecan"},
+        {w:"YALNIZLIK",m:"Tek başınalık"},{w:"SADAKAT",m:"Bağlılık"}
+    ],
+    "Sanat ve Estetik": [
+        {w:"MİMARİ",m:"Yapı sanatı"},{w:"EDEBİYAT",m:"Söz sanatı"},{w:"TİYATRO",m:"Sahne eseri"},{w:"BALE",m:"Dans sanatı"},
+        {w:"OPERADA",m:"Müzikli oyun"},{w:"SERAMİK",m:"Toprak sanatı"},{w:"EBRU",m:"Su üstünde resim"},{w:"HAT",m:"Güzel yazı sanatı"},
+        {w:"GRAFİK",m:"Görsel tasarım"},{w:"FOTOĞRAF",m:"Işıkla resim"}
+    ],
+    "Vücut 2": [
+        {w:"İSKELET",m:"Kemik çatısı"},{w:"DAMAR",m:"Kan yolu"},{w:"AKCİĞER",m:"Nefes organı"},{w:"BÖBREK",m:"Süzme organı"},
+        {w:"KARACİĞER",m:"Fabrika organ"},{w:"OMURGA",m:"Sırt kemiği"},{w:"KAŞ",m:"Göz üstü tüy"},{w:"KİRPİK",m:"Göz koruyucu"},
+        {w:"YENİDEN",m:"Hücre yenilenmesi"},{w:"EKLEM",m:"Kemik birleşimi"}
+    ],
+    "Zaman ve Takvim": [
+        {w:"PAZARTESİ",m:"Hafta başı"},{w:"HAFTA",m:"Yedi gün"},{w:"EYLÜL",m:"Sonbahar başı"},{w:"OCAK",m:"Yılın ilk ayı"},
+        {w:"TEMMUZ",m:"Yaz ortası"},{w:"ASIR",m:"Yüz yıl"},{w:"MİLAT",m:"Başlangıç"},{w:"TAKTAK",m:"Saniye sesi"},
+        {w:"GÜNDÜZ",m:"Aydınlık vakit"},{w:"TATİL",m:"Dinlenme zamanı"}
+    ],
+    "Doğa ve Yaşam": [
+        {w:"OKYANUS",m:"Büyük su kütlesi"},{w:"ORMAN",m:"Ağaçlık alan"},{w:"BOZKIR",m:"Kurak düzlük"},{w:"YAYLA",m:"Serin yükseklik"},
+        {w:"MAĞARA",m:"Doğal oyuk"},{w:"ADACIK",m:"Küçük kara parçası"},{w:"GEÇİT",m:"Dağ yolu"},{w:"PINAR",m:"Su kaynağı"},
+        {w:"TEPE",m:"Alçak yükselti"},{w:"SAHİL",m:"Deniz kıyısı"}
+    ],
+    "Sosyal Yaşam": [
+        {w:"AİLE",m:"En küçük toplum"},{w:"DOSTLUK",m:"Yakın ilişki"},{w:"KOMŞU",m:"Yakın oturan"},{w:"DÜĞÜN",m:"Evlilik töreni"},
+        {w:"BAYRAM",m:"Özel kutlama"},{w:"ZİYARET",m:"Gidip görme"},{w:"HEDİYE",m:"Armağan"},{w:"MİSAFİR",m:"Konuk"},
+        {w:"YARDIM",m:"Destek olma"},{w:"TOPLANTI",m:"Bir araya gelme"}
+    ],
+    "Bilim 2": [
+        {w:"DENEY",m:"Bilimsel test"},{w:"BULUŞ",m:"İcat"},{w:"TEORİ",m:"Kuram"},{w:"FORMÜL",m:"Matematiksel ifade"},
+        {w:"MERCEK",m:"Işığı kıran cam"},{w:"MİKNATIS",m:"Çekim gücü"},{w:"YERÇEKİMİ",m:"Kütle çekimi"},{w:"RADYASYON",m:"Işınım"},
+        {w:"FOSİL",m:"Eski canlı kalıntısı"},{w:"GENOM",m:"Genetik harita"}
+    ],
+    "Ev Eşyaları 2": [
+        {w:"ÜTÜ",m:"Kırışıklık giderici"},{w:"SÜPÜRGE",m:"Temizlik aracı"},{w:"ASKI",m:"Elbise tutucu"},{w:"YASTIK",m:"Baş koyulan yer"},
+        {w:"YORGAN",m:"Örtünme eşyası"},{w:"PASPAS",m:"Kapı önü örtüsü"},{w:"SAAT",m:"Duvar aksesuarı"},{w:"TABLO",m:"Duvar süsü"},
+        {w:"KUMANDA",m:"Uzak yönetici"},{w:"AVİZE",m:"Tavan lambası"}
+    ],
+    "Ticaret": [
+        {w:"ALIŞVERİŞ",m:"Ticari eylem"},{w:"PAZAR",m:"Satış yeri"},{w:"DÜKKAN",m:"Esnaf yeri"},{w:"MÜŞTERİ",m:"Alıcı"},
+        {w:"SATIŞ",m:"Pazarlama"},{w:"İNDİRİM",m:"Fiyat düşüşü"},{w:"FİŞ",m:"Ödeme belgesi"},{w:"KASA",m:"Para birimi"},
+        {w:"REKLAM",m:"Tanıtım"},{w:"MARKA",m:"Ürün kimliği"}
+    ],
+    "Şehir Hayatı": [
+        {w:"CADDE",m:"Geniş yol"},{w:"SOKAK",m:"Ara yol"},{w:"PARK",m:"Yeşil alan"},{w:"MEYDAN",m:"Açık alan"},
+        {w:"DURAK",m:"Bekleme yeri"},{w:"KAVŞAK",m:"Yol kesişimi"},{w:"KALDIRIM",m:"Yaya yolu"},{w:"LAMBA",m:"Sokak aydınlatması"},
+        {w:"MÜZE",m:"Kültür durağı"},{w:"ÇARŞI",m:"Alışveriş bölgesi"}
+    ],
+    "Hayvanlar 3": [
+        {w:"DEVE",m:"Hörgüçlü hayvan"},{w:"ZÜRAFA",m:"En uzun boyunlu"},{w:"GERGEDAN",m:"Boynuzlu dev"},{w:"SUAYGIRI",m:"Nehir devi"},
+        {w:"SIRTALAN",m:"Güleç avcı"},{w:"KUNDUZ",m:"Baraj yapan"},{w:"KİRPI",m:"Dikenli küçük"},{w:"HAMSTER",m:"Tekerlek faresi"},
+        {w:"BUKALEMUN",m:"Renk değiştiren"},{w:"YARASA",m:"Gece uçanı"}
+    ],
+    "Sanat ve Müzik 2": [
+        {w:"NOTALIK",m:"Müzik sehpası"},{w:"ORKESTRA",m:"Müzik grubu"},{w:"SOLİST",m:"Şarkı söyleyen"},{w:"BESTE",m:"Müzik eseri"},
+        {w:"KEMAN",m:"Zarif yaylı"},{w:"PİYANO",m:"Tuşlu dev"},{w:"SAKSOFON",m:"Üflemeli pirinç"},{w:"TROMBET",m:"Bakır çalgı"},
+        {w:"KORO",m:"Ses grubu"},{w:"AKOR",m:"Ses uyumu"}
+    ],
+    "Eğitim ve Okul 2": [
+        {w:"SÖZLÜK",m:"Anlam kitabı"},{w:"DENEY",m:"Fen dersi işi"},{w:"PROJE",m:"Ödev çalışması"},{w:"KULÜP",m:"Öğrenci topluluğu"},
+        {w:"DİPLOMA",m:"Mezuniyet belgesi"},{w:"KÜRSÜ",m:"Öğretmen masası"},{w:"ZİL",m:"Ders saati sesi"},{w:"ÖNLÜK",m:"Okul giysisi"},
+        {w:"BAŞARI",m:"Hedefe ulaşma"},{w:"ÖDÜL",m:"Tebrik nişanesi"}
+    ],
+    "Genel Kültür": [
+        {w:"PİRAMİT",m:"Mısır yapısı"},{w:"HEYKEL",m:"Anıt eser"},{w:"KALE",m:"Savunma yapısı"},{w:"KULE",m:"Yüksek bina"},
+        {w:"TAPINAK",m:"Eski ibadethane"},{w:"SARAY",m:"Hükümdar konutu"},{w:"KÖPRÜ",m:"Geçiş yolu"},{w:"ÇEŞME",m:"Su yapısı"},
+        {w:"HAMAM",m:"Yıkanma yeri"},{w:"MÜZE",m:"Tarih evi"}
     ]
+ 
+
  
  
 };
