@@ -9,8 +9,7 @@
     
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1880946354382681" crossorigin="anonymous"></script>
-    <!-- AMP Auto Ads -->
-    <script async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js"></script>
+    <!-- AMP Auto Ads kaldırıldı — sayfa içi reklam patlamasını önlemek için -->
     
     <style>
         :root {
@@ -118,8 +117,9 @@
         .content::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.3); }
 
         /* HERO */
-        .hero-card { background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(138,43,226,0.1)); border: 1px solid rgba(255,255,255,0.1); border-radius: 28px; padding: 35px; margin-bottom: 35px; position: relative; overflow: hidden; backdrop-filter: blur(15px); transition: all 0.5s ease; box-shadow: var(--glass-shadow); }
-        .hero-card:hover { border-color: rgba(255,255,255,0.2); box-shadow: 0 20px 40px rgba(0,0,0,0.4); transform: translateY(-3px); }
+        .hero-card { background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(138,43,226,0.12)); border: 1px solid rgba(255,255,255,0.12); border-radius: 28px; padding: 35px; margin-bottom: 35px; position: relative; overflow: hidden; backdrop-filter: blur(15px); transition: all 0.5s ease; box-shadow: var(--glass-shadow), 0 0 60px rgba(59,130,246,0.08) inset; }
+        .hero-card::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at 80% 50%, rgba(59,130,246,0.08) 0%, transparent 70%); pointer-events:none; }
+        .hero-card:hover { border-color: rgba(255,255,255,0.22); box-shadow: 0 24px 48px rgba(0,0,0,0.45), 0 0 80px rgba(59,130,246,0.1) inset; transform: translateY(-4px); }
         .hero-badge { background: linear-gradient(90deg, var(--accent), #e11d48); color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; display: inline-block; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(244,63,94,0.4); }
         .hero-title { font-size: 2.8rem; font-weight: 900; margin-bottom: 12px; line-height: 1.1; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .hero-desc { color: #cbd5e1; font-size: 1rem; max-width: 60%; margin-bottom: 25px; line-height: 1.6; font-weight: 300; }
@@ -132,9 +132,9 @@
         /* Arama */
         .search-container { position: relative; margin-bottom: 30px; }
         .search-icon { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: var(--text-sub); font-size: 1.2rem; }
-        .search-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); padding: 20px 20px 20px 60px; border-radius: 22px; color: #fff; font-size: 1.05rem; transition: all 0.3s; backdrop-filter: blur(15px); box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); }
+        .search-input { width: 100%; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.09); padding: 20px 20px 20px 60px; border-radius: 22px; color: #fff; font-size: 1.05rem; transition: all 0.3s; backdrop-filter: blur(20px); box-shadow: inset 0 2px 12px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.04); }
         .search-input::placeholder { color: #64748b; font-weight: 300; }
-        .search-input:focus { outline: none; border-color: rgba(59,130,246,0.6); box-shadow: 0 0 25px rgba(59,130,246,0.2), inset 0 2px 10px rgba(0,0,0,0.2); background: rgba(0,0,0,0.6); }
+        .search-input:focus { outline: none; border-color: rgba(59,130,246,0.7); box-shadow: 0 0 30px rgba(59,130,246,0.18), inset 0 2px 12px rgba(0,0,0,0.25); background: rgba(0,0,0,0.65); }
 
         /* Oyunlar Grid */
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
@@ -142,13 +142,15 @@
         .game-card {
             text-decoration: none; color: inherit; display: block; background: var(--bg-card);
             border-radius: 24px; overflow: hidden; cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.25,0.8,0.25,1); border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.4s cubic-bezier(0.25,0.8,0.25,1); border: 1px solid rgba(255,255,255,0.06);
             position: relative; backdrop-filter: blur(10px); -webkit-tap-highlight-color: transparent;
             animation: fadeUp 0.5s ease backwards;
         }
+        .game-card::after { content:''; position:absolute; inset:0; background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 60%); pointer-events:none; border-radius:24px; opacity:0; transition:opacity 0.3s; }
+        .game-card:hover::after { opacity:1; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        .game-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.15); z-index: 2; }
+        .game-card:hover { transform: translateY(-12px); box-shadow: 0 24px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.14); z-index: 2; }
         .game-card:active { transform: translateY(-3px) scale(0.97); }
         
         .game-thumb { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 4rem; transition: transform 0.5s cubic-bezier(0.25,0.8,0.25,1); position: relative; }
@@ -217,8 +219,6 @@
     </style>
 </head>
 <body>
-    <amp-auto-ads type="adsense" data-ad-client="ca-pub-1880946354382681"></amp-auto-ads>
-
     <!-- Loader -->
     <div class="page-loader" id="pageLoader">
         <div class="loader-spinner"></div>
@@ -345,8 +345,20 @@
                 <!-- Grid alanı tamamen JS ile doldurulacak -->
                 <div class="games-grid" id="gamesGrid"></div>
 
+                <!-- Reklam Alanı -->
+                <div style="margin-top: 40px; border-radius: 18px; overflow: hidden; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 10px; text-align: center;">
+                    <p style="color:#334155; font-size:0.65rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px;">REKLAM</p>
+                    <ins class="adsbygoogle"
+                         style="display:block; border-radius:12px; overflow:hidden;"
+                         data-ad-client="ca-pub-1880946354382681"
+                         data-ad-slot="1435965312"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                </div>
+
                 <!-- Alt Bilgi -->
-                <div style="margin-top: 50px; text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05);">
+                <div style="margin-top: 40px; text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05);">
                     <div class="logo-box" style="margin: 0 auto 15px auto; width: 40px; height: 40px; font-size:1.2rem;">
                         <i class="fa-solid fa-gamepad"></i>
                     </div>
@@ -378,41 +390,33 @@
         </div>
     </div>
 
-    <script>
-        // --- OYUN VERİTABANI ---
-        const gamesDB = [
-            { id: "ok_labirenti", title: "Ok Labirenti", catId: "puzzle", catName: "Zeka", desc: "Okları takip ederek doğru çıkışı bul!", icon: "🏹", url: "ok_labirenti.html", color1: "#6c63ff", color2: "#22d3ae", badge: "YENİ" },
-            { id: "tas_kirma", title: "3D Stack Ball", catId: "action", catName: "Aksiyon", desc: "Ekrana basılı tut, kuleyi yık, öfke modunu aç!", icon: "💥", url: "tas-kirma.html", color1: "#ff0844", color2: "#ffb199", badge: "YENİ" },
-            { id: "hokey", title: "Neon Masa Hokeyi", catId: "action", catName: "Aksiyon", desc: "Neon ışıklar altında yapay zekaya karşı kapış!", icon: "🏒", url: "masa-hokeyi.html", color1: "#d900ff", color2: "#00ffff", badge: "POPÜLER" },
-            { id: "kelime_puz", title: "Kelime Puzzle", catId: "puzzle", catName: "Bulmaca", desc: "Kozmik uzayda kelimeleri bul, zekanı test et!", icon: "🔠", url: "kelime_puzzle.html", color1: "#6366f1", color2: "#8b5cf6" },
-            { id: "2048", title: "2048 Pro", catId: "puzzle", catName: "Zeka", desc: "Sayıları birleştir, 2048'e ulaş!", icon: "🔢", url: "2048.html", color1: "#f59e0b", color2: "#fbbf24" },
-            { id: "enerji", title: "Enerji Tüpleri", catId: "strategy", catName: "Strateji", desc: "Tüpleri bağla, enerjiyi akıt!", icon: "⚡", url: "enerji-toplari.html", color1: "#eab308", color2: "#fde047" },
-            { id: "kuantum", title: "Kuantum Kalkanı", catId: "action", catName: "Aksiyon", desc: "Kalkanını yönet, düşmanları savuş!", icon: "🛡️", url: "kuantum-kalkani.html", color1: "#06b6d4", color2: "#67e8f9" },
-            { id: "word_master", title: "Word Master", catId: "puzzle", catName: "Eğitim", desc: "Gizli kelimeleri bul, siber dünyanın hakimi ol!", icon: "W", url: "word-master.html", color1: "#7c3aed", color2: "#c084fc", isTextIcon: true },
-            { id: "ucak", title: "Uçak Simülasyonu", catId: "simulation", catName: "Simülasyon", desc: "3D kokpite geç, gökyüzünü fethet!", icon: "✈️", url: "ucak-simulasyonu.html", color1: "#0284c7", color2: "#38bdf8" },
-            { id: "block", title: "Block Legend", catId: "puzzle", catName: "Bulmaca", desc: "Blokları yerleştir, kombolar yap!", icon: "🧩", url: "block-puzzle.html", color1: "#d946ef", color2: "#f472b6" },
-            { id: "ninja", title: "Fruit Ninja", catId: "action", catName: "Aksiyon", desc: "Bıçaklarını bile, meyveleri kes.", icon: "🍉", url: "fruit-ninja.html", color1: "#ef4444", color2: "#fca5a5" },
-            { id: "flappy", title: "Flappy Bird", catId: "action", catName: "Beceri", desc: "Boruların arasından geç ve rekoru kır.", icon: "🐦", url: "flappy-bird.html", color1: "#f59e0b", color2: "#fcd34d" },
-            { id: "space", title: "Space Shooter", catId: "action", catName: "Uzay", desc: "Galaksiyi düşman istilasından kurtar!", icon: "🚀", url: "space-shooter.html", color1: "#3b82f6", color2: "#93c5fd" },
-            { id: "stack", title: "Stack Tower", catId: "puzzle", catName: "Zeka", desc: "Blokları üst üste diz, kule inşa et.", icon: "🏗️", url: "stack-tower.html", color1: "#10b981", color2: "#6ee7b7" },
-            { id: "bubble", title: "Bubble Shooter", catId: "puzzle", catName: "Bulmaca", desc: "Aynı renk topları eşleştir ve patlat.", icon: "🔮", url: "bubble.html", color1: "#8b5cf6", color2: "#c4b5fd" },
-            { id: "memory", title: "Hafıza Kartları", catId: "puzzle", catName: "Zeka", desc: "Kartları eşleştir, hafızanı zorla.", icon: "🃏", url: "kart-eslestirme.html", color1: "#14b8a6", color2: "#5eead4" },
-            { id: "snake", title: "Yılan Oyunu", catId: "action", catName: "Klasik", desc: "Klasik efsane! Yemi ye, uza.", icon: "🐍", url: "yilan-oyunu.html", color1: "#22c55e", color2: "#86efac" },
-            { id: "race", title: "Araba Yarışı", catId: "action", catName: "Yarış", desc: "Trafikte makas at, rekor kır.", icon: "🏎️", url: "araba.html", color1: "#ef4444", color2: "#f87171" },
-            { id: "kelime_ust", title: "Kelime Üstadı", catId: "puzzle", catName: "Kelime", desc: "Harfleri birleştir, kelime türet.", icon: "🔡", url: "kelime-ustadi.html", color1: "#f97316", color2: "#fdba74" },
-            { id: "dama", title: "Dama Oyunu", catId: "strategy", catName: "Strateji", desc: "Türk daması kurallarıyla rakibini alt et.", icon: "⚫", url: "turk-damasi.html", color1: "#64748b", color2: "#cbd5e1" },
-            { id: "kizma", title: "Kızma Birader", catId: "strategy", catName: "Klasik", desc: "Zarlarını at, piyonlarını eve ulaştır.", icon: "🎲", url: "kizma-birader.html", color1: "#eab308", color2: "#fde047" },
-            { id: "mugolyoner", title: "MuGölyoner", catId: "puzzle", catName: "Bilgi", desc: "Kim Milyoner Olmak İster tarzı bilgi yarışması!", icon: "💰", url: "mugolyoner.html", color1: "#ffaa00", color2: "#00d4ff", badge: "YENİ" },
-            { id: "adam_asmaca", title: "Adam Asmaca", catId: "puzzle", catName: "Kelime", desc: "Harfleri tahmin et, adamı kurtar!", icon: "🪢", url: "adam-asmaca.html", color1: "#1e293b", color2: "#38bdf8", badge: "YENİ" }
-        ];
+    <!-- Oyun veritabanı — gamesDB ve gamesCategories burada tanımlanır -->
+    <script src="games-data.js"></script>
 
-        // Kategoriler
-        const categories = {
-            'action': { name: 'Aksiyon', icon: '⚡', color: '#ef4444' },
-            'puzzle': { name: 'Zeka & Bulmaca', icon: '🧠', color: '#a855f7' },
-            'strategy': { name: 'Strateji', icon: '♟️', color: '#eab308' },
-            'simulation': { name: 'Simülasyon', icon: '✈️', color: '#0ea5e9' }
-        };
+    <script>
+        /*
+         * Oyun verisi games-data.js dosyasından gelir.
+         * gamesDB ve gamesCategories bu sayfadan önce yüklenir.
+         * Aşağıda gamesCategories → categories takma adı kurulur.
+         */
+        const categories = gamesCategories; // games-data.js'deki global isim
+
+        // Labirent oyununu veritabanına ekle (eğer yoksa)
+        if (!gamesDB.find(g => g.id === 'labirent')) {
+            gamesDB.unshift({
+                id: 'labirent',
+                title: 'Labirent',
+                catId: 'puzzle',
+                catName: 'Bulmaca',
+                desc: 'Neon ışıklı labirentten çıkış yolunu bul! Yıldızları topla, en iyi rankı kazan.',
+                icon: '🌀',
+                color1: '#00f2ff',
+                color2: '#8a2be2',
+                url: 'labirent.html',
+                badge: 'YENİ',
+                isTextIcon: false
+            });
+        }
 
         let favorites = JSON.parse(localStorage.getItem('mugolFavorites')) || [];
         let currentFilter = 'all';

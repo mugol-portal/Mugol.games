@@ -27,21 +27,24 @@
         /* Navigasyon Paneli */
         .top-nav {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 15px; background: var(--glass); backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 10;
+            padding: 10px 15px; background: rgba(10,10,18,0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,242,255,0.15); z-index: 10;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
         .back-btn {
-            background: none; border: 1px solid var(--neon); color: var(--neon);
-            padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 16px;
-            font-family: 'Orbitron';
+            background: rgba(0, 242, 255, 0.08); border: 1px solid var(--neon); color: var(--neon);
+            padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 14px;
+            font-family: 'Orbitron'; transition: all 0.25s; display:flex; align-items:center; gap:6px;
         }
+        .back-btn:hover { background: rgba(0,242,255,0.18); box-shadow: 0 0 15px rgba(0,242,255,0.3); transform: translateX(-2px); }
 
         .action-btn {
-            background: rgba(255,255,255,0.1); border: none; color: white;
-            padding: 8px 12px; border-radius: 5px; font-size: 10px; cursor: pointer;
-            font-family: 'Orbitron';
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); color: white;
+            padding: 7px 13px; border-radius: 8px; font-size: 10px; cursor: pointer;
+            font-family: 'Orbitron'; transition: all 0.2s; margin-left: 6px;
         }
+        .action-btn:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.25); }
 
         /* HUD Paneli */
         .hud { width: 100%; padding: 10px 0; background: rgba(0,0,0,0.2); }
@@ -63,36 +66,37 @@
             position: relative;
         }
         canvas { 
-            border-radius: 12px; 
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            border-radius: 16px; 
+            box-shadow: 0 0 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,242,255,0.1);
             background: var(--path);
         }
 
         /* Kontroller */
         .controls {
             display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 12px; padding: 20px; width: 100%; max-width: 320px;
+            gap: 10px; padding: 15px 20px; width: 100%; max-width: 300px;
             margin: 0 auto;
         }
         .btn {
-            height: 65px; background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px; color: white; display: flex; align-items: center;
-            justify-content: center; font-size: 24px; cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
+            height: 62px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px; color: white; display: flex; align-items: center;
+            justify-content: center; font-size: 22px; cursor: pointer;
+            -webkit-tap-highlight-color: transparent; transition: all 0.15s;
         }
-        .btn:active { background: var(--neon); color: black; box-shadow: 0 0 25px var(--neon); transform: scale(0.95); }
+        .btn:active { background: var(--neon); color: black; box-shadow: 0 0 30px var(--neon); transform: scale(0.92); border-color: var(--neon); }
 
         /* Sonuç Ekranı */
         #overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.88);
             display: none; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 100; backdrop-filter: blur(8px);
+            z-index: 100; backdrop-filter: blur(12px);
         }
         .modal { 
-            background: #0d0d1a; padding: 40px; border-radius: 25px; 
-            border: 2px solid var(--neon); text-align: center;
+            background: linear-gradient(160deg, #0d0d1a, #090912); padding: 45px 50px; border-radius: 28px; 
+            border: 1px solid rgba(0,242,255,0.35); text-align: center;
+            box-shadow: 0 0 60px rgba(0,242,255,0.12), 0 30px 60px rgba(0,0,0,0.7);
         }
-        .rank { font-size: 72px; font-weight: bold; margin: 10px 0; text-shadow: 0 0 20px var(--neon); }
+        .rank { font-size: 80px; font-weight: bold; margin: 10px 0; text-shadow: 0 0 30px var(--neon), 0 0 60px var(--neon); }
 
         #fileInput { display: none; }
     </style>
@@ -100,7 +104,7 @@
 <body>
 
     <nav class="top-nav">
-        <button class="back-btn" onclick="window.history.back()">←</button>
+        <button class="back-btn" onclick="window.location.href='index.html'">← GERİ</button>
         <div style="font-size: 14px; letter-spacing: 3px; font-weight: bold;">LABİRENT</div>
         <div class="save-load-btns">
             <button class="action-btn" onclick="exportData()">💾 KAYDET</button>
