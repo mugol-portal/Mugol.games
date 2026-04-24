@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -7,10 +8,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     
-    <!-- Google AdSense -->
+    <!-- Google AdSense - Sadece Standart Kod Bırakıldı (AMP Kaldırıldı) -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1880946354382681" crossorigin="anonymous"></script>
-    <!-- AMP Auto Ads -->
-    <script async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js"></script>
     
     <style>
         :root {
@@ -217,7 +216,7 @@
     </style>
 </head>
 <body>
-    <amp-auto-ads type="adsense" data-ad-client="ca-pub-1880946354382681"></amp-auto-ads>
+    <!-- AMP Otomatik Reklamlar Kaldırıldı, Sadece Panelden Kontrol Edilen Otomatik Reklam Aktif -->
 
     <!-- Loader -->
     <div class="page-loader" id="pageLoader">
@@ -379,7 +378,7 @@
     </div>
 
     <script>
-        // --- OYUN VERİTABANI ---
+        // JS kodları aynen korunmuştur (Oyun veri tabanı, render, favori vs.)
         const gamesDB = [
             { id: "ok_labirenti", title: "Ok Labirenti", catId: "puzzle", catName: "Zeka", desc: "Okları takip ederek doğru çıkışı bul!", icon: "🏹", url: "ok_labirenti.html", color1: "#6c63ff", color2: "#22d3ae", badge: "YENİ" },
             { id: "tas_kirma", title: "3D Stack Ball", catId: "action", catName: "Aksiyon", desc: "Ekrana basılı tut, kuleyi yık, öfke modunu aç!", icon: "💥", url: "tas-kirma.html", color1: "#ff0844", color2: "#ffb199", badge: "YENİ" },
@@ -406,7 +405,6 @@
             { id: "adam_asmaca", title: "Adam Asmaca", catId: "puzzle", catName: "Kelime", desc: "Harfleri tahmin et, adamı kurtar!", icon: "🪢", url: "adam-asmaca.html", color1: "#1e293b", color2: "#38bdf8", badge: "YENİ" }
         ];
 
-        // Kategoriler
         const categories = {
             'action': { name: 'Aksiyon', icon: '⚡', color: '#ef4444' },
             'puzzle': { name: 'Zeka & Bulmaca', icon: '🧠', color: '#a855f7' },
@@ -417,32 +415,24 @@
         let favorites = JSON.parse(localStorage.getItem('mugolFavorites')) || [];
         let currentFilter = 'all';
 
-        // --- BAŞLANGIÇ ÇALIŞTIRMALARI ---
         window.onload = () => {
             generateUI();
             updateDailyHero();
             renderGames();
         };
 
-        // YÜKLEME EKRANINDA TAKILI KALMA (BFCache) ÇÖZÜMÜ
         window.addEventListener('pageshow', (event) => {
             setTimeout(() => document.getElementById('pageLoader').classList.remove('active'), 300);
         });
 
-        // --- ARAYÜZ OLUŞTURUCU ---
         function generateUI() {
             const filterContainer = document.getElementById('filtersContainer');
             const menuContainer = document.getElementById('category-menu-container');
             
-            // Kategori Butonları ve Menüleri oluştur
             Object.keys(categories).forEach(catId => {
                 const cat = categories[catId];
                 const count = gamesDB.filter(g => g.catId === catId).length;
-
-                // Üst Filtre Butonu
                 filterContainer.innerHTML += `<button class="filter-btn" id="filter-${catId}" onclick="filterGames('${catId}')">${cat.icon} ${cat.name}</button>`;
-
-                // Yan Menü Öğesi
                 menuContainer.innerHTML += `
                     <div class="menu-item" id="menu-${catId}" onclick="filterGames('${catId}')">
                         <div class="menu-item-icon" style="background:${cat.color}25; color:${cat.color};">${cat.icon}</div>
@@ -451,19 +441,14 @@
                     </div>
                 `;
             });
-
             document.getElementById('count-all').innerText = gamesDB.length;
             updateFavoriteCount();
         }
 
-        // --- OYUNLARI EKRANA BASTIRMA ---
         function renderGames(searchQuery = '') {
             const grid = document.getElementById('gamesGrid');
             grid.innerHTML = '';
-            
             let filteredGames = gamesDB;
-
-            // Filtreleme mantığı
             if (currentFilter === 'favorites') {
                 filteredGames = gamesDB.filter(g => favorites.includes(g.id));
                 document.getElementById('sectionTitle').innerHTML = '<i class="fa-solid fa-heart" style="color:var(--accent)"></i> Favori Oyunlarım';
@@ -473,122 +458,70 @@
             } else {
                 document.getElementById('sectionTitle').innerHTML = '🕹️ Tüm Oyunlar';
             }
-
-            // Arama mantığı
             if (searchQuery) {
                 const q = searchQuery.toLowerCase();
                 filteredGames = gamesDB.filter(g => g.title.toLowerCase().includes(q) || g.catName.toLowerCase().includes(q));
                 document.getElementById('sectionTitle').innerHTML = `🔍 "${searchQuery}" Sonuçları`;
             }
-
-            // Oyun sayısını güncelle
             document.getElementById('gameCountText').innerText = `${filteredGames.length} Oyun`;
-
             if(filteredGames.length === 0) {
-                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-sub);">
-                    <i class="fa-regular fa-face-frown" style="font-size:3rem; margin-bottom:15px; opacity:0.5;"></i>
-                    <p>Bu kategoride/aramada oyun bulunamadı.</p>
-                </div>`;
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-sub);"><i class="fa-regular fa-face-frown" style="font-size:3rem; margin-bottom:15px; opacity:0.5;"></i><p>Bu kategoride/aramada oyun bulunamadı.</p></div>`;
                 return;
             }
-
-            // HTML Oluşturma
             filteredGames.forEach((game, index) => {
                 const isFav = favorites.includes(game.id);
                 const iconStyle = game.isTextIcon ? `font-family:'Outfit',sans-serif;font-weight:900;` : '';
                 const badgeHTML = game.badge ? `<div class="card-badge">${game.badge}</div>` : '';
-                
-                // Gecikmeli animasyon için
                 const animDelay = (index * 0.05) + 's';
-
-                const cardHTML = `
-                    <div class="game-card" style="animation-delay: ${animDelay};" onclick="openGame(event, '${game.url}')">
-                        ${badgeHTML}
-                        <div class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(event, '${game.id}')" title="Favorilere Ekle">
-                            <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-                        </div>
-                        <div class="play-overlay"><i class="fa-solid fa-play"></i></div>
-                        <div class="game-thumb" style="background:linear-gradient(135deg, ${game.color1}, ${game.color2}); ${iconStyle} text-shadow:0 5px 15px rgba(0,0,0,0.3); color:#fff;">
-                            ${game.icon}
-                        </div>
-                        <div class="game-info">
-                            <div class="game-title">${game.title}</div>
-                            <div class="game-cat" style="color:${game.color2}">
-                                ${game.catName}
-                            </div>
-                        </div>
-                    </div>
-                `;
+                const cardHTML = `<div class="game-card" style="animation-delay: ${animDelay};" onclick="openGame(event, '${game.url}')">${badgeHTML}<div class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(event, '${game.id}')" title="Favorilere Ekle"><i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i></div><div class="play-overlay"><i class="fa-solid fa-play"></i></div><div class="game-thumb" style="background:linear-gradient(135deg, ${game.color1}, ${game.color2}); ${iconStyle} text-shadow:0 5px 15px rgba(0,0,0,0.3); color:#fff;">${game.icon}</div><div class="game-info"><div class="game-title">${game.title}</div><div class="game-cat" style="color:${game.color2}">${game.catName}</div></div></div>`;
                 grid.innerHTML += cardHTML;
             });
         }
 
-        // --- GÜNÜN YILDIZI GÜNCELLEME ---
         function updateDailyHero() {
             const today = new Date();
             const start = new Date(today.getFullYear(), 0, 0);
             const dayOfYear = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-            const game = gamesDB[dayOfYear % gamesDB.length]; // Her gün değişir
-
+            const game = gamesDB[dayOfYear % gamesDB.length];
             document.getElementById('heroTitle').innerHTML = game.title.replace(' ', '<br>');
             document.getElementById('heroDesc').textContent = game.desc;
-            
             const heroIconEl = document.getElementById('heroIcon');
             heroIconEl.textContent = game.icon;
-            heroIconEl.style.fontFamily = game.isTextIcon ? "'Outfit', sans-serif" : 'inherit';
             if (game.isTextIcon) heroIconEl.style.fontWeight = '900';
-
             const heroBtn = document.getElementById('heroBtn');
             heroBtn.href = game.url;
             heroBtn.setAttribute('onclick', `openGame(event,'${game.url}')`);
-            
             const heroCard = document.getElementById('dailyHero');
             heroCard.style.background = `linear-gradient(135deg, ${game.color1}30, rgba(15,23,42,0.8))`;
             heroCard.style.borderColor = `${game.color1}55`;
         }
 
-        // --- FİLTRELEME & ARAMA ---
         function filterGames(filterId) {
             currentFilter = filterId;
-            document.getElementById('searchInput').value = ''; // Aramayı temizle
-
-            // Buton aktiflikleri
+            document.getElementById('searchInput').value = '';
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             const fBtn = document.getElementById('filter-' + filterId);
             if(fBtn) fBtn.classList.add('active');
-
-            // Menü aktiflikleri
             document.querySelectorAll('.menu-item[id^="menu-"]').forEach(item => item.classList.remove('active-cat'));
             const mBtn = document.getElementById('menu-' + filterId);
             if(mBtn) mBtn.classList.add('active-cat');
-
             closeMenu();
             renderGames();
-            
-            // Sayfayı hafif yukarı kaydır
             document.getElementById('mainContent').scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         document.getElementById('searchInput').addEventListener('input', (e) => {
             const val = e.target.value.trim();
-            if(val) {
-                // Arama yaparken butonlardan aktifliği kaldır
-                document.querySelectorAll('.filter-btn, .menu-item[id^="menu-"]').forEach(el => el.classList.remove('active', 'active-cat'));
-            } else {
-                // Silinince mevcut filtre butonunu aktif et
-                document.getElementById('filter-' + currentFilter)?.classList.add('active');
-            }
+            if(val) document.querySelectorAll('.filter-btn, .menu-item[id^="menu-"]').forEach(el => el.classList.remove('active', 'active-cat'));
+            else document.getElementById('filter-' + currentFilter)?.classList.add('active');
             renderGames(val);
         });
 
-        // --- FAVORİ SİSTEMİ ---
         function toggleFavorite(event, gameId) {
-            event.stopPropagation(); // Karta tıklanmasını(oyun açılmasını) engelle
+            event.stopPropagation();
             event.preventDefault();
-
             const index = favorites.indexOf(gameId);
             const gameTitle = gamesDB.find(g => g.id === gameId).title;
-
             if (index === -1) {
                 favorites.push(gameId);
                 showToast(`❤️ <b>${gameTitle}</b> favorilere eklendi.`);
@@ -596,14 +529,10 @@
                 favorites.splice(index, 1);
                 showToast(`💔 <b>${gameTitle}</b> favorilerden çıkarıldı.`);
             }
-
             localStorage.setItem('mugolFavorites', JSON.stringify(favorites));
             updateFavoriteCount();
-            
-            // Eğer favoriler sekmesindeysek listeyi yenile
             if(currentFilter === 'favorites') renderGames();
             else {
-                // Sadece butonu güncelle (sayfa yenilenmesin diye)
                 const btn = event.currentTarget;
                 btn.classList.toggle('active');
                 const icon = btn.querySelector('i');
@@ -612,18 +541,14 @@
             }
         }
 
-        function updateFavoriteCount() {
-            document.getElementById('count-favorites').innerText = favorites.length;
-        }
-
-        // --- TOAST BİLDİRİM ---
+        function updateFavoriteCount() { document.getElementById('count-favorites').innerText = favorites.length; }
+        
         function showToast(message) {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = 'toast';
             toast.innerHTML = message;
             container.appendChild(toast);
-            
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateY(20px)';
@@ -631,30 +556,22 @@
             }, 3000);
         }
 
-        // --- YÖNLENDİRME ---
         function openGame(event, url) {
-            // Eğer yeni sekmede açılmak isteniyorsa engelleme
             if (event && (event.ctrlKey || event.metaKey || event.button === 1)) return true;
             if (event) event.preventDefault();
-            
             document.getElementById('pageLoader').classList.add('active');
             setTimeout(() => { window.location.href = url; }, 500);
         }
 
-        // --- SCROLL TO TOP ---
         const contentArea = document.getElementById('mainContent');
         const scrollBtn = document.getElementById('scrollTopBtn');
-        
         contentArea.addEventListener('scroll', () => {
             if (contentArea.scrollTop > 300) scrollBtn.classList.add('visible');
             else scrollBtn.classList.remove('visible');
         });
 
-        function scrollToTop() {
-            contentArea.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        function scrollToTop() { contentArea.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-        // --- UI YARDIMCILARI ---
         function setMode(mode) {
             const frame = document.getElementById('deviceFrame');
             document.querySelectorAll('.sim-btn').forEach(b => b.classList.remove('active'));
@@ -671,7 +588,6 @@
             document.getElementById('sideMenu').classList.remove('active');
             document.getElementById('menuOverlay').classList.remove('active');
         }
-
         function openPrivacy() { document.getElementById('privacyModal').classList.add('active'); }
         function closePrivacy() { document.getElementById('privacyModal').classList.remove('active'); }
     </script>
