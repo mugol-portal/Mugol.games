@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -10,6 +9,8 @@
     
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1880946354382681" crossorigin="anonymous"></script>
+    <!-- AMP Auto Ads -->
+    <script async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js"></script>
     
     <style>
         :root {
@@ -29,6 +30,7 @@
 
         body { background-color: #020617; color: var(--text-main); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
+        /* --- SİMÜLASYON KONTROL BARI --- */
         .simulator-bar {
             height: 50px; background: rgba(9, 9, 11, 0.9); border-bottom: var(--glass-border);
             display: flex; align-items: center; justify-content: center; gap: 15px;
@@ -42,6 +44,7 @@
         }
         .sim-btn:hover, .sim-btn.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); transform: translateY(-2px); }
 
+        /* --- ANA ALAN --- */
         .app-container { flex: 1; display: flex; justify-content: center; background: var(--bg-dark); position: relative; overflow: hidden; }
         .bg-gradient { position: absolute; width: 100%; height: 100%; z-index: 0; overflow: hidden; }
         .blob { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: floatBlob 20s infinite alternate ease-in-out; will-change: transform; }
@@ -56,6 +59,7 @@
             transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
+        /* --- HEADER --- */
         .header {
             padding: 15px 25px; display: flex; align-items: center; justify-content: space-between;
             background: rgba(9, 9, 11, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -77,6 +81,7 @@
         }
         .menu-btn:hover { transform: scale(1.1) rotate(5deg); background: rgba(255,255,255,0.15); box-shadow: 0 0 15px rgba(255,255,255,0.1); }
 
+        /* --- SLIDE-IN MENÜ --- */
         .side-menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9000; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(5px); }
         .side-menu-overlay.active { opacity: 1; visibility: visible; }
         .side-menu {
@@ -98,92 +103,151 @@
         .menu-count { margin-left: auto; background: rgba(255,255,255,0.08); color: #94a3b8; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
         .menu-divider { border: none; border-top: var(--glass-border); margin: 18px 0; }
 
+        /* Filtre Butonları */
         .filters-wrapper { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 25px; padding-bottom: 10px; scrollbar-width: none; -ms-overflow-style: none; }
         .filters-wrapper::-webkit-scrollbar { display: none; }
         .filter-btn { background: rgba(255,255,255,0.03); color: #94a3b8; border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 30px; white-space: nowrap; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(5px); }
         .filter-btn:hover { background: rgba(255,255,255,0.1); color: #fff; transform: translateY(-2px); }
         .filter-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 6px 20px var(--primary-glow); font-weight: 600; }
 
+        /* İçerik */
         .content { flex: 1; overflow-y: auto; padding: 25px; padding-bottom: 80px; scroll-behavior: smooth; }
+        .content::-webkit-scrollbar { width: 8px; }
+        .content::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
+        .content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+        .content::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.3); }
+
+        /* HERO */
         .hero-card { background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(138,43,226,0.1)); border: 1px solid rgba(255,255,255,0.1); border-radius: 28px; padding: 35px; margin-bottom: 35px; position: relative; overflow: hidden; backdrop-filter: blur(15px); transition: all 0.5s ease; box-shadow: var(--glass-shadow); }
+        .hero-card:hover { border-color: rgba(255,255,255,0.2); box-shadow: 0 20px 40px rgba(0,0,0,0.4); transform: translateY(-3px); }
         .hero-badge { background: linear-gradient(90deg, var(--accent), #e11d48); color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; display: inline-block; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(244,63,94,0.4); }
         .hero-title { font-size: 2.8rem; font-weight: 900; margin-bottom: 12px; line-height: 1.1; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .hero-desc { color: #cbd5e1; font-size: 1rem; max-width: 60%; margin-bottom: 25px; line-height: 1.6; font-weight: 300; }
         .hero-btn { background: #fff; color: #000; border: none; padding: 15px 35px; border-radius: 50px; font-size: 1.05rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25,0.8,0.25,1); box-shadow: 0 5px 20px rgba(255,255,255,0.2); text-decoration: none; }
+        .hero-btn:hover { box-shadow: 0 10px 30px rgba(255,255,255,0.4); transform: translateY(-3px); background: #f8fafc; }
+        .hero-btn:active { transform: translateY(0) scale(0.95); }
         .hero-img { position: absolute; right: -10px; bottom: -20px; font-size: 9rem; opacity: 0.9; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.6)); animation: floatHeroIcon 4s ease-in-out infinite; }
         @keyframes floatHeroIcon { 0% { transform: translateY(0) rotate(-15deg); } 50% { transform: translateY(-20px) rotate(-10deg); } 100% { transform: translateY(0) rotate(-15deg); } }
 
+        /* Arama */
         .search-container { position: relative; margin-bottom: 30px; }
         .search-icon { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: var(--text-sub); font-size: 1.2rem; }
-        .search-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); padding: 20px 20px 20px 60px; border-radius: 22px; color: #fff; font-size: 1.05rem; transition: all 0.3s; backdrop-filter: blur(15px); }
+        .search-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); padding: 20px 20px 20px 60px; border-radius: 22px; color: #fff; font-size: 1.05rem; transition: all 0.3s; backdrop-filter: blur(15px); box-shadow: inset 0 2px 10px rgba(0,0,0,0.2); }
+        .search-input::placeholder { color: #64748b; font-weight: 300; }
+        .search-input:focus { outline: none; border-color: rgba(59,130,246,0.6); box-shadow: 0 0 25px rgba(59,130,246,0.2), inset 0 2px 10px rgba(0,0,0,0.2); background: rgba(0,0,0,0.6); }
 
+        /* Oyunlar Grid */
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
+        
         .game-card {
             text-decoration: none; color: inherit; display: block; background: var(--bg-card);
             border-radius: 24px; overflow: hidden; cursor: pointer;
             transition: all 0.4s cubic-bezier(0.25,0.8,0.25,1); border: 1px solid rgba(255,255,255,0.05);
-            position: relative; backdrop-filter: blur(10px); animation: fadeUp 0.5s ease backwards;
+            position: relative; backdrop-filter: blur(10px); -webkit-tap-highlight-color: transparent;
+            animation: fadeUp 0.5s ease backwards;
         }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .game-thumb { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 4rem; transition: transform 0.5s; position: relative; }
+        
+        .game-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.15); z-index: 2; }
+        .game-card:active { transform: translateY(-3px) scale(0.97); }
+        
+        .game-thumb { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 4rem; transition: transform 0.5s cubic-bezier(0.25,0.8,0.25,1); position: relative; }
+        .game-card:hover .game-thumb { transform: scale(1.1) rotate(3deg); }
+        
+        /* Play Overlay */
         .play-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; z-index: 5; }
         .game-card:hover .play-overlay { opacity: 1; }
-        .card-badge { position: absolute; top: 12px; left: 12px; background: var(--accent); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 10px; border-radius: 12px; z-index: 10; letter-spacing: 1px; }
-        .fav-btn { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; background: rgba(0,0,0,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; z-index: 10; border: 1px solid rgba(255,255,255,0.1); }
-        .fav-btn.active { color: var(--accent); }
-        .game-info { padding: 18px 15px; position: relative; z-index: 2; background: rgba(24,24,27,1); }
-        .game-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
-        .game-cat { font-size: 0.75rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
+        .play-overlay i { font-size: 2.5rem; color: #fff; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .game-card:hover .play-overlay i { transform: scale(1); }
 
+        /* Rozetler */
+        .card-badge { position: absolute; top: 12px; left: 12px; background: var(--accent); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 10px; border-radius: 12px; z-index: 10; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        
+        /* Favori Butonu */
+        .fav-btn { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.9rem; z-index: 10; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s; }
+        .fav-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.1); }
+        .fav-btn.active { color: var(--accent); background: rgba(244,63,94,0.15); border-color: var(--accent); }
+        .fav-btn.active i { font-weight: 900; }
+
+        .game-info { padding: 18px 15px; position: relative; z-index: 2; background: linear-gradient(to top, rgba(24,24,27,1) 30%, rgba(24,24,27,0.8)); border-top: 1px solid rgba(255,255,255,0.03); }
+        .game-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
+        .game-cat { font-size: 0.75rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 5px; }
+
+        /* Bölüm başlığı */
         .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; margin-top: 15px; }
         .section-title { font-size: 1.2rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 12px; }
-        .section-title::before { content: ''; display: block; width: 5px; height: 22px; background: var(--primary); border-radius: 5px; }
+        .section-title::before { content: ''; display: block; width: 5px; height: 22px; background: var(--primary); border-radius: 5px; box-shadow: 0 0 12px var(--primary-glow); }
 
-        .toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 100000; pointer-events: none; }
-        .toast { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); color: #fff; padding: 12px 24px; border-radius: 30px; margin-bottom: 10px; animation: toastIn 0.3s forwards; }
-        @keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* Toast Bildirim */
+        .toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 100000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: toastIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        
+        /* Scroll to Top */
+        .scroll-top { position: absolute; bottom: 30px; right: 30px; width: 50px; height: 50px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; z-index: 100; box-shadow: 0 5px 20px var(--primary-glow); border: none; opacity: 0; visibility: hidden; transition: 0.3s; transform: translateY(20px); }
+        .scroll-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+        .scroll-top:hover { transform: translateY(-5px); background: #2563eb; }
 
-        .scroll-top { position: absolute; bottom: 30px; right: 30px; width: 50px; height: 50px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; border: none; opacity: 0; visibility: hidden; transition: 0.3s; }
-        .scroll-top.visible { opacity: 1; visibility: visible; }
-
+        /* Loader */
         .page-loader { position: fixed; inset: 0; background: #020617; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.4s ease; color: #fff; }
         .page-loader.active { opacity: 1; visibility: visible; }
-        .loader-spinner { width: 70px; height: 70px; border: 4px solid rgba(255,255,255,0.05); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        .loader-spinner { width: 70px; height: 70px; border: 4px solid rgba(255,255,255,0.05); border-top-color: var(--primary); border-left-color: var(--primary); border-radius: 50%; animation: spin 1s cubic-bezier(0.5,0.1,0.4,0.9) infinite; box-shadow: 0 0 30px var(--primary-glow); margin-bottom: 25px; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(10px); }
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s; backdrop-filter: blur(10px); padding: 20px; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-box { background: #0f172a; width: 90%; max-width: 480px; border-radius: 30px; padding: 40px; border: 1px solid rgba(255,255,255,0.1); position: relative; }
+        .modal-box { background: #0f172a; width: 100%; max-width: 480px; border-radius: 30px; padding: 40px; border: 1px solid rgba(255,255,255,0.1); position: relative; transform: translateY(30px) scale(0.95); transition: 0.4s cubic-bezier(0.25,0.8,0.25,1); box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
+        .modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
+        .modal-close { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; color: #94a3b8; cursor: pointer; width: 45px; height: 45px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+        .modal-close:hover { background: rgba(244,63,94,0.2); color: #f43f5e; transform: rotate(90deg); }
 
+        /* Responsive */
+        .device-frame.tablet { width: 820px; height: 90vh; border-radius: 40px; border: 12px solid #18181b; margin-top: 25px; box-shadow: 0 0 50px rgba(0,0,0,0.8); overflow: hidden; }
+        .device-frame.mobile-sim { width: 390px; height: 85vh; border-radius: 50px; border: 14px solid #18181b; margin-top: 25px; box-shadow: 0 0 50px rgba(0,0,0,0.8); overflow: hidden; }
         @media (max-width: 768px) {
             .simulator-bar { display: none !important; }
-            .device-frame { border: none !important; border-radius: 0 !important; }
+            .app-container { padding: 0; }
+            .device-frame { width: 100% !important; height: 100% !important; border: none !important; border-radius: 0 !important; margin: 0 !important; box-shadow: none; }
+            .games-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
             .hero-title { font-size: 2.2rem; }
+            .hero-img { font-size: 7rem; right: -15px; bottom: -10px; }
+            .hero-desc { max-width: 100%; font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
+    <amp-auto-ads type="adsense" data-ad-client="ca-pub-1880946354382681"></amp-auto-ads>
+
+    <!-- Loader -->
     <div class="page-loader" id="pageLoader">
         <div class="loader-spinner"></div>
-        <div style="font-weight:800; letter-spacing:4px; font-size:1rem; color:white; margin-top:20px;">MUGÖL GAMES</div>
+        <div style="font-weight:800; letter-spacing:4px; font-size:1rem; color:white;">MUGÖL <span style="color:var(--primary);">GAMES</span></div>
+        <div style="margin-top:10px; font-size:0.8rem; color:var(--text-sub);">Bağlantı kuruluyor...</div>
     </div>
 
+    <!-- Toast Bildirim Konteyneri -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- Simülasyon Barı -->
     <div class="simulator-bar">
         <button class="sim-btn" onclick="setMode('mobile-sim')"><i class="fa-solid fa-mobile-screen"></i> Mobil</button>
         <button class="sim-btn" onclick="setMode('tablet')"><i class="fa-solid fa-tablet-screen-button"></i> Tablet</button>
         <button class="sim-btn active" onclick="setMode('desktop')"><i class="fa-solid fa-desktop"></i> Tam Ekran</button>
     </div>
 
+    <!-- Slide-in Menü Overlay -->
     <div class="side-menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
 
+    <!-- Slide-in Yan Menü -->
     <div class="side-menu" id="sideMenu">
         <div class="side-menu-header">
             <span class="side-menu-title"><i class="fa-solid fa-gamepad" style="color:var(--primary)"></i> MuGöl GAMES</span>
             <div class="side-menu-close" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></div>
         </div>
+
         <div class="menu-section-label">Oyunlar</div>
+        
         <div class="menu-item active-cat" id="menu-all" onclick="filterGames('all')">
             <div class="menu-item-icon" style="background:rgba(59,130,246,0.15); color:#3b82f6;">🕹️</div>
             <span>Tüm Oyunlar</span>
@@ -194,8 +258,32 @@
             <span>Favorilerim</span>
             <span class="menu-count" id="count-favorites">0</span>
         </div>
+
         <div class="menu-section-label" style="margin-top: 10px;">Kategoriler</div>
-        <div id="category-menu-container"></div>
+        <div id="category-menu-container">
+            <!-- Kategoriler JS ile yüklenecek -->
+        </div>
+
+        <hr class="menu-divider">
+
+        <div class="menu-section-label">Diğer</div>
+        <a href="https://mugol-portal.github.io" class="menu-item" onclick="openGame(event, 'https://mugol-portal.github.io'); closeMenu();">
+            <div class="menu-item-icon" style="background:rgba(16,185,129,0.15); color:#10b981;">🏠</div>
+            <span>Portala Dön</span>
+        </a>
+        <a href="mugolyoner.html" class="menu-item" onclick="openGame(event, 'mugolyoner.html'); closeMenu();">
+            <div class="menu-item-icon" style="background:rgba(255,170,0,0.15); color:#ffaa00;">💰</div>
+            <span>MuGölyoner</span>
+        </a>
+        
+        <div class="menu-item" onclick="openPrivacy(); closeMenu();">
+            <div class="menu-item-icon" style="background:rgba(100,116,139,0.15); color:#94a3b8;">🔒</div>
+            <span>Gizlilik Politikası</span>
+        </div>
+        <div class="menu-item" style="margin-top:auto; background:rgba(0,0,0,0.2); pointer-events: none;">
+            <div class="menu-item-icon" style="background:transparent; color:#475569;">ℹ️</div>
+            <span style="font-size:0.85rem; color:#475569;">Sürüm v6.0</span>
+        </div>
     </div>
 
     <div class="app-container">
@@ -206,18 +294,27 @@
         </div>
 
         <div class="device-frame" id="deviceFrame">
+            <!-- HEADER -->
             <header class="header">
                 <div class="logo-area">
-                    <div class="logo-box"><i class="fa-solid fa-gamepad"></i></div>
+                    <div class="logo-box">
+                        <img src="logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain;display:none;" onload="this.style.display='block';this.parentElement.style.background='transparent';this.parentElement.style.border='none';" onerror="this.style.display='none'">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
                     <div>
                         <div class="logo-title">MuGöl</div>
                         <div class="logo-subtitle">GAMES</div>
                     </div>
                 </div>
-                <div class="menu-btn" onclick="openMenu()"><i class="fa-solid fa-bars-staggered"></i></div>
+                <div class="menu-btn" onclick="openMenu()">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </div>
             </header>
 
+            <!-- İÇERİK -->
             <div class="content" id="mainContent">
+                
+                <!-- GÜNÜN YILDIZI -->
                 <div class="hero-card" id="dailyHero">
                     <span class="hero-badge" id="heroBadge">🌟 GÜNÜN YILDIZI</span>
                     <h1 class="hero-title" id="heroTitle">Yükleniyor...</h1>
@@ -226,139 +323,332 @@
                     <div class="hero-img" id="heroIcon">🎮</div>
                 </div>
 
+                <!-- ARAMA -->
                 <div class="search-container">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" class="search-input" placeholder="Oyun ara..." id="searchInput">
+                    <input type="text" class="search-input" placeholder="Oyun, kategori veya etiket ara..." id="searchInput">
                 </div>
 
+                <!-- FİLTRELER -->
                 <div class="filters-wrapper" id="filtersContainer">
                     <button class="filter-btn active" id="filter-all" onclick="filterGames('all')">Tümü</button>
+                    <button class="filter-btn" id="filter-favorites" onclick="filterGames('favorites')">❤️ Favoriler</button>
+                    <!-- Kategori butonları JS ile eklenecek -->
                 </div>
 
+                <!-- OYUN LİSTESİ -->
                 <div class="section-header">
                     <div class="section-title" id="sectionTitle">Tüm Oyunlar</div>
-                    <span id="gameCountText" style="color:var(--text-sub); font-size:0.85rem;"></span>
+                    <span style="color:var(--text-sub); font-size:0.85rem; font-weight:600;" id="gameCountText"></span>
                 </div>
 
+                <!-- Grid alanı tamamen JS ile doldurulacak -->
                 <div class="games-grid" id="gamesGrid"></div>
+
+                <!-- Alt Bilgi -->
+                <div style="margin-top: 50px; text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05);">
+                    <div class="logo-box" style="margin: 0 auto 15px auto; width: 40px; height: 40px; font-size:1.2rem;">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <p style="color:#64748b;font-weight:600;font-size:0.85rem;margin-bottom:10px;letter-spacing:1px;">MUGÖL GAMES v6.0</p>
+                    <span style="color:#475569; font-size: 0.8rem; cursor: pointer; text-decoration: underline;" onclick="openPrivacy()">Gizlilik İlkeleri</span>
+                </div>
+
+                <!-- Yukarı Çık Butonu -->
+                <button class="scroll-top" id="scrollTopBtn" onclick="scrollToTop()">
+                    <i class="fa-solid fa-arrow-up"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <script>
-        const gamesDB = [
-            // BAĞLANTI YAPILAN OYUN BURADA
-            { id: "labirent", title: "Neon Labirent", catId: "puzzle", catName: "Zeka", desc: "Karanlık dehlizlerde yolunu bul ve tüm yıldızları topla!", icon: "🧭", url: "labirent.html", color1: "#00f2ff", color2: "#0a0a12", badge: "YENİ" },
-            { id: "tas_kirma", title: "3D Stack Ball", catId: "action", catName: "Aksiyon", desc: "Ekrana basılı tut, kuleyi yık, öfke modunu aç!", icon: "💥", url: "tas-kirma.html", color1: "#ff0844", color2: "#ffb199", badge: "POPÜLER" },
-            { id: "hokey", title: "Neon Masa Hokeyi", catId: "action", catName: "Aksiyon", desc: "Neon ışıklar altında yapay zekaya karşı kapış!", icon: "🏒", url: "masa-hokeyi.html", color1: "#d900ff", color2: "#00ffff" },
-            { id: "kelime_puz", title: "Kelime Puzzle", catId: "puzzle", catName: "Bulmaca", desc: "Kozmik uzayda kelimeleri bul, zekanı test et!", icon: "🔠", url: "kelime_puzzle.html", color1: "#6366f1", color2: "#8b5cf6" },
-            { id: "2048", title: "2048 Pro", catId: "puzzle", catName: "Zeka", desc: "Sayıları birleştir, 2048'e ulaş!", icon: "🔢", url: "2048.html", color1: "#f59e0b", color2: "#fbbf24" },
-            { id: "enerji", title: "Enerji Tüpleri", catId: "strategy", catName: "Strateji", desc: "Tüpleri bağla, enerjiyi akıt!", icon: "⚡", url: "enerji-toplari.html", color1: "#eab308", color2: "#fde047" },
-            { id: "kuantum", title: "Kuantum Kalkanı", catId: "action", catName: "Aksiyon", desc: "Kalkanını yönet, düşmanları savuş!", icon: "🛡️", url: "kuantum-kalkani.html", color1: "#06b6d4", color2: "#67e8f9" },
-            { id: "ucak", title: "Uçak Simülasyonu", catId: "simulation", catName: "Simülasyon", desc: "3D kokpite geç, gökyüzünü fethet!", icon: "✈️", url: "ucak-simulasyonu.html", color1: "#0284c7", color2: "#38bdf8" },
-            { id: "block", title: "Block Legend", catId: "puzzle", catName: "Bulmaca", desc: "Blokları yerleştir, kombolar yap!", icon: "🧩", url: "block-puzzle.html", color1: "#d946ef", color2: "#f472b6" },
-            { id: "ninja", title: "Fruit Ninja", catId: "action", catName: "Aksiyon", desc: "Bıçaklarını bile, meyveleri kes.", icon: "🍉", url: "fruit-ninja.html", color1: "#ef4444", color2: "#fca5a5" },
-            { id: "flappy", title: "Flappy Bird", catId: "action", catName: "Beceri", desc: "Boruların arasından geç ve rekoru kır.", icon: "🐦", url: "flappy-bird.html", color1: "#f59e0b", color2: "#fcd34d" },
-            { id: "space", title: "Space Shooter", catId: "action", catName: "Uzay", desc: "Galaksiyi düşman istilasından kurtar!", icon: "🚀", url: "space-shooter.html", color1: "#3b82f6", color2: "#93c5fd" },
-            { id: "snake", title: "Yılan Oyunu", catId: "action", catName: "Klasik", desc: "Klasik efsane! Yemi ye, uza.", icon: "🐍", url: "yilan-oyunu.html", color1: "#22c55e", color2: "#86efac" },
-            { id: "race", title: "Araba Yarışı", catId: "action", catName: "Yarış", desc: "Trafikte makas at, rekor kır.", icon: "🏎️", url: "araba.html", color1: "#ef4444", color2: "#f87171" },
-            { id: "mugolyoner", title: "MuGölyoner", catId: "puzzle", catName: "Bilgi", desc: "Bilgi yarışması!", icon: "💰", url: "mugolyoner.html", color1: "#ffaa00", color2: "#00d4ff", badge: "YENİ" }
-        ];
+    <!-- GİZLİLİK MODALI -->
+    <div class="modal-overlay" id="privacyModal">
+        <div class="modal-box">
+            <div class="modal-close" onclick="closePrivacy()"><i class="fa-solid fa-xmark"></i></div>
+            <div style="width: 50px; height: 50px; background: rgba(100,116,139,0.15); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #94a3b8; margin-bottom: 20px;">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h2 style="color:#fff;margin-bottom:15px;font-weight:800; font-size:1.5rem;">Gizlilik Politikası</h2>
+            <div style="color:#cbd5e1;font-size:0.95rem;line-height:1.7;">
+                <p><strong>MuGöl GAMES</strong> olarak kişisel verilerinizi toplamıyoruz.</p><br>
+                <p>Oyun ilerlemeleriniz ve favori oyun seçimleriniz yalnızca kullandığınız cihazda <i>(Tarayıcı Local Storage)</i> şifrelenmeden saklanır. Sunucu tabanlı herhangi bir veri aktarımı, izleme veya kayıt sistemimiz bulunmamaktadır.</p><br>
+                <button onclick="closePrivacy()" style="background:var(--primary);color:#fff;border:none;padding:14px 30px;border-radius:30px;width:100%;margin-top:20px;font-weight:700;cursor:pointer;font-size:1rem;box-shadow:0 5px 20px var(--primary-glow);transition:0.3s;">Anladım ve Kabul Ediyorum</button>
+            </div>
+        </div>
+    </div>
 
-        const categories = {
-            'action': { name: 'Aksiyon', icon: '⚡', color: '#ef4444' },
-            'puzzle': { name: 'Bulmaca', icon: '🧠', color: '#a855f7' },
-            'strategy': { name: 'Strateji', icon: '♟️', color: '#eab308' },
-            'simulation': { name: 'Simülasyon', icon: '✈️', color: '#0ea5e9' }
-        };
+    <!-- Oyun veritabanı — gamesDB ve gamesCategories burada tanımlanır -->
+    <script src="games-data.js"></script>
+
+    <script>
+        /*
+         * Oyun verisi games-data.js dosyasından gelir.
+         * gamesDB ve gamesCategories bu sayfadan önce yüklenir.
+         * Aşağıda gamesCategories → categories takma adı kurulur.
+         */
+        const categories = gamesCategories; // games-data.js'deki global isim
 
         let favorites = JSON.parse(localStorage.getItem('mugolFavorites')) || [];
         let currentFilter = 'all';
 
+        // --- BAŞLANGIÇ ÇALIŞTIRMALARI ---
         window.onload = () => {
             generateUI();
             updateDailyHero();
             renderGames();
-            setTimeout(() => document.getElementById('pageLoader').classList.remove('active'), 500);
         };
 
+        // YÜKLEME EKRANINDA TAKILI KALMA (BFCache) ÇÖZÜMÜ
+        window.addEventListener('pageshow', (event) => {
+            setTimeout(() => document.getElementById('pageLoader').classList.remove('active'), 300);
+        });
+
+        // --- ARAYÜZ OLUŞTURUCU ---
         function generateUI() {
             const filterContainer = document.getElementById('filtersContainer');
             const menuContainer = document.getElementById('category-menu-container');
+            
+            // Kategori Butonları ve Menüleri oluştur
             Object.keys(categories).forEach(catId => {
                 const cat = categories[catId];
+                const count = gamesDB.filter(g => g.catId === catId).length;
+
+                // Üst Filtre Butonu
                 filterContainer.innerHTML += `<button class="filter-btn" id="filter-${catId}" onclick="filterGames('${catId}')">${cat.icon} ${cat.name}</button>`;
-                menuContainer.innerHTML += `<div class="menu-item" id="menu-${catId}" onclick="filterGames('${catId}')"><div class="menu-item-icon" style="background:${cat.color}25; color:${cat.color};">${cat.icon}</div><span>${cat.name}</span></div>`;
+
+                // Yan Menü Öğesi
+                menuContainer.innerHTML += `
+                    <div class="menu-item" id="menu-${catId}" onclick="filterGames('${catId}')">
+                        <div class="menu-item-icon" style="background:${cat.color}25; color:${cat.color};">${cat.icon}</div>
+                        <span>${cat.name}</span>
+                        <span class="menu-count">${count}</span>
+                    </div>
+                `;
             });
+
             document.getElementById('count-all').innerText = gamesDB.length;
-            document.getElementById('count-favorites').innerText = favorites.length;
+            updateFavoriteCount();
         }
 
+        // --- OYUNLARI EKRANA BASTIRMA ---
         function renderGames(searchQuery = '') {
             const grid = document.getElementById('gamesGrid');
             grid.innerHTML = '';
-            let filtered = gamesDB;
-            if (currentFilter === 'favorites') filtered = gamesDB.filter(g => favorites.includes(g.id));
-            else if (currentFilter !== 'all') filtered = gamesDB.filter(g => g.catId === currentFilter);
             
-            if (searchQuery) filtered = filtered.filter(g => g.title.toLowerCase().includes(searchQuery.toLowerCase()));
+            let filteredGames = gamesDB;
 
-            document.getElementById('gameCountText').innerText = `${filtered.length} Oyun`;
-            filtered.forEach(game => {
+            // Filtreleme mantığı
+            if (currentFilter === 'favorites') {
+                filteredGames = gamesDB.filter(g => favorites.includes(g.id));
+                document.getElementById('sectionTitle').innerHTML = '<i class="fa-solid fa-heart" style="color:var(--accent)"></i> Favori Oyunlarım';
+            } else if (currentFilter !== 'all') {
+                filteredGames = gamesDB.filter(g => g.catId === currentFilter);
+                document.getElementById('sectionTitle').innerHTML = `${categories[currentFilter].icon} ${categories[currentFilter].name}`;
+            } else {
+                document.getElementById('sectionTitle').innerHTML = '🕹️ Tüm Oyunlar';
+            }
+
+            // Arama mantığı
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filteredGames = gamesDB.filter(g => g.title.toLowerCase().includes(q) || g.catName.toLowerCase().includes(q));
+                document.getElementById('sectionTitle').innerHTML = `🔍 "${searchQuery}" Sonuçları`;
+            }
+
+            // Oyun sayısını güncelle
+            document.getElementById('gameCountText').innerText = `${filteredGames.length} Oyun`;
+
+            if(filteredGames.length === 0) {
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-sub);">
+                    <i class="fa-regular fa-face-frown" style="font-size:3rem; margin-bottom:15px; opacity:0.5;"></i>
+                    <p>Bu kategoride/aramada oyun bulunamadı.</p>
+                </div>`;
+                return;
+            }
+
+            // HTML Oluşturma
+            filteredGames.forEach((game, index) => {
                 const isFav = favorites.includes(game.id);
-                grid.innerHTML += `
-                    <div class="game-card" onclick="openGame(event, '${game.url}')">
-                        ${game.badge ? `<div class="card-badge">${game.badge}</div>` : ''}
-                        <div class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(event, '${game.id}')"><i class="fa-solid fa-heart"></i></div>
+                const iconStyle = game.isTextIcon ? `font-family:'Outfit',sans-serif;font-weight:900;` : '';
+                const badgeHTML = game.badge ? `<div class="card-badge">${game.badge}</div>` : '';
+                
+                // Gecikmeli animasyon için
+                const animDelay = (index * 0.05) + 's';
+
+                const cardHTML = `
+                    <div class="game-card" style="animation-delay: ${animDelay};" onclick="openGame(event, '${game.url}')">
+                        ${badgeHTML}
+                        <div class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(event, '${game.id}')" title="Favorilere Ekle">
+                            <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                        </div>
                         <div class="play-overlay"><i class="fa-solid fa-play"></i></div>
-                        <div class="game-thumb" style="background:linear-gradient(135deg, ${game.color1}, ${game.color2})">${game.icon}</div>
+                        <div class="game-thumb" style="background:linear-gradient(135deg, ${game.color1}, ${game.color2}); ${iconStyle} text-shadow:0 5px 15px rgba(0,0,0,0.3); color:#fff;">
+                            ${game.icon}
+                        </div>
                         <div class="game-info">
                             <div class="game-title">${game.title}</div>
-                            <div class="game-cat" style="color:${game.color1}">${game.catName}</div>
+                            <div class="game-cat" style="color:${game.color2}">
+                                ${game.catName}
+                            </div>
                         </div>
-                    </div>`;
+                    </div>
+                `;
+                grid.innerHTML += cardHTML;
             });
         }
 
+        // --- GÜNÜN YILDIZI GÜNCELLEME ---
         function updateDailyHero() {
-            const game = gamesDB[0]; // İlk oyunu (Labirent) hero yapalım
-            document.getElementById('heroTitle').innerText = game.title;
-            document.getElementById('heroDesc').innerText = game.desc;
-            document.getElementById('heroIcon').innerText = game.icon;
-            document.getElementById('heroBtn').onclick = (e) => openGame(e, game.url);
+            const today = new Date();
+            const start = new Date(today.getFullYear(), 0, 0);
+            const dayOfYear = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+            const game = gamesDB[dayOfYear % gamesDB.length]; // Her gün değişir
+
+            document.getElementById('heroTitle').innerHTML = game.title.replace(' ', '<br>');
+            document.getElementById('heroDesc').textContent = game.desc;
+            
+            const heroIconEl = document.getElementById('heroIcon');
+            heroIconEl.textContent = game.icon;
+            heroIconEl.style.fontFamily = game.isTextIcon ? "'Outfit', sans-serif" : 'inherit';
+            if (game.isTextIcon) heroIconEl.style.fontWeight = '900';
+
+            const heroBtn = document.getElementById('heroBtn');
+            heroBtn.href = game.url;
+            heroBtn.setAttribute('onclick', `openGame(event,'${game.url}')`);
+            
+            const heroCard = document.getElementById('dailyHero');
+            heroCard.style.background = `linear-gradient(135deg, ${game.color1}30, rgba(15,23,42,0.8))`;
+            heroCard.style.borderColor = `${game.color1}55`;
         }
 
-        function openGame(e, url) {
-            if(e) e.preventDefault();
-            document.getElementById('pageLoader').classList.add('active');
-            setTimeout(() => location.href = url, 400);
-        }
+        // --- FİLTRELEME & ARAMA ---
+        function filterGames(filterId) {
+            currentFilter = filterId;
+            document.getElementById('searchInput').value = ''; // Aramayı temizle
 
-        function filterGames(id) {
-            currentFilter = id;
-            document.querySelectorAll('.filter-btn, .menu-item').forEach(el => el.classList.remove('active', 'active-cat'));
-            document.getElementById('filter-' + id)?.classList.add('active');
-            renderGames();
+            // Buton aktiflikleri
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            const fBtn = document.getElementById('filter-' + filterId);
+            if(fBtn) fBtn.classList.add('active');
+
+            // Menü aktiflikleri
+            document.querySelectorAll('.menu-item[id^="menu-"]').forEach(item => item.classList.remove('active-cat'));
+            const mBtn = document.getElementById('menu-' + filterId);
+            if(mBtn) mBtn.classList.add('active-cat');
+
             closeMenu();
-        }
-
-        function toggleFavorite(e, id) {
-            e.stopPropagation();
-            const idx = favorites.indexOf(id);
-            if(idx === -1) favorites.push(id); else favorites.splice(idx, 1);
-            localStorage.setItem('mugolFavorites', JSON.stringify(favorites));
-            document.getElementById('count-favorites').innerText = favorites.length;
             renderGames();
+            
+            // Sayfayı hafif yukarı kaydır
+            document.getElementById('mainContent').scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function openMenu() { document.getElementById('sideMenu').classList.add('active'); document.getElementById('menuOverlay').classList.add('active'); }
-        function closeMenu() { document.getElementById('sideMenu').classList.remove('active'); document.getElementById('menuOverlay').classList.remove('active'); }
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if(val) {
+                // Arama yaparken butonlardan aktifliği kaldır
+                document.querySelectorAll('.filter-btn, .menu-item[id^="menu-"]').forEach(el => el.classList.remove('active', 'active-cat'));
+            } else {
+                // Silinince mevcut filtre butonunu aktif et
+                document.getElementById('filter-' + currentFilter)?.classList.add('active');
+            }
+            renderGames(val);
+        });
+
+        // --- FAVORİ SİSTEMİ ---
+        function toggleFavorite(event, gameId) {
+            event.stopPropagation(); // Karta tıklanmasını(oyun açılmasını) engelle
+            event.preventDefault();
+
+            const index = favorites.indexOf(gameId);
+            const gameTitle = gamesDB.find(g => g.id === gameId).title;
+
+            if (index === -1) {
+                favorites.push(gameId);
+                showToast(`❤️ <b>${gameTitle}</b> favorilere eklendi.`);
+            } else {
+                favorites.splice(index, 1);
+                showToast(`💔 <b>${gameTitle}</b> favorilerden çıkarıldı.`);
+            }
+
+            localStorage.setItem('mugolFavorites', JSON.stringify(favorites));
+            updateFavoriteCount();
+            
+            // Eğer favoriler sekmesindeysek listeyi yenile
+            if(currentFilter === 'favorites') renderGames();
+            else {
+                // Sadece butonu güncelle (sayfa yenilenmesin diye)
+                const btn = event.currentTarget;
+                btn.classList.toggle('active');
+                const icon = btn.querySelector('i');
+                icon.classList.toggle('fa-solid');
+                icon.classList.toggle('fa-regular');
+            }
+        }
+
+        function updateFavoriteCount() {
+            document.getElementById('count-favorites').innerText = favorites.length;
+        }
+
+        // --- TOAST BİLDİRİM ---
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- YÖNLENDİRME ---
+        function openGame(event, url) {
+            // Eğer yeni sekmede açılmak isteniyorsa engelleme
+            if (event && (event.ctrlKey || event.metaKey || event.button === 1)) return true;
+            if (event) event.preventDefault();
+            
+            document.getElementById('pageLoader').classList.add('active');
+            setTimeout(() => { window.location.href = url; }, 500);
+        }
+
+        // --- SCROLL TO TOP ---
+        const contentArea = document.getElementById('mainContent');
+        const scrollBtn = document.getElementById('scrollTopBtn');
+        
+        contentArea.addEventListener('scroll', () => {
+            if (contentArea.scrollTop > 300) scrollBtn.classList.add('visible');
+            else scrollBtn.classList.remove('visible');
+        });
+
+        function scrollToTop() {
+            contentArea.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- UI YARDIMCILARI ---
         function setMode(mode) {
             const frame = document.getElementById('deviceFrame');
             document.querySelectorAll('.sim-btn').forEach(b => b.classList.remove('active'));
             event.currentTarget.classList.add('active');
-            frame.className = 'device-frame ' + (mode === 'desktop' ? '' : mode);
+            frame.className = 'device-frame';
+            if (mode !== 'desktop') frame.classList.add(mode);
         }
+
+        function openMenu() {
+            document.getElementById('sideMenu').classList.add('active');
+            document.getElementById('menuOverlay').classList.add('active');
+        }
+        function closeMenu() {
+            document.getElementById('sideMenu').classList.remove('active');
+            document.getElementById('menuOverlay').classList.remove('active');
+        }
+
+        function openPrivacy() { document.getElementById('privacyModal').classList.add('active'); }
+        function closePrivacy() { document.getElementById('privacyModal').classList.remove('active'); }
     </script>
 </body>
 </html>
