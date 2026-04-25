@@ -14,7 +14,20 @@
         body > ins.adsbygoogle,
         body > div[id^="google_ads"],
         body > iframe[id^="google_ads"],
-        body > ins[data-ad-slot] { display: none !important; }
+        body > ins[data-ad-slot],
+        body > .adsbygoogle,
+        .simulator-bar ~ ins,
+        .app-container > ins,
+        .device-frame > ins {
+            display: none !important;
+            height: 0 !important;
+            max-height: 0 !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            position: absolute !important;
+            pointer-events: none !important;
+        }
     </style>
     
     <style>
@@ -688,6 +701,18 @@
 
         function openPrivacy() { document.getElementById('privacyModal').classList.add('active'); }
         function closePrivacy() { document.getElementById('privacyModal').classList.remove('active'); }
+
+        // AdSense'in body'e enjekte ettiği reklamları anında kaldır
+        (function() {
+            function removeTopAds() {
+                document.querySelectorAll('body > ins, body > iframe[id*="google"], body > div[id*="google_ads"]').forEach(el => {
+                    el.style.cssText = 'display:none!important;height:0!important;max-height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;';
+                });
+            }
+            removeTopAds();
+            const observer = new MutationObserver(removeTopAds);
+            observer.observe(document.body, { childList: true, subtree: false });
+        })();
     </script>
 </body>
 </html>
