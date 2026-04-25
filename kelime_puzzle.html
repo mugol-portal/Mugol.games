@@ -38,8 +38,8 @@
         body {
             background-color: var(--bg-grad-2);
             font-family: var(--font-main);
-            margin: 0; padding: 0; width: 100vw; height: 100%; height: 100dvh;
-            display: flex; flex-direction: column; overflow: hidden;
+            margin: 0; padding: 0; width: 100vw; min-height: 100dvh;
+            display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden;
             color: var(--text-main);
         }
 
@@ -123,7 +123,7 @@
         /* --- OYUN ALANI --- */
         #game-area {
             flex: 1; display: flex; justify-content: center; align-items: center;
-            width: 100%; position: relative; overflow: hidden; perspective: 1200px;
+            width: 100%; position: relative; overflow: visible; perspective: 1200px;
         }
 
         .shake-screen { animation: shakeStrong 0.4s cubic-bezier(.36,.07,.19,.97) both; }
@@ -203,7 +203,7 @@
 </head>
 <body>
     <!-- Google AdSense Reklam Birimi: Yatay 1435965312 -->
-    <div id="ad-container" style="position:fixed; top:0; left:0; width:100%; z-index:9999; background:#000;">
+    <div id="ad-container" style="position:fixed; bottom:0; left:0; width:100%; z-index:9999; background:#000;">
         <ins class="adsbygoogle"
              style="display:block"
              data-ad-client="ca-pub-1880946354382681"
@@ -213,18 +213,18 @@
         <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
     <script>
-    // Reklam yüklendikten sonra yüksekliği ölç ve body'e padding ekle
-    window.addEventListener('load', function() {
+    function adjustForAd() {
         var ad = document.getElementById('ad-container');
-        if (ad) {
-            var h = ad.offsetHeight;
-            if (h > 0) document.body.style.paddingTop = h + 'px';
-            // Reklam geç yüklenirse tekrar kontrol et
-            setTimeout(function() {
-                h = ad.offsetHeight;
-                if (h > 0) document.body.style.paddingTop = h + 'px';
-            }, 2000);
+        if (!ad) return;
+        var h = ad.offsetHeight;
+        if (h > 0) {
+            document.body.style.paddingBottom = h + 'px';
         }
+    }
+    window.addEventListener('load', function() {
+        adjustForAd();
+        setTimeout(adjustForAd, 1500);
+        setTimeout(adjustForAd, 3000);
     });
     </script>
 
