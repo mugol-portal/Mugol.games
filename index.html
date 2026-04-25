@@ -701,23 +701,7 @@
         function openPrivacy() { document.getElementById('privacyModal').classList.add('active'); }
         function closePrivacy() { document.getElementById('privacyModal').classList.remove('active'); }
 
-        // AdSense overlay/anchor reklamlarını engelle
-        (function() {
-            const style = document.createElement('style');
-            style.textContent = `
-                ins.adsbygoogle[data-anchor-shown],
-                div[id^="google_ads_iframe"],
-                iframe[id^="google_ads"],
-                .adsbygoogle-noablate { display:none!important; }
-            `;
-            document.head.appendChild(style);
-            const obs = new MutationObserver(() => {
-                document.querySelectorAll('body > ins, body > iframe[src*="google"], body > div[id*="aswift"]').forEach(el => {
-                    el.style.cssText = 'display:none!important;height:0!important;max-height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;position:absolute!important;';
-                });
-            });
-            obs.observe(document.body, { childList: true });
-        })();
+
     </script>
 </body>
 </html>
