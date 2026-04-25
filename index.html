@@ -9,6 +9,13 @@
     
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1880946354382681" crossorigin="anonymous"></script>
+    <!-- Üstten otomatik reklam engeli -->
+    <style>
+        body > ins.adsbygoogle,
+        body > div[id^="google_ads"],
+        body > iframe[id^="google_ads"],
+        body > ins[data-ad-slot] { display: none !important; }
+    </style>
     
     <style>
         :root {
@@ -344,6 +351,17 @@
 
                 <!-- Grid alanı tamamen JS ile doldurulacak -->
                 <div class="games-grid" id="gamesGrid"></div>
+
+                <!-- Reklam Alanı -->
+                <div style="margin-top: 40px; border-radius: 18px; overflow: hidden; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 10px; text-align: center;">
+                    <p style="color:#334155; font-size:0.65rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:8px;">REKLAM</p>
+                    <ins class="adsbygoogle"
+                         style="display:inline-block; width:320px; height:50px; border-radius:10px; overflow:hidden;"
+                         data-ad-client="ca-pub-1880946354382681"
+                         data-ad-slot="1435965312"
+                         data-ad-format="horizontal"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                </div>
 
                 <!-- Alt Bilgi -->
                 <div style="margin-top: 40px; text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05);">
