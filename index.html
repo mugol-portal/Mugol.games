@@ -502,13 +502,14 @@
                 return;
             }
 
-            // HTML Oluşturma
+            // Reklam push'larını topla, DOM hazır olduktan sonra tetikle
+            const adSlotIndices = [];
+
+            // HTML Oluşturma — insertAdjacentHTML ile DOM'a teker teker ekle
             filteredGames.forEach((game, index) => {
                 const isFav = favorites.includes(game.id);
                 const iconStyle = game.isTextIcon ? `font-family:'Outfit',sans-serif;font-weight:900;` : '';
                 const badgeHTML = game.badge ? `<div class="card-badge">${game.badge}</div>` : '';
-                
-                // Gecikmeli animasyon için
                 const animDelay = (index * 0.05) + 's';
 
                 const cardHTML = `
@@ -529,12 +530,13 @@
                         </div>
                     </div>
                 `;
-                grid.innerHTML += cardHTML;
+                grid.insertAdjacentHTML('beforeend', cardHTML);
 
                 // Her 4 oyundan sonra reklam ekle (tam sayfa genişliğinde)
                 if ((index + 1) % 4 === 0 && index !== filteredGames.length - 1) {
-                    grid.innerHTML += `
-                        <div class="grid-ad-box" style="grid-column:1/-1; text-align:center; margin: 10px 0; border-radius:14px; overflow:hidden; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:8px; min-height:0;">
+                    const adId = 'grid-ad-' + index;
+                    grid.insertAdjacentHTML('beforeend', `
+                        <div class="grid-ad-box" id="${adId}" style="grid-column:1/-1; text-align:center; margin: 10px 0; border-radius:14px; overflow:hidden; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:8px; min-height:0;">
                             <p style="color:#334155;font-size:0.6rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">REKLAM</p>
                             <ins class="adsbygoogle"
                                  style="display:block;"
@@ -543,10 +545,25 @@
                                  data-ad-format="auto"
                                  data-full-width-responsive="true"></ins>
                         </div>
-                    `;
-                    const pushed = (adsbygoogle = window.adsbygoogle || []).push({});
+                    `);
+                    adSlotIndices.push(adId);
                 }
             });
+
+            // Tüm DOM hazır olduktan sonra AdSense push et
+            if (adSlotIndices.length > 0) {
+                setTimeout(() => {
+                    adSlotIndices.forEach(id => {
+                        const box = document.getElementById(id);
+                        if (box) {
+                            const ins = box.querySelector('ins.adsbygoogle');
+                            if (ins && !ins.dataset.adsbygoogleStatus) {
+                                (window.adsbygoogle = window.adsbygoogle || []).push({});
+                            }
+                        }
+                    });
+                }, 100);
+            }
         }
 
         // --- GÜNÜN YILDIZI GÜNCELLEME ---
