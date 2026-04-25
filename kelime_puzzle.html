@@ -203,13 +203,30 @@
 </head>
 <body>
     <!-- Google AdSense Reklam Birimi: Yatay 1435965312 -->
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-1880946354382681"
-         data-ad-slot="1435965312"
-         data-ad-format="horizontal"
-         data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <div id="ad-container" style="position:fixed; top:0; left:0; width:100%; z-index:9999; background:#000;">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-1880946354382681"
+             data-ad-slot="1435965312"
+             data-ad-format="horizontal"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+    <script>
+    // Reklam yüklendikten sonra yüksekliği ölç ve body'e padding ekle
+    window.addEventListener('load', function() {
+        var ad = document.getElementById('ad-container');
+        if (ad) {
+            var h = ad.offsetHeight;
+            if (h > 0) document.body.style.paddingTop = h + 'px';
+            // Reklam geç yüklenirse tekrar kontrol et
+            setTimeout(function() {
+                h = ad.offsetHeight;
+                if (h > 0) document.body.style.paddingTop = h + 'px';
+            }, 2000);
+        }
+    });
+    </script>
 
     <div class="universe-bg" id="parallax-bg">
         <div class="nebula" id="parallax-nebula"></div>
