@@ -6,10 +6,6 @@
     <title>MuGölyoner</title>
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1880946354382681" crossorigin="anonymous"></script>
-    <!-- AMP Otomatik Reklamlar -->
-    <script async custom-element="amp-auto-ads"
-            src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
-    </script>
     <!-- Ekran görüntüsü almak için kütüphane -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
@@ -406,12 +402,51 @@
         .btn-close-shop:hover { background: #444; color: white; }
         .kasa-badge { cursor: pointer; transition: all 0.2s ease; }
         .kasa-badge:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(46,204,113,0.5); }
+
+        /* ── AdSense Reklam Kutusu ── */
+        .mg-ad-box {
+            position: relative;
+            width: 100%;
+            background: rgba(0, 0, 20, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 20px;
+            padding: 28px 12px 12px;
+            margin-top: 18px;
+            overflow: visible;
+            box-sizing: border-box;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        .mg-ad-box ins.adsbygoogle {
+            display: block !important;
+            width: 300px !important;
+            height: 250px !important;
+        }
+        .mg-ad-label {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            font-weight: 800;
+            color: rgba(255,255,255,0.25);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(0,0,20,0.8);
+            padding: 2px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(212,175,55,0.2);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1;
+            font-family: 'Nunito', sans-serif;
+        }
     </style>
 </head>
 <body>
-<amp-auto-ads type="adsense"
-        data-ad-client="ca-pub-1880946354382681">
-</amp-auto-ads>
 
     <div id="start-screen" class="screen active">
         <div class="top-bar" style="position: absolute; top: 0; width: 100%; background: transparent; border:none; box-shadow:none; justify-content: space-between;">
@@ -438,6 +473,17 @@
                 <button class="cp-btn btn-exit" onclick="uyarKapat()">🚪 Çıkış</button>
                 <input type="file" id="kasa-upload" style="display:none;" accept=".mgy" onchange="kasaYukle(event)">
             </div>
+
+            <!-- ── ADSENSE REKLAM 1 — Ana Menü Alt ── -->
+            <div class="mg-ad-box" aria-label="Reklam" role="complementary">
+                <span class="mg-ad-label">Reklam</span>
+                <ins class="adsbygoogle"
+                     style="display:block;width:300px;height:250px;"
+                     data-ad-client="ca-pub-1880946354382681"
+                     data-ad-slot="1689789138"
+                     data-ad-format="rectangle"></ins>
+            </div>
+
         </div>
     </div>
 
@@ -538,6 +584,16 @@
         <h2 id="final-prize">Kazandığınız Ödül: 0 TL</h2>
         <h3 id="kasa-eklenen" style="color: #2ecc71; font-weight: 800; margin-top:10px;"></h3>
         <button onclick="anaMenuyeDon()">Ana Menüye Dön</button>
+
+        <!-- ── ADSENSE REKLAM 2 — Oyun Sonu Ekranı ── -->
+        <div class="mg-ad-box" style="max-width:340px; margin-top:24px;" aria-label="Reklam" role="complementary">
+            <span class="mg-ad-label">Reklam</span>
+            <ins class="adsbygoogle"
+                 style="display:block;width:300px;height:250px;"
+                 data-ad-client="ca-pub-1880946354382681"
+                 data-ad-slot="1689789138"
+                 data-ad-format="rectangle"></ins>
+        </div>
     </div>
 
     <script>
@@ -920,5 +976,40 @@
 
         window.onload = () => { setTimeout(kategorileriYukle, 300); kasaGuncelle(0); };
     </script>
+
+    <!-- ── AdSense Lazy Push ── -->
+    <script>
+    (function() {
+        function mgPushAds() {
+            document.querySelectorAll('ins.adsbygoogle').forEach(function(ins) {
+                if (!ins.getAttribute('data-adsbygoogle-status')) {
+                    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+                }
+            });
+        }
+        // Sayfa yüklenince
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() { setTimeout(mgPushAds, 800); });
+        } else {
+            setTimeout(mgPushAds, 800);
+        }
+        // Oyun bitince game-over ekranı açıldığında da push et
+        var origOyunuBitir = window.oyunuBitir;
+        document.addEventListener('DOMContentLoaded', function() {
+            var gameOver = document.getElementById('game-over');
+            if (gameOver) {
+                var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(m) {
+                        if (m.type === 'attributes' && m.attributeName === 'style') {
+                            if (gameOver.style.display === 'flex') { setTimeout(mgPushAds, 300); }
+                        }
+                    });
+                });
+                observer.observe(gameOver, { attributes: true });
+            }
+        });
+    })();
+    </script>
+
 </body>
 </html>
