@@ -570,10 +570,21 @@
         reader.onload = function(e) {
             try {
                 const data = JSON.parse(e.target.result);
-                if (data.skor !== undefined) {
-                    alert(
-                        `📂 Kayıt Yüklendi!\n\nSkor: ${data.skor}\nTur: ${data.tur}\nToplar: ${data.toplar}\nTarih: ${data.tarih}`
-                    );
+                if (data.skor !== undefined && data.tur !== undefined && data.toplar !== undefined) {
+                    const wasPlaying = isPlaying;
+                    score          = data.skor;
+                    round          = data.tur;
+                    totalBallCount = data.toplar;
+                    extraBallsThisRound = 0;
+                    bricks = []; items = []; balls = []; particles = [];
+                    isPlaying  = true;
+                    isShooting = false;
+                    gameStartTime = new Date();
+                    updateUI();
+                    document.getElementById("startScreen").style.display    = "none";
+                    document.getElementById("gameOverScreen").style.display = "none";
+                    nextTurn();
+                    if (!wasPlaying) requestAnimationFrame(update);
                 } else {
                     alert("Geçersiz kayıt dosyası.");
                 }
