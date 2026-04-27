@@ -424,6 +424,86 @@
             });
         }
 
+        // Neon Striker (Tuğla Kırıcı) oyununu veritabanına ekle (eğer yoksa)
+        if (typeof gamesDB !== 'undefined' && !gamesDB.find(g => g.id === 'tugla-kirici')) {
+            const firstCat = Object.keys(gamesCategories)[0];
+            const catId = gamesCategories['action'] ? 'action' : firstCat;
+            const catName = gamesCategories[catId]?.name || 'Aksiyon';
+            gamesDB.push({
+                id: 'tugla-kirici',
+                title: 'Neon Striker',
+                catId: catId,
+                catName: catName,
+                desc: 'Neon topunla tuğlaları parçala, güç-up\'ları yakala ve tüm seviyeleri temizle!',
+                icon: '🧱',
+                color1: '#39ff14',
+                color2: '#00e5ff',
+                url: 'tugla-kirici.html',
+                badge: 'YENİ',
+                isTextIcon: false
+            });
+        }
+
+        // Mayın Tarlası oyununu veritabanına ekle (eğer yoksa)
+        if (typeof gamesDB !== 'undefined' && !gamesDB.find(g => g.id === 'mayin-tarlasi')) {
+            const firstCat = Object.keys(gamesCategories)[0];
+            const catId = gamesCategories['puzzle'] ? 'puzzle' : firstCat;
+            const catName = gamesCategories[catId]?.name || 'Bulmaca';
+            gamesDB.push({
+                id: 'mayin-tarlasi',
+                title: 'Mayın Tarlası',
+                catId: catId,
+                catName: catName,
+                desc: 'Klasik mayın tarlası deneyimi! Tüm mayınları işaretleyerek güvenli kareleri aç.',
+                icon: '💣',
+                color1: '#27ae60',
+                color2: '#2ecc71',
+                url: 'mayin-tarlasi.html',
+                badge: 'YENİ',
+                isTextIcon: false
+            });
+        }
+
+        // SOS Pro oyununu veritabanına ekle (eğer yoksa)
+        if (typeof gamesDB !== 'undefined' && !gamesDB.find(g => g.id === 'sos')) {
+            const firstCat = Object.keys(gamesCategories)[0];
+            const catId = gamesCategories['strategy'] ? 'strategy' : (gamesCategories['board'] ? 'board' : firstCat);
+            const catName = gamesCategories[catId]?.name || 'Strateji';
+            gamesDB.push({
+                id: 'sos',
+                title: 'SOS Pro',
+                catId: catId,
+                catName: catName,
+                desc: 'Rakibinden önce S-O-S dizisini oluştur! İki kişilik klasik strateji oyunu.',
+                icon: '🎯',
+                color1: '#ff4757',
+                color2: '#ffa502',
+                url: 'sos.html',
+                badge: 'YENİ',
+                isTextIcon: false
+            });
+        }
+
+        // Tetris oyununu veritabanına ekle (eğer yoksa)
+        if (typeof gamesDB !== 'undefined' && !gamesDB.find(g => g.id === 'tetris')) {
+            const firstCat = Object.keys(gamesCategories)[0];
+            const catId = gamesCategories['puzzle'] ? 'puzzle' : firstCat;
+            const catName = gamesCategories[catId]?.name || 'Bulmaca';
+            gamesDB.push({
+                id: 'tetris',
+                title: 'Tetris',
+                catId: catId,
+                catName: catName,
+                desc: 'Klasik Tetris deneyimi! Blokları yerleştir, satırları tamamla ve rekor kır.',
+                icon: '🟦',
+                color1: '#7c3aed',
+                color2: '#06b6d4',
+                url: 'tetris.html',
+                badge: 'YENİ',
+                isTextIcon: false
+            });
+        }
+
         let favorites = JSON.parse(localStorage.getItem('mugolFavorites')) || [];
         let currentFilter = 'all';
 
