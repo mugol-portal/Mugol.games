@@ -484,7 +484,65 @@
             to   { transform:scale(1) translateY(0); opacity:1; }
         }
 
+        /* ── AdSense Reklam Kutusu ── */
+        .mg-ad-bar {
+            flex: 0 0 auto;
+            width: 100%;
+            background: rgba(5, 5, 10, 0.7);
+            border-top: 1px solid rgba(0, 229, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 0 4px;
+            z-index: 10;
+        }
+        .mg-ad-bar ins.adsbygoogle {
+            display: block !important;
+        }
+        /* Modal içi reklam kutusu */
+        .mg-ad-box-modal {
+            position: relative;
+            width: 100%;
+            background: rgba(5, 5, 10, 0.6);
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px 12px 12px;
+            margin-top: 16px;
+            overflow: visible;
+            box-sizing: border-box;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mg-ad-box-modal ins.adsbygoogle {
+            display: block !important;
+            width: 300px !important;
+            height: 250px !important;
+        }
+        .mg-ad-label {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: rgba(0, 229, 255, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(5, 5, 10, 0.9);
+            padding: 2px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 229, 255, 0.12);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1;
+            font-family: 'Outfit', sans-serif;
+        }
+
     </style>
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1880946354382681" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -534,6 +592,16 @@
 
     <div id="keyboard-container"></div>
 
+    <!-- ── ADSENSE REKLAM 1 — Klavye Altı Banner ── -->
+    <div class="mg-ad-bar" aria-label="Reklam" role="complementary">
+        <ins class="adsbygoogle"
+             style="display:block;width:320px;height:50px;"
+             data-ad-client="ca-pub-1880946354382681"
+             data-ad-slot="1689789138"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+    </div>
+
     <!-- ══ SONUÇ MODALI ══ -->
     <div id="result-modal" class="modal-overlay">
         <div class="modal-content">
@@ -553,6 +621,16 @@
             </div>
 
             <button class="btn-primary" onclick="nextLevel()">DEVAM ET <span>➜</span></button>
+
+            <!-- ── ADSENSE REKLAM 2 — Oyun Sonu Modali ── -->
+            <div class="mg-ad-box-modal" aria-label="Reklam" role="complementary">
+                <span class="mg-ad-label">Reklam</span>
+                <ins class="adsbygoogle"
+                     style="display:block;width:300px;height:250px;"
+                     data-ad-client="ca-pub-1880946354382681"
+                     data-ad-slot="1689789138"
+                     data-ad-format="rectangle"></ins>
+            </div>
         </div>
     </div>
 
@@ -1200,5 +1278,38 @@
 
     init();
 </script>
+
+    <!-- ── AdSense Lazy Push ── -->
+    <script>
+    (function() {
+        function mgPushAds() {
+            document.querySelectorAll('ins.adsbygoogle').forEach(function(ins) {
+                if (!ins.getAttribute('data-adsbygoogle-status')) {
+                    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+                }
+            });
+        }
+        // Sayfa yüklenince push et
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() { setTimeout(mgPushAds, 800); });
+        } else {
+            setTimeout(mgPushAds, 800);
+        }
+        // result-modal açılınca (kazanma/kaybetme) push et
+        document.addEventListener('DOMContentLoaded', function() {
+            var modal = document.getElementById('result-modal');
+            if (modal) {
+                new MutationObserver(function(mutations) {
+                    mutations.forEach(function(m) {
+                        if (m.type === 'attributes' && m.attributeName === 'style') {
+                            if (modal.style.display === 'flex') { setTimeout(mgPushAds, 300); }
+                        }
+                    });
+                }).observe(modal, { attributes: true });
+            }
+        });
+    })();
+    </script>
+
 </body>
 </html>

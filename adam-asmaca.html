@@ -6,10 +6,6 @@
     <title>Neon Hangman - Pro Edition</title>
     <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1880946354382681" crossorigin="anonymous"></script>
-    <!-- AMP Otomatik Reklamlar -->
-    <script async custom-element="amp-auto-ads"
-            src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
-    </script>
     <!-- Kelimeler dosyasını asmaca klasöründen çekiyoruz -->
     <script src="sorular/kelimeler.js"></script>
     <style>
@@ -212,12 +208,72 @@
             font-family: 'Orbitron';
             letter-spacing: 1px;
         }
+
+        /* ── AdSense Reklam Kutusu ── */
+        .mg-ad-box {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            background: rgba(20, 25, 40, 0.85);
+            border: 1px solid rgba(0, 242, 255, 0.12);
+            border-radius: 20px;
+            padding: 28px 12px 12px;
+            margin: 20px auto;
+            overflow: visible;
+            box-sizing: border-box;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(15px);
+        }
+        .mg-ad-box ins.adsbygoogle {
+            display: block !important;
+            width: 300px !important;
+            height: 250px !important;
+        }
+        .mg-ad-label {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: rgba(0, 242, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: #141928;
+            padding: 2px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 242, 255, 0.15);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1;
+            font-family: 'Orbitron', sans-serif;
+        }
+        /* Modal içi reklam */
+        .mg-ad-box-modal {
+            position: relative;
+            background: rgba(8, 11, 18, 0.9);
+            border: 1px solid rgba(0, 242, 255, 0.15);
+            border-radius: 16px;
+            padding: 28px 12px 12px;
+            margin-top: 20px;
+            overflow: visible;
+            box-sizing: border-box;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mg-ad-box-modal ins.adsbygoogle {
+            display: block !important;
+            width: 300px !important;
+            height: 250px !important;
+        }
     </style>
 </head>
 <body>
-<amp-auto-ads type="adsense"
-        data-ad-client="ca-pub-1880946354382681">
-</amp-auto-ads>
 
     <nav class="nav-bar">
         <button class="back-btn" onclick="window.history.back()">
@@ -254,11 +310,31 @@
         </div>
     </div>
 
+    <!-- ── ADSENSE REKLAM 1 — Oyun Alanı Altı ── -->
+    <div class="mg-ad-box" aria-label="Reklam" role="complementary">
+        <span class="mg-ad-label">Reklam</span>
+        <ins class="adsbygoogle"
+             style="display:block;width:300px;height:250px;"
+             data-ad-client="ca-pub-1880946354382681"
+             data-ad-slot="1689789138"
+             data-ad-format="rectangle"></ins>
+    </div>
+
     <div id="modal" class="modal">
         <div class="modal-box">
             <h2 id="modalTitle" style="font-family: Orbitron; font-size: 2.5rem; margin: 0;"></h2>
             <p id="modalMsg" style="margin: 20px 0; font-size: 1.1rem; opacity: 0.9;"></p>
             <button class="restart-btn" onclick="initGame()">TEKRAR OYNA</button>
+
+            <!-- ── ADSENSE REKLAM 2 — Oyun Sonu ── -->
+            <div class="mg-ad-box-modal" aria-label="Reklam" role="complementary">
+                <span class="mg-ad-label">Reklam</span>
+                <ins class="adsbygoogle"
+                     style="display:block;width:300px;height:250px;"
+                     data-ad-client="ca-pub-1880946354382681"
+                     data-ad-slot="1689789138"
+                     data-ad-format="rectangle"></ins>
+            </div>
         </div>
     </div>
 
@@ -350,5 +426,38 @@
 
         window.onload = initGame;
     </script>
+
+    <!-- ── AdSense Lazy Push ── -->
+    <script>
+    (function() {
+        function mgPushAds() {
+            document.querySelectorAll('ins.adsbygoogle').forEach(function(ins) {
+                if (!ins.getAttribute('data-adsbygoogle-status')) {
+                    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+                }
+            });
+        }
+        // Sayfa yüklenince push et
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() { setTimeout(mgPushAds, 800); });
+        } else {
+            setTimeout(mgPushAds, 800);
+        }
+        // Modal açılınca (oyun bitince) push et
+        document.addEventListener('DOMContentLoaded', function() {
+            var modal = document.getElementById('modal');
+            if (modal) {
+                new MutationObserver(function(mutations) {
+                    mutations.forEach(function(m) {
+                        if (m.type === 'attributes' && m.attributeName === 'style') {
+                            if (modal.style.display === 'flex') { setTimeout(mgPushAds, 300); }
+                        }
+                    });
+                }).observe(modal, { attributes: true });
+            }
+        });
+    })();
+    </script>
+
 </body>
 </html>
