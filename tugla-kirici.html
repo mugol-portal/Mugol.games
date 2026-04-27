@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Striker Ultimate - Long Aim</title>
+    <style>
+        :root {
+            --neon-green: #39ff14;
+            --neon-red: #ff073a;
+            --neon-blue: #00e5ff;
+            --neon-yellow: #fff01f;
+            --ground-color: #1a1a1a;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: #000;
+            color: white;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            overflow: hidden;
+            touch-action: none;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw; height: 100vh;
+            max-width: 500px;
+            background: #080808;
+            border-bottom: 5px solid var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+        }
+
+        canvas { display: block; }
+
+        .header {
+            position: absolute; top: 0; left: 0; width: 100%;
+            height: 60px; background: rgba(0,0,0,0.8);
+            display: flex; justify-content: space-around; align-items: center;
+            font-size: 18px; font-weight: bold; color: var(--neon-blue);
+            border-bottom: 1px solid #333; z-index: 10;
+        }
+
+        .bottom-bar {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            height: 50px; background: var(--ground-color);
+            border-top: 2px solid var(--neon-blue);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 5;
+        }
+
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 100;
+        }
+
+        .btn {
+            background: transparent; color: var(--neon-green);
+            border: 2px solid var(--neon-green);
+            padding: 15px 40px; font-size: 20px;
+            cursor: pointer; box-shadow: 0 0 15px var(--neon-green);
+        }
+
+        #speed-btn {
+            position: absolute; bottom: 70px; right: 20px;
+            width: 50px; height: 50px; border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid var(--neon-yellow);
+            color: var(--neon-yellow); font-weight: bold;
+            display: none; z-index: 10;
+        }
+
+        .ball-info {
+            position: absolute; bottom: 60px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px; color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div class="header">
+            <div>SKOR: <span id="score">0</span></div>
+            <div>TOP: <span id="ballQty">1</span></div>
+            <div>TUR: <span id="round">1</span></div>
+        </div>
+
+        <button id="speed-btn">2x</button>
+        <div class="ball-info" id="ballInfo">Nişan al ve fırlat!</div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="bottom-bar">
+            <div style="color: var(--neon-blue); font-size: 12px;">GÜVENLİ BÖLGE</div>
+        </div>
+
+        <div id="startScreen" class="overlay">
+            <h1 style="color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue);">NEON STRIKER</h1>
+            <button class="btn" onclick="startGame()">BAŞLAT</button>
+        </div>
+
+        <div id="gameOverScreen" class="overlay" style="display: none;">
+            <h1 style="color: var(--neon-red);">OYUN BİTTİ</h1>
+            <p>Skorun: <span id="finalScore">0</span></p>
+            <button class="btn" onclick="startGame()">TEKRAR DENE</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const speedBtn = document.getElementById("speed-btn");
+        
+        let width, height;
+        let score = 0, round = 1, isPlaying = false;
+        let totalBallCount = 1;
+        let balls = [];
+        let bricks = [];
+        let items = [];
+        let particles = [];
+        let isShooting = false;
+        let aiming = false;
+        let timeScale = 1;
+        let cannon = { x: 0, y: 0, angle: -Math.PI/2 };
+        let extraBallsThisRound = 0;
+
+        function resize() {
+            width = document.getElementById("game-container").clientWidth;
+            height = document.getElementById("game-container").clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+            cannon.x = width / 2;
+            cannon.y = height - 60;
+        }
+
+        window.addEventListener("resize", resize);
+        resize();
+
+        speedBtn.onclick = () => {
+            timeScale = (timeScale === 1) ? 3 : 1;
+            speedBtn.innerText = (timeScale === 1) ? "2x" : ">>";
+        };
+
+        function startGame() {
+            score = 0; round = 1; totalBallCount = 1; extraBallsThisRound = 0;
+            bricks = []; items = []; balls = []; particles = [];
+            isPlaying = true; isShooting = false;
+            updateUI();
+            document.getElementById("startScreen").style.display = "none";
+            document.getElementById("gameOverScreen").style.display = "none";
+            nextTurn();
+            requestAnimationFrame(update);
+        }
+
+        function updateUI() {
+            document.getElementById("score").innerText = score;
+            document.getElementById("round").innerText = round;
+            document.getElementById("ballQty").innerText = totalBallCount;
+        }
+
+        function createRow() {
+            const cols = 6;
+            const brickW = (width - (cols + 1) * 10) / cols;
+            const brickH = 35;
+            for (let i = 0; i < cols; i++) {
+                let x = i * (brickW + 10) + 10;
+                let rand = Math.random();
+                if (rand > 0.45) {
+                    bricks.push({ x, y: 70, w: brickW, h: brickH, hp: round, color: `hsl(${round * 20 % 360}, 70%, 50%)` });
+                } else if (rand > 0.25) {
+                    items.push({ x: x + brickW/2, y: 70 + brickH/2, type: 'plus', r: 12 });
+                }
+            }
+        }
+
+        function nextTurn() {
+            bricks.forEach(b => b.y += 50);
+            items.forEach(it => it.y += 50);
+            totalBallCount += extraBallsThisRound;
+            extraBallsThisRound = 0;
+            createRow();
+            isShooting = false;
+            timeScale = 1;
+            speedBtn.style.display = "none";
+            updateUI();
+            checkGameOver();
+        }
+
+        function checkGameOver() {
+            if (bricks.some(b => b.y + b.h > cannon.y - 20)) {
+                isPlaying = false;
+                document.getElementById("gameOverScreen").style.display = "flex";
+                document.getElementById("finalScore").innerText = score;
+            }
+        }
+
+        function handleInput(e) {
+            if (!isPlaying || isShooting) return;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const rect = canvas.getBoundingClientRect();
+            let tx = clientX - rect.left;
+            let ty = clientY - rect.top;
+            
+            if (ty < cannon.y) {
+                cannon.angle = Math.atan2(ty - cannon.y, tx - cannon.x);
+                aiming = true;
+            }
+        }
+
+        function fire() {
+            if (!aiming || isShooting) return;
+            isShooting = true;
+            aiming = false;
+            speedBtn.style.display = "block";
+            
+            for (let i = 0; i < totalBallCount; i++) {
+                setTimeout(() => {
+                    if(!isPlaying) return;
+                    balls.push({
+                        x: cannon.x, y: cannon.y,
+                        dx: Math.cos(cannon.angle) * 8,
+                        dy: Math.sin(cannon.angle) * 8,
+                        active: true
+                    });
+                }, i * 100);
+            }
+        }
+
+        canvas.addEventListener("mousedown", () => aiming = false);
+        canvas.addEventListener("mousemove", handleInput);
+        window.addEventListener("mouseup", fire);
+        canvas.addEventListener("touchstart", (e) => { e.preventDefault(); aiming = false; }, {passive: false});
+        canvas.addEventListener("touchmove", handleInput);
+        window.addEventListener("touchend", fire);
+
+        function createParticles(x, y, color) {
+            for(let i=0; i<5; i++) {
+                particles.push({
+                    x, y, 
+                    dx: (Math.random()-0.5)*5, 
+                    dy: (Math.random()-0.5)*5, 
+                    life: 1, color
+                });
+            }
+        }
+
+        function update() {
+            if (!isPlaying) return;
+            ctx.fillStyle = "rgba(8, 8, 8, 0.4)";
+            ctx.fillRect(0, 0, width, height);
+
+            particles.forEach((p, i) => {
+                p.x += p.dx; p.y += p.dy; p.life -= 0.03;
+                ctx.fillStyle = p.color; ctx.globalAlpha = p.life;
+                ctx.fillRect(p.x, p.y, 3, 3);
+                if(p.life <= 0) particles.splice(i, 1);
+            });
+            ctx.globalAlpha = 1;
+
+            items.forEach((it, idx) => {
+                ctx.beginPath();
+                ctx.arc(it.x, it.y, it.r, 0, Math.PI*2);
+                ctx.strokeStyle = varColor('--neon-green');
+                ctx.lineWidth = 2; ctx.stroke();
+                ctx.fillStyle = "#fff"; ctx.font = "bold 14px Arial";
+                ctx.textAlign = "center"; ctx.fillText("+", it.x, it.y+5);
+            });
+
+            // GÜNCELLENEN NİŞAN ÇİZGİSİ
+            if (aiming) {
+                ctx.beginPath(); 
+                ctx.setLineDash([8, 12]); // Çizgi boyutu biraz artırıldı
+                ctx.moveTo(cannon.x, cannon.y);
+                // Uzunluk 200'den 800'e çıkarıldı (Ekranın dışına kadar nişan alır)
+                ctx.lineTo(cannon.x + Math.cos(cannon.angle) * 800, cannon.y + Math.sin(cannon.angle) * 800);
+                ctx.strokeStyle = "rgba(0, 229, 255, 0.6)"; // Daha belirgin yapıldı
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.lineWidth = 1;
+            }
+
+            balls.forEach((b, bIdx) => {
+                for(let s=0; s < timeScale; s++) {
+                    b.x += b.dx; b.y += b.dy;
+                    if (b.x < 10 || b.x > width - 10) b.dx *= -1;
+                    if (b.y < 65) b.dy *= -1;
+                    if (b.y > cannon.y + 10) b.active = false;
+
+                    bricks.forEach((br, brIdx) => {
+                        if (b.x + 5 > br.x && b.x - 5 < br.x + br.w && b.y + 5 > br.y && b.y - 5 < br.y + br.h) {
+                            if (b.x < br.x || b.x > br.x + br.w) b.dx *= -1;
+                            else b.dy *= -1;
+                            br.hp--; score++;
+                            createParticles(b.x, b.y, br.color);
+                            if (br.hp <= 0) bricks.splice(brIdx, 1);
+                            updateUI();
+                        }
+                    });
+
+                    items.forEach((it, itIdx) => {
+                        if (Math.hypot(b.x - it.x, b.y - it.y) < it.r + 8) {
+                            extraBallsThisRound++;
+                            items.splice(itIdx, 1);
+                            createParticles(it.x, it.y, "#39ff14");
+                        }
+                    });
+                }
+                ctx.beginPath(); ctx.arc(b.x, b.y, 6, 0, Math.PI*2);
+                ctx.fillStyle = "#fff"; ctx.fill();
+            });
+
+            balls = balls.filter(b => b.active);
+
+            if (isShooting && balls.length === 0) {
+                round++;
+                nextTurn();
+            }
+
+            bricks.forEach(br => {
+                ctx.fillStyle = br.color;
+                ctx.fillRect(br.x, br.y, br.w, br.h);
+                ctx.fillStyle = "#fff"; ctx.font = "bold 14px Arial";
+                ctx.textAlign = "center"; ctx.fillText(br.hp, br.x + br.w/2, br.y + br.h/2 + 5);
+            });
+
+            ctx.save();
+            ctx.translate(cannon.x, cannon.y);
+            ctx.rotate(cannon.angle);
+            ctx.fillStyle = varColor('--neon-blue');
+            ctx.fillRect(-5, -5, 30, 10);
+            ctx.restore();
+            ctx.beginPath(); ctx.arc(cannon.x, cannon.y, 15, 0, Math.PI*2);
+            ctx.fill();
+
+            requestAnimationFrame(update);
+        }
+
+        function varColor(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+    </script>
+</body>
+</html>
