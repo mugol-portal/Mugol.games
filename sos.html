@@ -208,7 +208,97 @@
             font-weight: 600;
             font-size: 1.1rem;
         }
+
+        /* ── Oyun Sonu Modali ── */
+        .end-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .end-modal-overlay.active { display: flex; }
+        .end-modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 32px 24px 24px;
+            width: 90%;
+            max-width: 340px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .end-modal-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #2f3542;
+            text-align: center;
+        }
+        .end-modal-btn {
+            border: none;
+            background: #2f3542;
+            color: white;
+            padding: 11px 32px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .end-modal-btn:hover { opacity: 0.88; transform: translateY(-2px); }
+
+        /* ── AdSense Reklam Kutusu ── */
+        .mg-ad-box {
+            position: relative;
+            width: 100%;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 14px;
+            padding: 26px 10px 10px;
+            margin-top: 8px;
+            overflow: visible;
+            box-sizing: border-box;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mg-ad-box ins.adsbygoogle {
+            display: block !important;
+            width: 300px !important;
+            height: 250px !important;
+        }
+        .mg-ad-label {
+            position: absolute;
+            top: 7px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.58rem;
+            font-weight: 700;
+            color: #adb5bd;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: #f8f9fa;
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid #dee2e6;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1;
+        }
+        /* Sayfa altı reklam */
+        .mg-ad-page {
+            width: 90%;
+            max-width: 450px;
+            margin: 24px auto 32px;
+        }
     </style>
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1880946354382681" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -244,6 +334,34 @@
         <div id="turn-display" class="turn-text" style="color: var(--p1-color);">Sıra: Oyuncu 1</div>
         
         <button class="reset-btn" onclick="resetGame()">Yeni Oyun</button>
+    </div>
+
+    <!-- ── Oyun Sonu Modali ── -->
+    <div id="end-modal" class="end-modal-overlay">
+        <div class="end-modal-box">
+            <div class="end-modal-title" id="end-modal-text"></div>
+            <button class="end-modal-btn" onclick="closeEndModal()">Yeni Oyun</button>
+
+            <!-- ── ADSENSE REKLAM 1 — Oyun Sonu Modali ── -->
+            <div class="mg-ad-box" aria-label="Reklam" role="complementary">
+                <span class="mg-ad-label">Reklam</span>
+                <ins class="adsbygoogle"
+                     style="display:block;width:300px;height:250px;"
+                     data-ad-client="ca-pub-1880946354382681"
+                     data-ad-slot="1689789138"
+                     data-ad-format="rectangle"></ins>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── ADSENSE REKLAM 2 — Sayfa Altı ── -->
+    <div class="mg-ad-box mg-ad-page" aria-label="Reklam" role="complementary">
+        <span class="mg-ad-label">Reklam</span>
+        <ins class="adsbygoogle"
+             style="display:block;width:300px;height:250px;"
+             data-ad-client="ca-pub-1880946354382681"
+             data-ad-slot="1689789138"
+             data-ad-format="rectangle"></ins>
     </div>
 
     <script>
@@ -358,11 +476,18 @@
 
         function endGame() {
             let result = "";
-            if (scores[1] > scores[2]) result = "Oyuncu 1 Kazandı!";
-            else if (scores[2] > scores[1]) result = "Oyuncu 2 Kazandı!";
-            else result = "Berabere!";
-            
-            setTimeout(() => alert("Oyun Bitti! " + result), 100);
+            if (scores[1] > scores[2]) result = "🏆 Oyuncu 1 Kazandı!";
+            else if (scores[2] > scores[1]) result = "🏆 Oyuncu 2 Kazandı!";
+            else result = "🤝 Berabere!";
+
+            document.getElementById('end-modal-text').textContent = "Oyun Bitti!\n" + result;
+            document.getElementById('end-modal').classList.add('active');
+            setTimeout(mgPushAds, 300);
+        }
+
+        function closeEndModal() {
+            document.getElementById('end-modal').classList.remove('active');
+            resetGame();
         }
 
         function resetGame() {
@@ -374,7 +499,16 @@
             updateUI();
         }
 
+        function mgPushAds() {
+            document.querySelectorAll('ins.adsbygoogle').forEach(function(ins) {
+                if (!ins.getAttribute('data-adsbygoogle-status')) {
+                    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+                }
+            });
+        }
+
         initBoard();
+        setTimeout(mgPushAds, 800);
     </script>
 </body>
 </html>

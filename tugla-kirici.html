@@ -355,7 +355,49 @@
             pointer-events: none;
             z-index: 200;
         }
+
+        /* ── AdSense Reklam Kutusu (Overlay içi) ── */
+        .mg-ad-box {
+            position: relative;
+            width: 300px;
+            background: rgba(5, 8, 16, 0.7);
+            border: 1px solid rgba(255, 7, 58, 0.15);
+            border-radius: 12px;
+            padding: 24px 10px 10px;
+            overflow: visible;
+            box-sizing: border-box;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mg-ad-box ins.adsbygoogle {
+            display: block !important;
+            width: 300px !important;
+            height: 250px !important;
+        }
+        .mg-ad-label {
+            position: absolute;
+            top: 7px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.58rem;
+            font-weight: 700;
+            color: rgba(255, 7, 58, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            background: rgba(5, 8, 16, 0.95);
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 7, 58, 0.15);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1;
+            font-family: 'Orbitron', monospace;
+        }
     </style>
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1880946354382681" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -410,6 +452,16 @@
         <h1 class="overlay-title">NEON STRIKER</h1>
         <p class="overlay-subtitle">ULTIMATE EDITION</p>
         <button class="btn" onclick="startGame()">BAŞLAT</button>
+
+        <!-- ── ADSENSE REKLAM 1 — Başlangıç Ekranı ── -->
+        <div class="mg-ad-box" aria-label="Reklam" role="complementary">
+            <span class="mg-ad-label">Reklam</span>
+            <ins class="adsbygoogle"
+                 style="display:block;width:300px;height:250px;"
+                 data-ad-client="ca-pub-1880946354382681"
+                 data-ad-slot="1689789138"
+                 data-ad-format="rectangle"></ins>
+        </div>
     </div>
 
     <!-- Oyun Bitti Ekranı -->
@@ -431,6 +483,16 @@
         </div>
         <button class="btn" onclick="startGame()">TEKRAR DENE</button>
         <button class="btn secondary" onclick="saveScore()">💾 SKORU İNDİR</button>
+
+        <!-- ── ADSENSE REKLAM 2 — Oyun Sonu Ekranı ── -->
+        <div class="mg-ad-box" aria-label="Reklam" role="complementary">
+            <span class="mg-ad-label">Reklam</span>
+            <ins class="adsbygoogle"
+                 style="display:block;width:300px;height:250px;"
+                 data-ad-client="ca-pub-1880946354382681"
+                 data-ad-slot="1689789138"
+                 data-ad-format="rectangle"></ins>
+        </div>
     </div>
 
 </div>
@@ -882,6 +944,36 @@
 
         requestAnimationFrame(update);
     }
+
+    /* ── AdSense Lazy Push ── */
+    (function() {
+        function mgPushAds() {
+            document.querySelectorAll('ins.adsbygoogle').forEach(function(ins) {
+                if (!ins.getAttribute('data-adsbygoogle-status')) {
+                    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+                }
+            });
+        }
+        // Sayfa yüklenince (startScreen görünür)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() { setTimeout(mgPushAds, 800); });
+        } else {
+            setTimeout(mgPushAds, 800);
+        }
+        // gameOverScreen açılınca push et
+        document.addEventListener('DOMContentLoaded', function() {
+            var goScreen = document.getElementById('gameOverScreen');
+            if (goScreen) {
+                new MutationObserver(function(mutations) {
+                    mutations.forEach(function(m) {
+                        if (m.type === 'attributes' && m.attributeName === 'style') {
+                            if (goScreen.style.display !== 'none') { setTimeout(mgPushAds, 300); }
+                        }
+                    });
+                }).observe(goScreen, { attributes: true });
+            }
+        });
+    })();
 </script>
 </body>
 </html>
