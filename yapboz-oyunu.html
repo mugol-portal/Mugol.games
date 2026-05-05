@@ -351,21 +351,28 @@
 
         /* Reklam kutusu */
         .win-ad-box {
-            margin-top: 4px;
-            border-radius: 12px;
+            margin-top: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(56,189,248,0.2);
+            padding: 12px;
             text-align: center;
+            min-height: 120px;
         }
         .win-ad-label {
-            color: #334155;
-            font-size: 9px;
+            color: #64748b;
+            font-size: 10px;
             font-weight: 700;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+        }
+        .win-ad-box ins.adsbygoogle {
+            display: block !important;
+            min-width: 280px !important;
+            min-height: 100px !important;
+            width: 100% !important;
         }
     </style>
 </head>
@@ -380,8 +387,14 @@
     <div class="header-card">
         <div class="stats-row">
             <div class="stat-item"><span>Hamle</span><b id="move-txt">0</b></div>
-            <div class="stat-item"><span>Kalan</span><b id="remain-txt">0</b></div>
+            <div class="stat-item"><span>❌ Yanlış</span><b id="remain-txt" style="color:#f43f5e;">0</b></div>
+            <div class="stat-item"><span>✅ Doğru</span><b id="correct-txt" style="color:#22c55e;">0</b></div>
             <div class="stat-item"><span>Süre</span><b id="time-txt">00:00</b></div>
+        </div>
+        <div class="stats-row" style="margin-bottom:4px;">
+            <div class="stat-item" style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);">
+                <span>🏅 En İyi (Bu Boyut)</span><b id="best-txt" style="color:#a78bfa;font-size:11px;">—</b>
+            </div>
         </div>
         
         <div class="progress-container"><div id="progress-bar"></div></div>
@@ -404,6 +417,7 @@
         
         <div class="btn-row">
             <button onclick="changeRandom()">🔀 Yeni Resim</button>
+            <button onclick="useHint()" id="hint-btn" style="background: #7c3aed;">💡 İpucu <span id="hint-count" style="background:rgba(255,255,255,0.2);padding:1px 5px;border-radius:10px;margin-left:2px;">3</span></button>
             <button onclick="autoSolve()" style="background: var(--danger);">🏳 Pes Et</button>
         </div>
     </div>
@@ -419,12 +433,18 @@
             <span class="trophy-icon">🏆</span>
             <div class="win-title">TEBRİKLER!</div>
             <div class="win-subtitle">Yapboz Tamamlandı</div>
+            <div id="new-record-badge" style="display:none;background:linear-gradient(135deg,#f59e0b,#ef4444);color:white;font-size:11px;font-weight:900;padding:4px 14px;border-radius:20px;letter-spacing:1px;margin-bottom:12px;display:none;">🏅 YENİ REKOR!</div>
 
             <div class="win-stats">
                 <div class="win-stat">
                     <span class="win-stat-icon">🎯</span>
                     <span class="win-stat-val" id="win-moves">0</span>
                     <span class="win-stat-lbl">Hamle</span>
+                </div>
+                <div class="win-stat">
+                    <span class="win-stat-icon">❌</span>
+                    <span class="win-stat-val" id="win-wrong" style="color:#f43f5e;">0</span>
+                    <span class="win-stat-lbl">Yanlış</span>
                 </div>
                 <div class="win-stat">
                     <span class="win-stat-icon">⏱️</span>
@@ -444,12 +464,12 @@
             <button class="win-btn-retry" onclick="initGame()">↩ Aynı Resmi Tekrar Oyna</button>
 
             <div class="win-ad-box">
-                <div class="win-ad-label">Reklam</div>
+                <div class="win-ad-label">📢 Reklam</div>
                 <ins class="adsbygoogle"
-                     style="display:block;"
+                     style="display:block;min-height:100px;width:100%;"
                      data-ad-client="ca-pub-1880946354382681"
                      data-ad-slot="1689789138"
-                     data-ad-format="auto"
+                     data-ad-format="rectangle"
                      data-full-width-responsive="true"></ins>
                 <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             </div>
@@ -458,8 +478,89 @@
 
     <script>
         let size = 4, moves = 0, placedCount = 0, seconds = 0, timer;
+        let wrongMoves = 0;
+        let hintsLeft = 3;
         let imgUrl = "https://picsum.photos/600/600?random=" + Math.floor(Math.random() * 2000);
         let tilePx, currentOpacity = 0.35;
+
+        /* ---- Ses Efektleri ---- */
+        function playSound(type) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const o = ctx.createOscillator();
+                const g = ctx.createGain();
+                o.connect(g); g.connect(ctx.destination);
+                if (type === 'correct') {
+                    o.frequency.setValueAtTime(523, ctx.currentTime);
+                    o.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
+                    o.frequency.setValueAtTime(784, ctx.currentTime + 0.2);
+                    g.gain.setValueAtTime(0.2, ctx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+                    o.start(); o.stop(ctx.currentTime + 0.4);
+                } else if (type === 'wrong') {
+                    o.frequency.setValueAtTime(220, ctx.currentTime);
+                    o.type = 'sawtooth';
+                    g.gain.setValueAtTime(0.15, ctx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+                    o.start(); o.stop(ctx.currentTime + 0.2);
+                } else if (type === 'win') {
+                    [523,659,784,1047].forEach((f,i) => {
+                        const o2 = ctx.createOscillator(); const g2 = ctx.createGain();
+                        o2.connect(g2); g2.connect(ctx.destination);
+                        o2.frequency.value = f;
+                        g2.gain.setValueAtTime(0.2, ctx.currentTime + i*0.12);
+                        g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.12 + 0.3);
+                        o2.start(ctx.currentTime + i*0.12); o2.stop(ctx.currentTime + i*0.12 + 0.3);
+                    });
+                }
+            } catch(e) {}
+        }
+
+        /* ---- En İyi Skor ---- */
+        function getBestKey() { return 'best_' + size; }
+        function loadBestScore() {
+            try {
+                const b = JSON.parse(localStorage.getItem(getBestKey()));
+                if (b) document.getElementById('best-txt').innerText = b.moves + ' hamle / ' + b.time;
+                else document.getElementById('best-txt').innerText = '—';
+            } catch(e) { document.getElementById('best-txt').innerText = '—'; }
+        }
+        function saveBestScore(moves, timeStr) {
+            try {
+                const key = getBestKey();
+                const prev = JSON.parse(localStorage.getItem(key));
+                if (!prev || moves < prev.moves) {
+                    localStorage.setItem(key, JSON.stringify({moves, time: timeStr}));
+                    loadBestScore();
+                    return true;
+                }
+            } catch(e) {}
+            return false;
+        }
+
+        /* ---- İpucu (Hint) ---- */
+        function useHint() {
+            if (hintsLeft <= 0) return;
+            const unplacedTiles = Array.from(document.querySelectorAll('.tile:not(.placed)'));
+            if (unplacedTiles.length === 0) return;
+            const tile = unplacedTiles[Math.floor(Math.random() * unplacedTiles.length)];
+            const slot = document.querySelector(`.slot[data-idx="${tile.dataset.correct}"]`);
+            if (!slot || slot.hasChildNodes()) { useHint(); return; }
+            tile.style.position = 'static';
+            tile.style.width  = '100%';
+            tile.style.height = '100%';
+            tile.classList.add('placed');
+            tile.style.border = '2px solid #a78bfa';
+            slot.appendChild(tile);
+            placedCount++;
+            moves++;
+            hintsLeft--;
+            document.getElementById('hint-count').innerText = hintsLeft;
+            if (hintsLeft === 0) document.getElementById('hint-btn').style.opacity = '0.4';
+            updateUI();
+            playSound('correct');
+            if (placedCount === size * size) win();
+        }
 
         const board = document.getElementById('board-box');
         const pool  = document.getElementById('piece-pool');
@@ -474,10 +575,14 @@
         /* ---- Oyun Başlat ---- */
         function initGame() {
             size = parseInt(document.getElementById('size-select').value);
-            moves = 0; placedCount = 0; seconds = 0;
+            moves = 0; placedCount = 0; seconds = 0; wrongMoves = 0; hintsLeft = 3;
             document.getElementById('move-txt').innerText  = "0";
-            document.getElementById('remain-txt').innerText = size * size;
+            document.getElementById('remain-txt').innerText = "0";
+            document.getElementById('correct-txt').innerText = "0";
             document.getElementById('time-txt').innerText  = "00:00";
+            document.getElementById('hint-count').innerText = "3";
+            document.getElementById('hint-btn').style.opacity = '1';
+            loadBestScore();
             document.getElementById('progress-bar').style.width = "0%";
 
             // Win ekranını kapat
@@ -581,6 +686,7 @@
                     slot.appendChild(tile);
                     placedCount++;
                     moves++;
+                    playSound('correct');
                     updateUI();
                     if (placedCount === size * size) win();
                 } else {
@@ -591,6 +697,8 @@
                     tile.style.height = (tilePx - 1) + "px";
                     pool.appendChild(tile);
                     moves++;
+                    wrongMoves++;
+                    playSound('wrong');
                     updateUI();
                 }
             });
@@ -599,7 +707,8 @@
         /* ---- UI Güncelle ---- */
         function updateUI() {
             document.getElementById('move-txt').innerText   = moves;
-            document.getElementById('remain-txt').innerText = (size * size) - placedCount;
+            document.getElementById('remain-txt').innerText = wrongMoves;
+            document.getElementById('correct-txt').innerText = placedCount;
             document.getElementById('progress-bar').style.width = (placedCount / (size * size) * 100) + "%";
         }
 
@@ -646,12 +755,19 @@
         /* ---- Oyun Kazanıldı ---- */
         function win() {
             clearInterval(timer);
+            playSound('win');
 
             const timeStr = document.getElementById('time-txt').innerText;
             const stars   = calcStars(moves, size, seconds);
+            const isNewBest = saveBestScore(moves, timeStr);
+
+            // Yeni rekor rozeti
+            const badge = document.getElementById('new-record-badge');
+            badge.style.display = isNewBest ? 'inline-block' : 'none';
 
             // Stat değerleri
             document.getElementById('win-moves').innerText = moves;
+            document.getElementById('win-wrong').innerText = wrongMoves;
             document.getElementById('win-time').innerText  = timeStr;
             document.getElementById('win-size').innerText  = size + 'x' + size;
 
