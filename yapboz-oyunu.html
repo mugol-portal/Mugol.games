@@ -209,8 +209,10 @@
             z-index: 99999;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             padding: 20px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             backdrop-filter: blur(0px);
             transition: background 0.6s ease, backdrop-filter 0.6s ease;
         }
@@ -349,30 +351,44 @@
         }
         .win-btn-retry:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
-        /* Reklam kutusu */
-        .win-ad-box {
-            margin-top: 12px;
-            border-radius: 16px;
-            overflow: hidden;
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(56,189,248,0.2);
-            padding: 12px;
-            text-align: center;
-            min-height: 120px;
+        /* ── AdSense Reklam Kutusu (Geçiş / Win Overlay) ──
+        .mg-ad-box {
+            position: relative;
+            width: 300px;
+            background: rgba(2, 6, 23, 0.7);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            border-radius: 12px;
+            padding: 24px 10px 10px;
+            overflow: visible;
+            box-sizing: border-box;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .win-ad-label {
-            color: #64748b;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-        .win-ad-box ins.adsbygoogle {
+        .mg-ad-box ins.adsbygoogle {
             display: block !important;
-            min-width: 280px !important;
-            min-height: 100px !important;
-            width: 100% !important;
+            width: 300px !important;
+            height: 250px !important;
+        }
+        .mg-ad-label {
+            position: absolute;
+            top: 7px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.58rem;
+            font-weight: 700;
+            color: rgba(56, 189, 248, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            background: rgba(2, 6, 23, 0.95);
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1;
+            font-family: 'Outfit', monospace;
         }
     </style>
 </head>
@@ -463,15 +479,13 @@
             <button class="win-btn-next" onclick="changeRandom()">🔀 YENİ BÖLÜM</button>
             <button class="win-btn-retry" onclick="initGame()">↩ Aynı Resmi Tekrar Oyna</button>
 
-            <div class="win-ad-box">
-                <div class="win-ad-label">📢 Reklam</div>
+            <div class="mg-ad-box" aria-label="Reklam" role="complementary">
+                <span class="mg-ad-label">Reklam</span>
                 <ins class="adsbygoogle"
-                     style="display:block;min-height:100px;width:100%;"
+                     style="display:block;width:300px;height:250px;"
                      data-ad-client="ca-pub-1880946354382681"
                      data-ad-slot="1689789138"
-                     data-ad-format="rectangle"
-                     data-full-width-responsive="true"></ins>
-                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                     data-ad-format="rectangle"></ins>
             </div>
         </div>
     </div>
@@ -822,6 +836,30 @@
 
         window.onload   = initGame;
         window.onresize = initGame;
+
+    /* ── AdSense Lazy Push ── */
+    (function() {
+        function mgPushAds() {
+            document.querySelectorAll('ins.adsbygoogle').forEach(function(ins) {
+                if (!ins.getAttribute('data-adsbygoogle-status')) {
+                    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+                }
+            });
+        }
+        // win-overlay açılınca push et
+        document.addEventListener('DOMContentLoaded', function() {
+            var winOv = document.getElementById('win-overlay');
+            if (winOv) {
+                new MutationObserver(function(mutations) {
+                    mutations.forEach(function(m) {
+                        if (m.type === 'attributes' && m.attributeName === 'style') {
+                            if (winOv.style.display !== 'none') { setTimeout(mgPushAds, 300); }
+                        }
+                    });
+                }).observe(winOv, { attributes: true });
+            }
+        });
+    })();
     </script>
 </body>
 </html>
