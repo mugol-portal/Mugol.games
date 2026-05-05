@@ -504,6 +504,26 @@
             });
         }
 
+        // Yapboz oyununu veritabanına ekle (eğer yoksa)
+        if (typeof gamesDB !== 'undefined' && !gamesDB.find(g => g.id === 'yapboz-oyunu')) {
+            const firstCat = Object.keys(gamesCategories)[0];
+            const catId = gamesCategories['puzzle'] ? 'puzzle' : firstCat;
+            const catName = gamesCategories[catId]?.name || 'Bulmaca';
+            gamesDB.push({
+                id: 'yapboz-oyunu',
+                title: 'Yapboz',
+                catId: catId,
+                catName: catName,
+                desc: 'Parçaları birleştir, resmi tamamla! Eğlenceli ve zorlu yapboz macerasına hazır mısın?',
+                icon: '🧩',
+                color1: '#f59e0b',
+                color2: '#ef4444',
+                url: 'yapboz-oyunu.html',
+                badge: 'YENİ',
+                isTextIcon: false
+            });
+        }
+
         let favorites = JSON.parse(localStorage.getItem('mugolFavorites')) || [];
         let currentFilter = 'all';
 
